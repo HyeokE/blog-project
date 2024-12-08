@@ -40,7 +40,8 @@
   "ignorePatterns": ["public", "node_modules", ".cache", ".vscode", "dist", "**/service/src/types/index.ts"],
   "rules": {
     "no-console": ["error", { "allow": ["warn", "error", "info", "debug", "table"] }],
-    "no-undef": "warn",
+    "no-undef": "off",
+    "no-use-before-define": "off",
     "no-async-promise-executor": "error",
     "no-extra-boolean-cast": "error",
     "no-implicit-coercion": "error",
@@ -62,7 +63,7 @@
     "react-hooks/exhaustive-deps": "error",
     "react-hooks/rules-of-hooks": "error",
     "react/jsx-uses-react": "off",
-    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-non-null-assertion": "warn",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-use-before-define": ["warn", { "typedefs": false }],
@@ -86,7 +87,6 @@
     "@typescript-eslint/no-var-requires": "error",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/array-type": ["error", { "default": "array-simple" }],
-
     "@typescript-eslint/consistent-type-imports": ["warn", { "prefer": "type-imports" }],
     "no-unused-vars": ["error", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }],
     "@typescript-eslint/no-unnecessary-type-constraint": "off",
