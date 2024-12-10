@@ -8,6 +8,13 @@ import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { MenuIcon } from '@/assets/MenuIcon';
 
+export type DockItem = {
+  title: string;
+  icon: React.ReactNode;
+  href?: string;
+  onClick?: () => void;
+};
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -17,7 +24,7 @@ export const Dock = ({
   desktopClassName,
   mobileClassName,
 }: {
-  items: Array<{ title: string; icon: React.ReactNode; href: string }>;
+  items: DockItem[];
   desktopClassName?: string;
   mobileClassName?: string;
 }) => {
@@ -29,13 +36,7 @@ export const Dock = ({
   );
 };
 
-const FloatingDockMobile = ({
-  items,
-  className,
-}: {
-  items: Array<{ title: string; icon: React.ReactNode; href: string }>;
-  className?: string;
-}) => {
+const FloatingDockMobile = ({ items, className }: { items: DockItem[]; className?: string }) => {
   const [open, setOpen] = useState(false);
   return (
     <div className={cn('relative block md:hidden', className)}>
@@ -62,13 +63,23 @@ const FloatingDockMobile = ({
                 }}
                 transition={{ delay: (items.length - 1 - idx) * 0.05 }}
               >
-                <Link
-                  href={item.href}
-                  key={item.title}
-                  className="h-10 w-10 rounded-full bg-gray-50 dark:bg-neutral-900 flex items-center justify-center"
-                >
-                  <div className="h-4 w-4">{item.icon}</div>
-                </Link>
+                {item.href ? (
+                  <Link
+                    href={item.href}
+                    key={item.title}
+                    className="h-10 w-10 rounded-full bg-gray-50 dark:bg-neutral-900 flex items-center justify-center"
+                  >
+                    <div className="h-4 w-4">{item.icon}</div>
+                  </Link>
+                ) : (
+                  <button
+                    key={item.title}
+                    onClick={item.onClick}
+                    className="h-10 w-10 rounded-full bg-gray-50 dark:bg-neutral-900 flex items-center justify-center cursor-pointer"
+                  >
+                    <div className="h-4 w-4">{item.icon}</div>
+                  </button>
+                )}
               </motion.div>
             ))}
           </motion.div>
@@ -84,13 +95,7 @@ const FloatingDockMobile = ({
   );
 };
 
-const FloatingDockDesktop = ({
-  items,
-  className,
-}: {
-  items: Array<{ title: string; icon: React.ReactNode; href: string }>;
-  className?: string;
-}) => {
+const FloatingDockDesktop = ({ items, className }: { items: DockItem[]; className?: string }) => {
   const mouseX = useMotionValue(Infinity);
   return (
     <motion.div
@@ -108,17 +113,7 @@ const FloatingDockDesktop = ({
   );
 };
 
-function IconContainer({
-  mouseX,
-  title,
-  icon,
-  href,
-}: {
-  mouseX: MotionValue;
-  title: string;
-  icon: React.ReactNode;
-  href: string;
-}) {
+function IconContainer({ mouseX, title, icon, href, onClick }: { mouseX: MotionValue } & DockItem) {
   const ref = useRef<HTMLDivElement>(null);
 
   const distance = useTransform(mouseX, (val) => {
@@ -158,33 +153,65 @@ function IconContainer({
   const [hovered, setHovered] = useState(false);
 
   return (
-    <Link href={href}>
-      <motion.div
-        ref={ref}
-        style={{ width, height }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        className="aspect-square rounded-full bg-gray-200 dark:bg-neutral-800 flex items-center justify-center relative"
-      >
-        <AnimatePresence>
-          {hovered && (
+    <>
+      {href ? (
+        <Link href={href}>
+          <motion.div
+            ref={ref}
+            style={{ width, height }}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            className="aspect-square rounded-full bg-gray-200 dark:bg-neutral-800 flex items-center justify-center relative"
+          >
+            <AnimatePresence>
+              {hovered && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, x: '-50%' }}
+                  animate={{ opacity: 1, y: 0, x: '-50%' }}
+                  exit={{ opacity: 0, y: 2, x: '-50%' }}
+                  className="px-2 py-0.5 whitespace-pre rounded-md bg-gray-100 border dark:bg-neutral-800 dark:border-neutral-900 dark:text-white border-gray-200 text-neutral-700 absolute left-1/2 -translate-x-1/2 -top-8 w-fit text-xs"
+                >
+                  {title}
+                </motion.div>
+              )}
+            </AnimatePresence>
             <motion.div
-              initial={{ opacity: 0, y: 10, x: '-50%' }}
-              animate={{ opacity: 1, y: 0, x: '-50%' }}
-              exit={{ opacity: 0, y: 2, x: '-50%' }}
-              className="px-2 py-0.5 whitespace-pre rounded-md bg-gray-100 border dark:bg-neutral-800 dark:border-neutral-900 dark:text-white border-gray-200 text-neutral-700 absolute left-1/2 -translate-x-1/2 -top-8 w-fit text-xs"
+              style={{ width: widthIcon, height: heightIcon }}
+              className="flex items-center justify-center"
             >
-              {title}
+              {icon}
             </motion.div>
-          )}
-        </AnimatePresence>
+          </motion.div>
+        </Link>
+      ) : (
         <motion.div
-          style={{ width: widthIcon, height: heightIcon }}
-          className="flex items-center justify-center"
+          ref={ref}
+          style={{ width, height }}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          onClick={onClick}
+          className="aspect-square rounded-full bg-gray-200 dark:bg-neutral-800 flex items-center justify-center relative"
         >
-          {icon}
+          <AnimatePresence>
+            {hovered && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, x: '-50%' }}
+                animate={{ opacity: 1, y: 0, x: '-50%' }}
+                exit={{ opacity: 0, y: 2, x: '-50%' }}
+                className="px-2 py-0.5 whitespace-pre rounded-md bg-gray-100 border dark:bg-neutral-800 dark:border-neutral-900 dark:text-white border-gray-200 text-neutral-700 absolute left-1/2 -translate-x-1/2 -top-8 w-fit text-xs"
+              >
+                {title}
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <motion.div
+            style={{ width: widthIcon, height: heightIcon }}
+            className="flex items-center justify-center"
+          >
+            {icon}
+          </motion.div>
         </motion.div>
-      </motion.div>
-    </Link>
+      )}
+    </>
   );
 }

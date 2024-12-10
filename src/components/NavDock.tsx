@@ -1,9 +1,14 @@
-import { Dock } from '@/components/Dock';
+'use client';
+import { SparklesIcon } from '@/assets/SparklesIcon';
+import { SunIcon } from '@/assets/SunIcon';
+import { Dock, DockItem } from '@/components/Dock';
 import { HomeIcon } from '@/assets/HomeIcon';
 import { UserIcon } from '@/assets/UserIcon';
+import useDarkMode from '@/hooks/useDarkMode';
 
 export function NavDock() {
-  const links = [
+  const [mode, toggleMode] = useDarkMode('light');
+  const links: DockItem[] = [
     {
       title: 'Home',
       icon: <HomeIcon />,
@@ -11,9 +16,14 @@ export function NavDock() {
     },
 
     {
-      title: 'Products',
+      title: 'About Me',
       icon: <UserIcon />,
       href: '#',
+    },
+    {
+      title: 'Change Theme',
+      icon: mode === 'dark' ? <SunIcon /> : <SparklesIcon />,
+      onClick: toggleMode,
     },
   ];
   return (

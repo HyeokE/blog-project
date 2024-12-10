@@ -24,7 +24,6 @@ const PostSection = ({ posts, year }: { posts: NotionPosts; year: number }) => {
         style={{
           backgroundColor: 'var(--background)',
           color: 'var(--foreground)',
-          padding: '10px',
           borderRadius: '10px',
           boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
         }}

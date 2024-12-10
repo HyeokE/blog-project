@@ -1,5 +1,6 @@
 'use client';
 
+import useDarkMode from '@/hooks/useDarkMode';
 import { Code } from 'react-notion-x/build/third-party/code';
 import { Collection } from 'react-notion-x/build/third-party/collection';
 import { Equation } from 'react-notion-x/build/third-party/equation';
@@ -18,24 +19,27 @@ import 'prismjs/themes/prism-tomorrow.css';
 // used for rendering equations (optional)
 import 'katex/dist/katex.min.css';
 
-const NotionView = ({ recordMap }: { recordMap: ExtendedRecordMap }) => (
-  <NotionRenderer
-    darkMode
-    isLinkCollectionToUrlProperty={false}
-    linkTableTitleProperties={false}
-    showTableOfContents={false}
-    previewImages={false}
-    recordMap={recordMap}
-    components={{
-      Code,
-      Collection,
-      Equation,
-      Modal,
-      Pdf,
-      Image,
-      Link,
-    }}
-  />
-);
+const NotionView = ({ recordMap }: { recordMap: ExtendedRecordMap }) => {
+  const [mode] = useDarkMode('light');
+  return (
+    <NotionRenderer
+      darkMode={mode === 'dark'}
+      isLinkCollectionToUrlProperty={false}
+      linkTableTitleProperties={false}
+      showTableOfContents={false}
+      previewImages={false}
+      recordMap={recordMap}
+      components={{
+        Code,
+        Collection,
+        Equation,
+        Modal,
+        Pdf,
+        Image,
+        Link,
+      }}
+    />
+  );
+};
 
 export default NotionView;

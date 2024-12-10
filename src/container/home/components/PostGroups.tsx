@@ -24,11 +24,15 @@ const PostGroups = ({ groupedPosts }: { groupedPosts: NotionPosts }) => {
           }}
         >
           <Link key={post.id} href={`/${post.id}`} className="flex flex-col gap-2">
-            <motion.h2 className="text-2xl font-bold">{post.title}</motion.h2>
-            <motion.p className="line-clamp-1 text-s text-gray-200">{post.summary}</motion.p>
-            <motion.time className="text-sm text-gray-400">
-              {format(post.date.start_date, 'MM.dd')}
-            </motion.time>
+            <motion.h2 className="text-xl font-bold">{post.title}</motion.h2>
+            <div className="flex flex-col gap-0.5">
+              <motion.p className="line-clamp-1 text-base text-gray-900 dark:text-gray-200">
+                {post.summary}
+              </motion.p>
+              <motion.time className="text-sm text-gray-600 dark:text-gray-400">
+                {format(post.date.start_date, 'MM.dd')}
+              </motion.time>
+            </div>
           </Link>
         </motion.div>
       ))}
