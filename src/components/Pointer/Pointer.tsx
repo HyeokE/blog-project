@@ -50,29 +50,28 @@ export const Pointer = ({ x, y }: { x: any; y: any }) => {
   const { cursorVariant, textHeight } = usePointer({ x, y });
   const variants = {
     default: {
-      height: 24,
-      width: 24,
-      borderRadius: '50%',
+      height: 16,
+      width: 16,
+      borderRadius: 16,
       backgroundColor: '#3a7bd5',
-      opacity: 0.6,
+      opacity: 1,
       x: '-50%', // Add these transform values
       y: '-50%',
     },
     pointer: {
       height: 36,
       width: 36,
-      borderRadius: '50%',
+      borderRadius: 36,
       backgroundColor: '#3a7bd5',
-      opacity: 0.8,
+      opacity: 1,
       x: '-50%',
       y: '-50%',
     },
     text: {
       height: textHeight,
-      width: 2,
-      borderRadius: 0,
+      width: 3,
+      borderRadius: 4,
       backgroundColor: '#3a7bd5',
-      opacity: 1,
       x: '-50%',
       y: '-50%',
     },

@@ -6,6 +6,7 @@ import type {
   SubDecoration,
 } from 'notion-types';
 import { getTextContent, getDateValue } from 'notion-utils';
+import { NotionPost } from '@/models/NotionPosts';
 
 interface User {
   id: string;
@@ -29,7 +30,7 @@ export default async function getPageProperties(
   id: string,
   block: BlockMap,
   schema: CollectionPropertySchemaMap,
-): Promise<PageProperties> {
+): Promise<NotionPost> {
   const api = new NotionAPI();
   const properties: PageProperties = { id };
 
@@ -88,5 +89,5 @@ export default async function getPageProperties(
     }
   }
 
-  return properties;
+  return properties as NotionPost;
 }
