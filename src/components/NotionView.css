@@ -275,7 +275,7 @@
 }
 
 .medium-zoom-image {
-    border-radius: 0;
+    border-radius: 8px;
 }
 
 .medium-zoom-image--opened {
@@ -920,7 +920,7 @@ svg.notion-page-icon {
     width: 100%;
     padding: 1em;
     margin: 4px 0;
-    border-radius: 3px;
+
     tab-size: 2;
     display: block;
     box-sizing: border-box;
@@ -928,6 +928,7 @@ svg.notion-page-icon {
     background: var(--bg-color-1);
     font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, Courier,
     monospace;
+    border-radius: 8px;
 }
 
 .notion-code-copy {
@@ -1155,7 +1156,7 @@ svg.notion-page-icon {
 .notion-image {
     display: block;
     width: 100%;
-    border-radius: 1px;
+    border-radius: 12px;
 }
 
 .notion-asset-caption {

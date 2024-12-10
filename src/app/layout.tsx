@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './reset.css';
 import './globals.css';
+import { PointerRoot } from '@/components/Pointer/Pointer';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -20,7 +21,9 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <PointerRoot>{children}</PointerRoot>
+      </body>
     </html>
   );
 }

@@ -17,19 +17,18 @@ const PostSection = ({ posts, year }: { posts: NotionPosts; year: number }) => {
       variants={itemVariants}
       key={year}
       ref={ref}
-      className="relative flex flex-row gap-10 h-fit py-[40px]"
+      className="relative flex flex-row gap-10 h-fit py-[40px] border-0"
     >
       <h2
         className="sticky text-xl h-fit top-[100px]"
         style={{
           backgroundColor: 'var(--background)',
           color: 'var(--foreground)',
-          borderRadius: '10px',
-          boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
         }}
       >
         {year}
       </h2>
+
       <PostGroups groupedPosts={posts} />
     </motion.div>
   );
