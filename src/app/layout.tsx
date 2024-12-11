@@ -13,6 +13,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  console.table(process.env);
   return (
     <html lang="en">
       <head>

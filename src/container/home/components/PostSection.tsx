@@ -1,35 +1,45 @@
 'use client';
-import React, { useRef } from 'react';
+import React, { use } from 'react';
 import type { NotionPosts } from '@/models/NotionPosts';
-import PostGroups from '@/container/home/components/PostGroups';
-import { motion, useScroll } from 'framer-motion';
-import { itemVariants } from '@/motions/delayChildren';
+import { motion } from 'framer-motion';
+import { itemVariants, listVariants } from '@/motions/delayChildren';
+import Link from 'next/link';
+import { format } from 'date-fns';
 
-const PostSection = ({ posts, year }: { posts: NotionPosts; year: number }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['end end', 'start start'],
-  });
+interface PostSectionProps {
+  posts: NotionPosts;
+}
 
+const PostSection = ({ posts }: PostSectionProps) => {
   return (
     <motion.div
-      variants={itemVariants}
-      key={year}
-      ref={ref}
-      className="relative flex flex-row gap-10 h-fit py-[40px] border-0"
+      variants={listVariants}
+      className="flex flex-col h-fit w-[512px] gap-8 mx-auto py-[calc(50dvh-41px)] px-5"
     >
-      <h2
-        className="sticky text-xl h-fit top-[100px]"
-        style={{
-          backgroundColor: 'var(--background)',
-          color: 'var(--foreground)',
-        }}
-      >
-        {year}
-      </h2>
-
-      <PostGroups groupedPosts={posts} />
+      {posts.map((post) => (
+        <motion.div
+          key={post.id}
+          variants={itemVariants}
+          whileHover={{
+            scale: 1.01,
+            transition: { duration: 0.2 },
+          }}
+          className="post-list"
+          data-post-date={post.date.start_date}
+        >
+          <Link key={post.id} href={`/${post.id}`} className="flex flex-col gap-2">
+            <motion.h2 className="text-xl font-bold">{post.title}</motion.h2>
+            <div className="flex flex-col gap-0.5">
+              <motion.p className="line-clamp-1 text-base text-gray-900 dark:text-gray-200">
+                {post.summary}
+              </motion.p>
+              <motion.time className="text-sm text-gray-600 dark:text-gray-400">
+                {format(post.date.start_date, 'MM.dd')}
+              </motion.time>
+            </div>
+          </Link>
+        </motion.div>
+      ))}
     </motion.div>
   );
 };

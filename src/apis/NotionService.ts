@@ -9,7 +9,7 @@ import { BLOG_CONFIG } from '../../.blog-project.config';
 export const notionService = new NotionAPI();
 
 export async function getAllPosts({ includePages = false }) {
-  let id = BLOG_CONFIG.NOTION_PAGE_ID as string;
+  let id = 'fe46fcdfb53b44689d0e5b8dff548636';
 
   const response = await notionService.getPage(id);
   id = idToUuid(id);
