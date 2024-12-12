@@ -14,7 +14,7 @@ const PostSection = ({ posts }: PostSectionProps) => {
   return (
     <motion.div
       variants={listVariants}
-      className="flex flex-col h-fit w-[512px] gap-8 mx-auto py-[calc(50dvh-41px)] px-5"
+      className="flex flex-col h-fit w-full mw-[512px] gap-8 mx-auto py-[calc(50dvh-41px)] px-5"
     >
       {posts.map((post) => (
         <motion.div
@@ -24,7 +24,7 @@ const PostSection = ({ posts }: PostSectionProps) => {
             scale: 1.01,
             transition: { duration: 0.2 },
           }}
-          className="post-list"
+          className="post-list snap-center"
           data-post-date={post.date.start_date}
         >
           <Link key={post.id} href={`/${post.id}`} className="flex flex-col gap-2">
