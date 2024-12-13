@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   console.table(process.env);
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link
           href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/static/woff2/SUIT.css"
@@ -24,9 +24,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <LayoutGroup>
-          <PointerRoot>{children}</PointerRoot>
-        </LayoutGroup>
+        <PointerRoot>{children}</PointerRoot>
       </body>
     </html>
   );
