@@ -1,3 +1,4 @@
+import { LayoutGroup } from 'framer-motion';
 import type { Metadata } from 'next';
 import './reset.css';
 import './globals.css';
@@ -23,7 +24,9 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <PointerRoot>{children}</PointerRoot>
+        <LayoutGroup>
+          <PointerRoot>{children}</PointerRoot>
+        </LayoutGroup>
       </body>
     </html>
   );

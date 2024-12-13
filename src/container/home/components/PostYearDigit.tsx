@@ -1,7 +1,8 @@
 'use client';
+import { YearDigit } from '@/components/Digits/YearDigit';
 import React from 'react';
 import { useSnapCenter } from '@/hooks/useCurrentPost';
-import { YearDigit } from '@/components/Digit';
+
 import { getYear } from 'date-fns';
 
 const pastYears = new Array(20).fill(0).map((_, i) => new Date().getFullYear() - i - 1);

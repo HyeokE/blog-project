@@ -5,6 +5,7 @@ import NotionView from '@/components/NotionView';
 import { Metadata, ResolvingMetadata } from 'next';
 import { NotionPosts } from '@/models/NotionPosts';
 import { BLOG_CONFIG } from '../../../.blog-project.config';
+import * as motion from 'motion/react-client';
 
 import { getPageDetail } from '@/utils/notion/getPageDetail';
 
@@ -19,9 +20,12 @@ const PostDetail = ({ postId }: { postId: string }) => {
 
   return (
     <article className="flex flex-col gap-6 w-full mw-[512px] px-5 mx-auto py-16">
-      <h1 className="text-3xl text-gray-900 font-bold w-full max-w-[712px] mx-auto">
+      <motion.h1
+        layoutId={post.id}
+        className="text-3xl text-gray-900 font-bold w-full max-w-[712px] mx-auto"
+      >
         {post.title}
-      </h1>
+      </motion.h1>
       <NotionView recordMap={post.recordMap} />
     </article>
   );
