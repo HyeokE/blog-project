@@ -1512,8 +1512,8 @@ __metadata:
     notion-client: "npm:^7.1.5"
     postcss: "npm:^8"
     prettier: "npm:^3.3.3"
-    react: "npm:19.1.0-canary-4dff0e62-20241213"
-    react-dom: "npm:19.1.0-canary-4dff0e62-20241213"
+    react: "npm:^18"
+    react-dom: "npm:^18"
     react-notion-x: "npm:^7.2.5"
     tailwind-merge: "npm:^2.5.5"
     tailwind-scrollbar-hide: "npm:^1.1.7"
@@ -3596,7 +3596,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.0.0, loose-envify@npm:^1.4.0":
+"loose-envify@npm:^1.0.0, loose-envify@npm:^1.1.0, loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -4558,14 +4558,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:19.1.0-canary-4dff0e62-20241213":
-  version: 19.1.0-canary-4dff0e62-20241213
-  resolution: "react-dom@npm:19.1.0-canary-4dff0e62-20241213"
+"react-dom@npm:^18":
+  version: 18.3.1
+  resolution: "react-dom@npm:18.3.1"
   dependencies:
-    scheduler: "npm:0.26.0-canary-4dff0e62-20241213"
+    loose-envify: "npm:^1.1.0"
+    scheduler: "npm:^0.23.2"
   peerDependencies:
-    react: 19.1.0-canary-4dff0e62-20241213
-  checksum: 10c0/26661dbca5ce2ac597540b6a906fcf6ce40c7780af046b0df312f09eaa964f1c2c7b477b9e8a3b81322638fd8155532a74c5e116261ed26a340221d44a99c249
+    react: ^18.3.1
+  checksum: 10c0/a752496c1941f958f2e8ac56239172296fcddce1365ce45222d04a1947e0cc5547df3e8447f855a81d6d39f008d7c32eab43db3712077f09e3f67c4874973e85
   languageName: node
   linkType: hard
 
@@ -4707,10 +4708,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:19.1.0-canary-4dff0e62-20241213":
-  version: 19.1.0-canary-4dff0e62-20241213
-  resolution: "react@npm:19.1.0-canary-4dff0e62-20241213"
-  checksum: 10c0/db69d5d1942319b7fca9bd6731553a7633177d8d9d2bdef0eb697ac49d6f34814bfd6edc9cf09e0bab94ea09923435f5817539b020409a765e42adb54e0503b0
+"react@npm:^18":
+  version: 18.3.1
+  resolution: "react@npm:18.3.1"
+  dependencies:
+    loose-envify: "npm:^1.1.0"
+  checksum: 10c0/283e8c5efcf37802c9d1ce767f302dd569dd97a70d9bb8c7be79a789b9902451e0d16334b05d73299b20f048cbc3c7d288bbbde10b701fa194e2089c237dbea3
   languageName: node
   linkType: hard
 
@@ -4926,10 +4929,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:0.26.0-canary-4dff0e62-20241213":
-  version: 0.26.0-canary-4dff0e62-20241213
-  resolution: "scheduler@npm:0.26.0-canary-4dff0e62-20241213"
-  checksum: 10c0/47902090188ea152387ca0eb98315d47d3c24a2225e8981713a8fff205b3553bb7e4e53308d0dcabfe3e7beb7b92788558d2902bb08e0390c72e12b6e7bba8a1
+"scheduler@npm:^0.23.2":
+  version: 0.23.2
+  resolution: "scheduler@npm:0.23.2"
+  dependencies:
+    loose-envify: "npm:^1.1.0"
+  checksum: 10c0/26383305e249651d4c58e6705d5f8425f153211aef95f15161c151f7b8de885f24751b377e4a0b3dd42cce09aad3f87a61dab7636859c0d89b7daf1a1e2a5c78
   languageName: node
   linkType: hard
 
