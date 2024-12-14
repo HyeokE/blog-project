@@ -1,4 +1,3 @@
-import { LayoutGroup } from 'framer-motion';
 import type { Metadata } from 'next';
 import './reset.css';
 import './globals.css';
@@ -14,7 +13,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  console.table(process.env);
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

@@ -2,8 +2,8 @@ import { use } from 'react';
 import { getAllPosts } from '@/apis/NotionService';
 import NotionView from '@/components/NotionView';
 
-import { Metadata, ResolvingMetadata } from 'next';
-import { NotionPosts } from '@/models/NotionPosts';
+import type { Metadata } from 'next';
+import type { NotionPosts } from '@/models/NotionPosts';
 import { BLOG_CONFIG } from '../../../.blog-project.config';
 import * as motion from 'motion/react-client';
 
@@ -26,6 +26,7 @@ const PostDetail = ({ postId }: { postId: string }) => {
       >
         {post.title}
       </motion.h1>
+
       <NotionView recordMap={post.recordMap} />
     </article>
   );
@@ -37,8 +38,8 @@ type Props = {
 };
 
 export async function generateMetadata(
-  { params, searchParams }: Props,
-  parent: ResolvingMetadata,
+  { params }: Props,
+  // parent: ResolvingMetadata,
 ): Promise<Metadata> {
   const id = (await params).slug;
 

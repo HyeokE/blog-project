@@ -1,10 +1,6 @@
 'use client';
 import React, { type ReactNode, useEffect, useRef, useState } from 'react';
-
-import { twMerge } from 'tailwind-merge';
 import usePreviousState from '@/hooks/usePreviousState';
-import { useWindowSize } from '@/hooks/useWindowSize';
-import { motion } from 'motion/react';
 
 const _getArr = (a: number, b: number) => new Array(b - a + 1).fill(0).map((_, index) => a + index);
 export const getArr = (x: number, y: number) => {

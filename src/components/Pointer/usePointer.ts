@@ -40,7 +40,10 @@ export const usePointer = ({ x, y }: { x: any; y: any }) => {
       const mouseX = x.get();
       const mouseY = y.get();
       const hoveredElement = document.elementFromPoint(mouseX, mouseY);
-      if (!hoveredElement) return;
+      if (!hoveredElement) {
+        return;
+      }
+
       const computedStyle = window.getComputedStyle(hoveredElement);
       if (
         hoveredElement?.tagName === 'A' ||

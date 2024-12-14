@@ -9,7 +9,7 @@ import { BLOG_CONFIG } from '../../.blog-project.config';
 export const notionService = new NotionAPI();
 
 export async function getAllPosts({ includePages = false }) {
-  let id = 'fe46fcdfb53b44689d0e5b8dff548636';
+  let id = BLOG_CONFIG.NOTION_PAGE_ID as string;
 
   const response = await notionService.getPage(id);
   id = idToUuid(id);
@@ -24,10 +24,13 @@ export async function getAllPosts({ includePages = false }) {
     return [];
   } else {
     // Construct Data
+    // @ts-ignore
     const pageIds = getPageIds(response);
     const data = [];
+
     for (let i = 0; i < pageIds.length; i++) {
       const id = pageIds[i];
+      // @ts-ignore
       const properties = (await getPageProperties(id, block, schema)) || null;
       // Add fullwidth, createdtime to properties
       properties.createdTime = new Date(block[id].value?.created_time).toString();
