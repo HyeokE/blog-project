@@ -1,4 +1,5 @@
 import typescript from '@typescript-eslint/eslint-plugin';
+import next from '@next/eslint-plugin-next';
 import typescriptParser from '@typescript-eslint/parser';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
@@ -19,6 +20,7 @@ export default [
     plugins: {
       '@typescript-eslint': typescript,
       react: react,
+      next,
       'react-hooks': reactHooks,
       prettier: prettier,
       import: importPlugin,

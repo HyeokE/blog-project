@@ -1,18 +1,7 @@
 import { ImageResponse } from 'next/og';
 
-export const runtime = 'edge';
+// export const runtime = 'edge';
 
-const gradientStyle = {
-  position: 'fixed',
-  zIndex: 1,
-  top: 0,
-  display: 'block',
-  content: '""',
-  width: '100%',
-  height: '10px',
-  background: '#00d2ff',
-  backgroundImage: 'linear-gradient(to right, #3a7bd5, #00d2ff)',
-} as const;
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -58,7 +47,7 @@ export async function GET(request: Request) {
         ],
       },
     );
-  } catch (error) {
+  } catch (e: unknown) {
     return new Response(`Failed to generate the Image`, { status: 500 });
   }
 }
