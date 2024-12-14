@@ -1,5 +1,5 @@
 'use client';
-import { YearDigit } from '@/components/Digits/YearDigit';
+import { NumberDigit } from '@/components/Digits/NumberDigit';
 import React from 'react';
 import { useSnapCenter } from '@/hooks/useCurrentPost';
 
@@ -26,7 +26,7 @@ const PostYearDigit = () => {
   );
 
   return (
-    <YearDigit
+    <NumberDigit
       availableYears={postYears}
       currentYear={getYear(currentDate)}
       duration={0.5}

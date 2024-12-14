@@ -9,7 +9,7 @@ interface YearProps {
   formatter?: (year: number) => React.ReactNode;
 }
 
-export const YearDigit = ({
+export const NumberDigit = ({
   currentYear,
   availableYears,
   height,
