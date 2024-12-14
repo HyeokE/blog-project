@@ -1,30 +1,24 @@
 import { motion } from 'motion/react';
 import React, { useEffect, useState } from 'react';
 
-interface YearProps {
-  currentYear: number;
-  availableYears: number[];
+interface NumberDigitProps {
+  current: number;
+  data: number[];
   height?: number;
   duration: number;
   formatter?: (year: number) => React.ReactNode;
 }
 
-export const NumberDigit = ({
-  currentYear,
-  availableYears,
-  height,
-  duration,
-  formatter,
-}: YearProps) => {
+export const NumberDigit = ({ current, data, height, duration, formatter }: NumberDigitProps) => {
   const [offset, setOffset] = useState(0);
-  const [displayYears, setDisplayYears] = useState<number[]>([]);
+  const [displayNumbers, setDisplayNumbers] = useState<number[]>([]);
 
   useEffect(() => {
-    const currentIndex = availableYears.indexOf(currentYear);
+    const currentIndex = data.indexOf(current);
 
-    setDisplayYears(availableYears);
+    setDisplayNumbers(data);
     setOffset(-currentIndex * 82);
-  }, [currentYear, availableYears, height]);
+  }, [current, data, height]);
 
   return (
     <div className="h-[82px] w-fit overflow-visible">
@@ -32,7 +26,7 @@ export const NumberDigit = ({
         className="flex flex-col items-center justify-center w-fit transition-transform duration-500 ease-out"
         style={{ transform: `translateY(${offset}px)` }}
       >
-        {displayYears.map((year) => (
+        {displayNumbers.map((year) => (
           <motion.div
             key={year}
             layoutId={year.toString()}

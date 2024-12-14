@@ -16,8 +16,8 @@ const PostMonthDigit = () => {
 
   return (
     <NumberDigit
-      availableYears={months}
-      currentYear={getMonth(currentDate) + 1}
+      data={months}
+      current={getMonth(currentDate) + 1}
       duration={0.5}
       formatter={(year) => <>{year}월</>}
     />

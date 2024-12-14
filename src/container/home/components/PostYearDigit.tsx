@@ -27,8 +27,8 @@ const PostYearDigit = () => {
 
   return (
     <NumberDigit
-      availableYears={postYears}
-      currentYear={getYear(currentDate)}
+      data={postYears}
+      current={getYear(currentDate)}
       duration={0.5}
       formatter={(year) => <>{year}년</>}
     />
