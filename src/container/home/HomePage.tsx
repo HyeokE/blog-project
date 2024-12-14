@@ -30,7 +30,7 @@ const HomePage = async () => {
           <div className="relative flex flex-col gap-8 h-dvh max-w-[612px] ">
             {/* Post Point Border  */}
             <div className="absolute z-10 top-0 left-0 right-0 bottom-0 flex items-center justify-center select-none pointer-events-none">
-              <div className="flex w-full h-[120px] border-y-[1px] border-solid border-gray-400 select-none" />
+              <div className="flex w-full h-[120px] border-y-[1px] border-solid border-gray-300 select-none" />
             </div>
             <motion.div className="overflow-y-scroll snap-y scrollbar-hide">
               <PostSection posts={posts} />
