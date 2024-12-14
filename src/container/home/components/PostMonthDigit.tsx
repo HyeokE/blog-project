@@ -13,8 +13,14 @@ const PostMonthDigit = () => {
     (element) => new Date(element.getAttribute('data-post-date') as string),
     new Date(),
   );
+
   return (
-    <YearDigit availableYears={months} currentYear={getMonth(currentDate) + 1} duration={0.5} />
+    <YearDigit
+      availableYears={months}
+      currentYear={getMonth(currentDate) + 1}
+      duration={0.5}
+      formatter={(year) => <>{year}월</>}
+    />
   );
 };
 

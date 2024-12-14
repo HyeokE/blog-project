@@ -14,25 +14,29 @@ const HomePage = async () => {
      snap-y snap-mandatory scroll-smooth
       [mask-image:linear-gradient(to_bottom,transparent_5%,black_45%,black_65%,transparent_95%)]"
     >
-      <div className="flex flex-row h-[100vh] overflow-hidden items-center justify-center">
-        <div className="relative h-dvh flex items-center justify-center px-3 ">
-          <PostYearDigit />
+      <div className="flex flex-row h-[100vh] overflow-hidden items-center justify-center gap-6">
+        <div className="flex flex-row gap-4">
+          <div className="relative h-dvh flex items-center justify-center">
+            <PostYearDigit />
+          </div>
+          {/*<div className="h-[20px] flex items-end ">*/}
+          {/*  <div className="w-[4px] h-[4px] rounded-[5px] bg-[#3a7bd5]" />*/}
+          {/*</div>*/}
+          <div className="relative h-dvh flex items-center justify-center ">
+            <PostMonthDigit />
+          </div>
         </div>
-        <div className="h-[41px] flex items-end ">
-          <div className="w-[8px] h-[8px] rounded-[5px] bg-[#3a7bd5]" />
+        {/*<div className="h-[20px] flex items-end ">*/}
+        {/*  <div className="w-[4px] h-[4px] rounded-[5px] bg-[#3a7bd5]" />*/}
+        {/*</div>*/}
+        <div className="relative flex flex-col gap-8 h-dvh max-w-[612px] ">
+          <div className="absolute z-10 top-0 left-0 right-0 bottom-0 flex items-center justify-center select-none pointer-events-none">
+            <div className="flex w-full h-[120px] border-y-[1px] border-solid border-gray-400 select-none" />
+          </div>
+          <motion.div className="overflow-y-scroll snap-y scrollbar-hide">
+            <PostSection posts={posts} />
+          </motion.div>
         </div>
-        <div className="relative h-dvh flex items-center justify-center px-3 ">
-          <PostMonthDigit />
-        </div>
-        <div className="h-[41px] flex items-end ">
-          <div className="w-[8px] h-[8px] rounded-[5px] bg-[#3a7bd5]" />
-        </div>
-        <motion.div className="flex flex-col gap-8 h-dvh max-w-[612px] overflow-y-scroll snap-y scrollbar-hide">
-          <PostSection posts={posts} />
-        </motion.div>
-      </div>
-      <div className="absolute z-10 top-0 left-0 w-dvw h-dvh flex items-center justify-center select-none pointer-events-none">
-        <div className="flex w-full h-[100px] border-y-[1px] border-solid border-gray-300 select-none" />
       </div>
     </div>
   );

@@ -29,13 +29,13 @@ const PostSection = ({ posts }: PostSectionProps) => {
         >
           <Link key={post.id} href={`/${post.id}`} className="flex flex-col gap-2">
             <motion.time className="text-sm text-gray-600 dark:text-gray-400">
-              {format(post.date.start_date, 'MM.dd')}
+              {format(post.date.start_date, 'dd')}일
             </motion.time>
             <motion.h2 className="text-xl font-bold" layoutId={post.id}>
               {post.title}
             </motion.h2>
             <div className="flex flex-col gap-0.5">
-              <motion.p className="line-clamp-1 text-base text-gray-900 dark:text-gray-200">
+              <motion.p className="line-clamp-1 text-base text-gray-700 dark:text-gray-200">
                 {post.summary}
               </motion.p>
             </div>

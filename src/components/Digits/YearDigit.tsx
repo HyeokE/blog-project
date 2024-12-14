@@ -6,9 +6,16 @@ interface YearProps {
   availableYears: number[];
   height?: number;
   duration: number;
+  formatter?: (year: number) => React.ReactNode;
 }
 
-export const YearDigit = ({ currentYear, availableYears, height, duration }: YearProps) => {
+export const YearDigit = ({
+  currentYear,
+  availableYears,
+  height,
+  duration,
+  formatter,
+}: YearProps) => {
   const [offset, setOffset] = useState(0);
   const [displayYears, setDisplayYears] = useState<number[]>([]);
 
@@ -29,9 +36,9 @@ export const YearDigit = ({ currentYear, availableYears, height, duration }: Yea
           <motion.div
             key={year}
             layoutId={year.toString()}
-            className="flex items-center justify-center h-[82px] w-fit text-5xl font-bold"
+            className="flex items-center justify-center h-[82px] w-fit text-xl font-light text-gray-700"
           >
-            {year}
+            {formatter ? formatter(year) : year}
           </motion.div>
         ))}
       </motion.div>
