@@ -1,3 +1,4 @@
+'use client';
 import { Command } from 'cmdk';
 import { useEffect, useState } from 'react';
 
@@ -18,11 +19,10 @@ const CommandMenu = () => {
   }, []);
 
   return (
-    <Command.Dialog open={open} onOpenChange={setOpen} label="Global Command Menu">
+    <Command>
       <Command.Input />
       <Command.List>
         <Command.Empty>No results found.</Command.Empty>
-
         <Command.Group heading="Letters">
           <Command.Item>a</Command.Item>
           <Command.Item>b</Command.Item>
@@ -32,6 +32,8 @@ const CommandMenu = () => {
 
         <Command.Item>Apple</Command.Item>
       </Command.List>
-    </Command.Dialog>
+    </Command>
   );
 };
+
+export default CommandMenu;
