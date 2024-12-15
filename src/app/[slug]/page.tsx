@@ -21,7 +21,8 @@ const PostDetail = ({ postId }: { postId: string }) => {
   return (
     <article className="flex flex-col gap-6 w-full mw-[512px] px-5 mx-auto py-16">
       <motion.h1
-        layoutId={post.id}
+        layout
+        layoutId={post.title}
         className="text-3xl text-gray-900 font-bold w-full max-w-[712px] mx-auto"
       >
         {post.title}

@@ -1,5 +1,5 @@
 'use client';
-import React, { use } from 'react';
+import React from 'react';
 import type { NotionPosts } from '@/models/NotionPosts';
 import { motion } from 'framer-motion';
 import { itemVariants, listVariants } from '@/motions/delayChildren';
@@ -31,7 +31,7 @@ const PostSection = ({ posts }: PostSectionProps) => {
             <motion.time className="text-sm text-gray-600 dark:text-gray-400">
               {format(post.date.start_date, 'dd')}일
             </motion.time>
-            <motion.h2 className="text-xl font-bold" layoutId={post.id}>
+            <motion.h2 className="text-xl font-bold" layoutId={post.title} layout>
               {post.title}
             </motion.h2>
             <div className="flex flex-col gap-0.5">
