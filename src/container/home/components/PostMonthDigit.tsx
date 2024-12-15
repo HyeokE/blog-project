@@ -13,13 +13,20 @@ const PostMonthDigit = () => {
     (element) => new Date(element.getAttribute('data-post-date') as string),
     new Date(),
   );
+  const initialOffset = -getMonth(currentDate) * 82; // Calculate initial offset
 
   return (
     <NumberDigit
       data={months}
       current={getMonth(currentDate) + 1}
       duration={0.5}
-      formatter={(year) => <>{year}월</>}
+      initialOffset={initialOffset}
+      formatter={(year) => (
+        <span className="whitespace-nowrap text-xl text-gray-700">
+          {year}
+          <span className="text-xl text-gray-700 max-[600px]:hidden">월</span>
+        </span>
+      )}
     />
   );
 };

@@ -35,7 +35,12 @@ const PostYearDigit = () => {
       data={postYears}
       current={getYear(currentDate)}
       duration={0.5}
-      formatter={(year) => <>{year}년</>}
+      formatter={(year) => (
+        <span className="whitespace-nowrap text-xl text-gray-700">
+          {year}
+          <span className="text-xl text-gray-700 max-[600px]:hidden">년</span>
+        </span>
+      )}
     />
   );
 };

@@ -1,37 +1,18 @@
-import { use } from 'react';
 import { getAllPosts } from '@/apis/NotionService';
-import NotionView from '@/components/NotionView';
 
 import type { Metadata } from 'next';
 import type { NotionPosts } from '@/models/NotionPosts';
 import { BLOG_CONFIG } from '../../../.blog-project.config';
-import * as motion from 'motion/react-client';
 
 import { getPageDetail } from '@/utils/notion/getPageDetail';
+import PostDetailPage from '@/container/PostDetail/PostDetailPage';
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const post = await getPageDetail(slug);
 
-  return <PostDetail postId={slug} />;
+  return <PostDetailPage post={post} />;
 }
-
-const PostDetail = ({ postId }: { postId: string }) => {
-  const post = use(getPageDetail(postId));
-
-  return (
-    <article className="flex flex-col gap-6 w-full mw-[512px] px-5 mx-auto py-16">
-      <motion.h1
-        layout
-        layoutId={post.title}
-        className="text-3xl text-gray-900 font-bold w-full max-w-[712px] mx-auto"
-      >
-        {post.title}
-      </motion.h1>
-
-      <NotionView recordMap={post.recordMap} />
-    </article>
-  );
-};
 
 type Props = {
   params: Promise<{ slug: string }>;

@@ -6,11 +6,19 @@ interface NumberDigitProps {
   data: number[];
   height?: number;
   duration: number;
+  initialOffset?: number; // Add this new prop
+
   formatter?: (year: number) => React.ReactNode;
 }
 
-export const NumberDigit = ({ current, data, height, duration, formatter }: NumberDigitProps) => {
-  const [offset, setOffset] = useState(0);
+export const NumberDigit = ({
+  current,
+  data,
+  height,
+  initialOffset,
+  formatter,
+}: NumberDigitProps) => {
+  const [offset, setOffset] = useState(initialOffset);
   const [displayNumbers, setDisplayNumbers] = useState<number[]>([]);
 
   useEffect(() => {

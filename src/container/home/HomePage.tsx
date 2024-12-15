@@ -12,27 +12,27 @@ import PostSearch from '@/container/home/components/PostSearch';
 const HomePage = async () => {
   const posts = await getAllPosts({ includePages: false });
   return (
-    <div className="flex flex-col w-dvw gap-8 items-center justify-center h-dvh">
-      <div className="fixed right-0 top-0 flex items-center justify-center h-[70px] px-5">
+    <div className="flex h-dvh w-dvw flex-col items-center justify-center gap-8">
+      <div className="fixed right-0 top-0 flex h-[70px] items-center justify-center px-5">
         <PostSearch />
       </div>
 
       <PostFadeBlur>
-        <div className="flex flex-row h-[100vh] overflow-hidden items-center justify-center gap-6">
-          <div className="flex flex-row gap-4">
-            <div className="relative h-dvh flex items-center justify-center min-w-[60px]">
+        <div className="tablet:gap-6 flex h-[100vh] flex-row items-center justify-center gap-1 overflow-hidden">
+          <div className="tablet:gap-4 flex flex-row gap-1">
+            <div className="relative flex h-dvh min-w-[60px] items-center justify-center">
               <PostYearDigit />
             </div>
-            <div className="relative h-dvh flex items-center justify-center ">
+            <div className="relative flex h-dvh items-center justify-center">
               <PostMonthDigit />
             </div>
           </div>
-          <div className="relative flex flex-col gap-8 h-dvh max-w-[612px] ">
+          <div className="relative flex h-dvh max-w-[612px] flex-col gap-8">
             {/* Post Point Border  */}
-            <div className="absolute z-10 top-0 left-0 right-0 bottom-0 flex items-center justify-center select-none pointer-events-none">
-              <div className="flex w-full h-[120px] border-y-[1px] border-solid border-gray-300 select-none" />
+            <div className="pointer-events-none absolute bottom-0 left-0 right-0 top-0 z-10 flex select-none items-center justify-center">
+              <div className="flex h-[120px] w-full select-none border-y-[1px] border-solid border-gray-300" />
             </div>
-            <motion.div className="overflow-y-scroll snap-y scrollbar-hide">
+            <motion.div className="snap-y overflow-y-scroll scrollbar-hide">
               <PostSection posts={posts} />
             </motion.div>
           </div>

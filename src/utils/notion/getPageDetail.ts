@@ -1,5 +1,11 @@
 import { notionService } from '@/apis/NotionService';
 import getPageProperties from '@/utils/notion/getPageProperties';
+import type { NotionPost } from '@/models/NotionPosts';
+import type { ExtendedRecordMap } from 'notion-types';
+
+export type PostDetailResponse = NotionPost & {
+  recordMap: ExtendedRecordMap;
+};
 
 export const getPageDetail = async (id: string) => {
   const response = await notionService.getPage(id);
