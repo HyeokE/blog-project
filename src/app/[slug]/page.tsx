@@ -7,45 +7,40 @@ import { BLOG_CONFIG } from '../../../.blog-project.config';
 import { getPageDetail } from '@/utils/notion/getPageDetail';
 import PostDetailPage from '@/container/PostDetail/PostDetailPage';
 
-export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+export default async function Page({ params }: { params: { slug: string } }) {
+  const { slug } = params;
   const post = await getPageDetail(slug);
 
   return <PostDetailPage post={post} />;
 }
 
-type Props = {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-};
-
-export async function generateMetadata(
-  { params }: Props,
-  // parent: ResolvingMetadata,
-): Promise<Metadata> {
-  const id = (await params).slug;
-
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const id = params.slug;
   const properties = await getPageDetail(id);
 
-  const image = await fetch(`${BLOG_CONFIG.ORIGIN_URL}/api/og?title=${properties.title}`);
-
   return {
-    title: properties?.title,
+    title: properties.title || 'Default Title',
     openGraph: {
-      images: [image],
+      images: [`/api/og?title=${encodeURIComponent(properties.title)}`], // 동적 이미지 경로
     },
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'), // 기본 URL 설정
   };
 }
-
+export const dynamic = 'force-static';
 export const revalidate = 60;
-
-export const dynamicParams = true; // or false, to 404 on unknown paths
 
 export async function generateStaticParams() {
   const posts: NotionPosts = await getAllPosts({
     includePages: false,
   });
-  return posts.map((post) => ({
-    id: String(post.id),
-  }));
+
+  return posts
+    .filter((post) => post.id) // id가 있는 post만 포함
+    .map((post) => ({
+      slug: String(post.id),
+    }));
 }

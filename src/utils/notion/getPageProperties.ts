@@ -6,7 +6,7 @@ import type {
   SubDecoration,
 } from 'notion-types';
 import { getTextContent, getDateValue } from 'notion-utils';
-import { NotionPost } from '@/models/NotionPosts';
+import type { NotionPost } from '@/models/NotionPosts';
 
 interface User {
   id: string;
@@ -58,29 +58,6 @@ export default async function getPageProperties(
         const text = getTextContent(val);
         if (text && text.length > 0) {
           properties[schema[key].name] = text.split(',');
-        }
-        break;
-      }
-      case 'person': {
-        const rawUsers = val.flat() as SubDecoration[];
-        const userIds = rawUsers.map((item) => item?.[0]?.[1]).filter(Boolean);
-
-        if (userIds.length > 0) {
-          const usersData = await Promise.all(
-            userIds.map(async (userId: string) => {
-              const res: any = await api.getUsers([userId]);
-              const resValue = res?.recordMapWithRoles?.notion_user?.[userId]?.value;
-              return {
-                id: resValue?.id,
-                first_name: resValue?.given_name,
-                last_name: resValue?.family_name,
-                profile_photo: resValue?.profile_photo,
-              } as User;
-            }),
-          );
-          properties[schema[key].name] = usersData;
-        } else {
-          properties[schema[key].name] = [];
         }
         break;
       }
