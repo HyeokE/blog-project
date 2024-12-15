@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
+import { motion, useMotionValue } from 'framer-motion';
 import { cn } from '@/components/Dock';
 import { usePointer } from '@/components/Pointer/usePointer';
 
@@ -38,7 +38,7 @@ export const PointerRoot = ({
         cursor: 'none',
       }}
       ref={ref}
-      className={cn('relative', className)}
+      className={cn('relative', className, 'max-[600px]:hidden')}
     >
       <Pointer x={x} y={y} />
       {children}
@@ -79,7 +79,7 @@ export const Pointer = ({ x, y }: { x: any; y: any }) => {
 
   return (
     <motion.div
-      className="fixed pointer-events-none z-50"
+      className="pointer-events-none fixed z-50"
       style={{
         top: y,
         left: x,
