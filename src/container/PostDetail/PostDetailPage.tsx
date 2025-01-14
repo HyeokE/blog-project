@@ -8,9 +8,9 @@ import { format } from 'date-fns';
 
 const PostDetailPage = ({ post }: { post: PostDetailResponse }) => {
   return (
-    <article className="flex flex-col gap-6 w-full mw-[512px] px-5 mx-auto py-16">
-      <div className="max-w-[712px] mx-auto w-full">
-        <motion.h1 layout layoutId={post.title} className="text-3xl text-gray-900 font-bold">
+    <article className="mw-[512px] mx-auto flex w-full flex-col gap-6 px-5 py-16">
+      <div className="mx-auto flex w-full max-w-[712px] flex-col gap-3">
+        <motion.h1 className="text-3xl font-bold text-gray-900 dark:text-gray-200">
           {post.title}
         </motion.h1>
         <motion.time

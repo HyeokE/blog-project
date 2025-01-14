@@ -36,9 +36,9 @@ const PostYearDigit = () => {
       current={getYear(currentDate)}
       duration={0.5}
       formatter={(year) => (
-        <span className="whitespace-nowrap text-xl text-gray-700">
+        <span className="whitespace-nowrap text-xl text-gray-700 dark:text-gray-500">
           {year}
-          <span className="text-xl text-gray-700 max-[600px]:hidden">년</span>
+          <span className="text-xl text-gray-700 max-[600px]:hidden dark:text-gray-500">년</span>
         </span>
       )}
     />

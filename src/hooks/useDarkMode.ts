@@ -1,7 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-export default function useDarkMode(defaultMode = 'light') {
+export default function useDarkMode(defaultModeProp = 'light') {
+  const defaultMode = document.documentElement.getAttribute('data-mode') || defaultModeProp;
   const [mode, setMode] = useState(defaultMode);
 
   useEffect(() => {

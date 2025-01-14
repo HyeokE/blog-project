@@ -38,7 +38,7 @@ export const PointerRoot = ({
         cursor: 'none',
       }}
       ref={ref}
-      className={cn('relative', className, 'max-[600px]:hidden')}
+      className={cn('relative', className)}
     >
       <Pointer x={x} y={y} />
       {children}
@@ -79,7 +79,7 @@ export const Pointer = ({ x, y }: { x: any; y: any }) => {
 
   return (
     <motion.div
-      className="pointer-events-none fixed z-50"
+      className="pointer-events-none fixed z-50 max-[600px]:hidden"
       style={{
         top: y,
         left: x,

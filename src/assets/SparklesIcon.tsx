@@ -42,7 +42,7 @@ const SparklesIcon = () => {
 
   return (
     <div
-      className="cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center"
+      className="hover:bg-accent flex cursor-pointer select-none items-center justify-center rounded-md p-2 transition-colors duration-200"
       onMouseEnter={() => {
         sparkleControls.start('hover');
         starControls.start('blink', { delay: 1 });
@@ -68,10 +68,10 @@ const SparklesIcon = () => {
           variants={sparkleVariants}
           animate={sparkleControls}
         />
-        <motion.path d="M20 3v4" variants={starVariants} animate={starControls} />
-        <motion.path d="M22 5h-4" variants={starVariants} animate={starControls} />
-        <motion.path d="M4 17v2" variants={starVariants} animate={starControls} />
-        <motion.path d="M5 18H3" variants={starVariants} animate={starControls} />
+        <motion.path d="M20 3v4" stroke="#3a7bd5" variants={starVariants} animate={starControls} />
+        <motion.path d="M22 5h-4" stroke="#3a7bd5" variants={starVariants} animate={starControls} />
+        <motion.path d="M4 17v2" stroke="#3a7bd5" variants={starVariants} animate={starControls} />
+        <motion.path d="M5 18H3" stroke="#3a7bd5" variants={starVariants} animate={starControls} />
       </svg>
     </div>
   );

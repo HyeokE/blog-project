@@ -38,7 +38,7 @@ const PostCard = ({ post }: PostCard) => {
           {post.title}
         </motion.h2>
         <div className="flex flex-col gap-0.5">
-          <motion.p className="line-clamp-1 text-base text-gray-700 max-[600px]:text-sm dark:text-gray-200">
+          <motion.p className="line-clamp-1 text-base text-gray-700 max-[600px]:text-sm dark:text-gray-400">
             {post.summary}
           </motion.p>
         </div>

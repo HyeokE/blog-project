@@ -2,7 +2,6 @@ import { getAllPosts } from '@/apis/NotionService';
 
 import type { Metadata } from 'next';
 import type { NotionPosts } from '@/models/NotionPosts';
-import { BLOG_CONFIG } from '../../../.blog-project.config';
 
 import { getPageDetail } from '@/utils/notion/getPageDetail';
 import PostDetailPage from '@/container/PostDetail/PostDetailPage';
