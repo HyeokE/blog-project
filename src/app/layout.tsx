@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './reset.css';
 import './globals.css';
 import { PointerRoot } from '@/components/Pointer/Pointer';
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -20,6 +21,7 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/static/woff2/SUIT.css"
           rel="stylesheet"
         />
+        <GoogleAnalytics gaId="G-07RYXQL1X0" />
       </head>
       <body>
         <PointerRoot>{children}</PointerRoot>
