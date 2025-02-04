@@ -2,11 +2,13 @@
 import { useEffect, useState } from 'react';
 
 export default function useDarkMode(defaultModeProp = 'light') {
-  const defaultMode = document.documentElement.getAttribute('data-mode') || defaultModeProp;
-  const [mode, setMode] = useState(defaultMode);
+  const [mode, setMode] = useState(defaultModeProp);
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-mode', mode);
+    document.documentElement.setAttribute(
+      'data-mode',
+      document.documentElement.getAttribute('data-mode') ?? mode,
+    );
   }, [mode]);
 
   const toggleMode = () => {

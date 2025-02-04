@@ -1,19 +1,6 @@
-import { NotionAPI } from 'notion-client';
-import type {
-  BlockMap,
-  CollectionPropertySchemaMap,
-  Decoration,
-  SubDecoration,
-} from 'notion-types';
-import { getTextContent, getDateValue } from 'notion-utils';
+import type { BlockMap, CollectionPropertySchemaMap, Decoration } from 'notion-types';
+import { getDateValue, getTextContent } from 'notion-utils';
 import type { NotionPost } from '@/models/NotionPosts';
-
-interface User {
-  id: string;
-  first_name: string;
-  last_name: string;
-  profile_photo: string;
-}
 
 interface PageProperties {
   id: string;
@@ -31,7 +18,6 @@ export default async function getPageProperties(
   block: BlockMap,
   schema: CollectionPropertySchemaMap,
 ): Promise<NotionPost> {
-  const api = new NotionAPI();
   const properties: PageProperties = { id };
 
   const propertiesObject = (block?.[id]?.value?.properties || {}) as Properties;

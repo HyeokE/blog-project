@@ -5,7 +5,7 @@ import { SearchIcon } from '@/assets/SearchIcon';
 const PostSearch = () => {
   return (
     <>
-      <SearchIcon onClick={() => console.log('search')} />
+      <SearchIcon onClick={() => console.info('search')} />
       {/*<CommandMenu />*/}
     </>
   );

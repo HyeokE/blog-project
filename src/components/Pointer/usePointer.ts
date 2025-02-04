@@ -1,39 +1,45 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export const usePointer = ({ x, y }: { x: any; y: any }) => {
   const [cursorVariant, setCursorVariant] = useState('default');
   const [textHeight, setTextHeight] = useState(24); // Default line height
 
-  const textNodeCache = new WeakMap<Element, ClientRect[]>();
+  const textNodeCache = useMemo(() => new WeakMap<Element, ClientRect[]>(), []);
 
-  const getTextRects = (element: Element): ClientRect[] => {
-    if (textNodeCache.has(element)) {
-      return textNodeCache.get(element)!;
-    }
-
-    const rects: ClientRect[] = [];
-    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
-
-    let node;
-    while ((node = walker.nextNode())) {
-      if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
-        const range = document.createRange();
-        range.selectNode(node);
-        rects.push(...Array.from(range.getClientRects()));
+  const getTextRects = useCallback(
+    (element: Element): ClientRect[] => {
+      if (textNodeCache.has(element)) {
+        return textNodeCache.get(element)!;
       }
-    }
 
-    textNodeCache.set(element, rects);
-    return rects;
-  };
+      const rects: ClientRect[] = [];
+      const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
 
-  const isOverText = (element: Element, x: number, y: number): boolean => {
-    const rects = getTextRects(element);
+      let node;
+      while ((node = walker.nextNode())) {
+        if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
+          const range = document.createRange();
+          range.selectNode(node);
+          rects.push(...Array.from(range.getClientRects()));
+        }
+      }
 
-    return rects.some(
-      (rect) => x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom,
-    );
-  };
+      textNodeCache.set(element, rects);
+      return rects;
+    },
+    [textNodeCache],
+  );
+
+  const isOverText = useCallback(
+    (element: Element, x: number, y: number): boolean => {
+      const rects = getTextRects(element);
+
+      return rects.some(
+        (rect) => x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom,
+      );
+    },
+    [getTextRects],
+  );
 
   useEffect(() => {
     const handleCursorState = () => {
@@ -62,7 +68,7 @@ export const usePointer = ({ x, y }: { x: any; y: any }) => {
 
     window.addEventListener('mousemove', handleCursorState);
     return () => window.removeEventListener('mousemove', handleCursorState);
-  }, [x, y]);
+  }, [isOverText, x, y]);
 
   return { cursorVariant, textHeight };
 };

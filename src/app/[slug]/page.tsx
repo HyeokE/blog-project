@@ -6,8 +6,8 @@ import type { NotionPosts } from '@/models/NotionPosts';
 import { getPageDetail } from '@/utils/notion/getPageDetail';
 import PostDetailPage from '@/container/PostDetail/PostDetailPage';
 
-export default async function Page({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const post = await getPageDetail(slug);
 
   return <PostDetailPage post={post} />;
@@ -16,9 +16,9 @@ export default async function Page({ params }: { params: { slug: string } }) {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const id = params.slug;
+  const { slug: id } = await params;
   const properties = await getPageDetail(id);
 
   return {

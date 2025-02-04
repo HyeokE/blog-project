@@ -90,6 +90,7 @@ export default [
         {
           varsIgnorePattern: '^_',
           argsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
         },
       ],
       '@typescript-eslint/naming-convention': [

@@ -48,7 +48,7 @@ const Digit = ({ digit, width, height, duration, formatter }: Props) => {
       setOffset(0);
       isAnimating = false;
     };
-  }, []);
+  }, [digit, height]);
 
   useEffect(() => {
     const diff = Number(digit) - Number(prevDigit);
@@ -56,11 +56,11 @@ const Digit = ({ digit, width, height, duration, formatter }: Props) => {
 
     setOffset(offset);
     isAnimating = true;
-  }, [digit, height]);
+  }, [prevDigit, digit, height]);
 
   useEffect(() => {
     setNumbers(getArr(Number(prevDigit), Number(digit)).map(String));
-  }, [digit]);
+  }, [digit, prevDigit]);
 
   useEffect(() => {
     wrapperRef.current?.addEventListener('transitionend', () => {
@@ -82,11 +82,11 @@ const Digit = ({ digit, width, height, duration, formatter }: Props) => {
   };
 
   return (
-    <div ref={wrapperRef} className="flex flex-col box-border" style={wrapperStyle}>
+    <div ref={wrapperRef} className="box-border flex flex-col" style={wrapperStyle}>
       {numbers.map((d, index) => (
         <div
           key={index}
-          className="flex flex-none justify-center items-center box-border"
+          className="box-border flex flex-none items-center justify-center"
           style={digitStyle}
         >
           {formatter?.(d) ?? d}

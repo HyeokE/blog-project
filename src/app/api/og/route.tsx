@@ -47,7 +47,7 @@ export async function GET(request: Request) {
         ],
       },
     );
-  } catch (e: unknown) {
+  } catch (_e: unknown) {
     return new Response(`Failed to generate the Image`, { status: 500 });
   }
 }

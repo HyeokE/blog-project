@@ -13,7 +13,7 @@ export const useSnapCenter = <T>(
 ): T => {
   const [centerValue, setCenterValue] = useState<T>(defaultValue);
 
-  const memoizedGetValue = useCallback(getValue, []);
+  const memoizedGetValue = useCallback(getValue, [getValue]);
 
   useEffect(() => {
     const { root = null, threshold = 0.5, rootMargin = '-46% 0px -46% 0px' } = options;
