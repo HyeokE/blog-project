@@ -1,19 +1,24 @@
 'use client';
 
 import { motion, useAnimation } from 'motion/react';
+import { clsx } from 'clsx';
 
 type SearchIconProps = {
   onClick?: () => void;
-};
+} & React.HTMLAttributes<HTMLDivElement>;
 
-const SearchIcon = ({ onClick }: SearchIconProps) => {
+const SearchIcon = ({ onClick, className, ...rest }: SearchIconProps) => {
   const controls = useAnimation();
 
   return (
     <div
-      className="cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center overflow-hidden"
+      className={clsx(
+        'hover:bg-accent flex cursor-pointer select-none items-center justify-center overflow-hidden rounded-md p-2 transition-colors duration-200',
+        className,
+      )}
       onMouseEnter={() => controls.start('animate')}
       onMouseLeave={() => controls.start('normal')}
+      {...rest}
       onClick={onClick}
     >
       <motion.svg

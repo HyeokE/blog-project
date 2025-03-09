@@ -13,7 +13,7 @@ const HomePage = async () => {
   const posts = await getAllPosts({ includePages: false });
   return (
     <div className="flex h-dvh w-dvw flex-col items-center justify-center gap-8">
-      <div className="fixed right-0 top-0 flex h-[70px] items-center justify-center px-5">
+      <div className="fixed right-0 top-0 z-20 flex h-[70px] items-center justify-center px-5">
         <PostSearch />
       </div>
 
@@ -38,7 +38,6 @@ const HomePage = async () => {
           </div>
         </div>
       </PostFadeBlur>
-      <NavDock />
     </div>
   );
 };
