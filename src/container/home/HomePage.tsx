@@ -13,7 +13,7 @@ const HomePage = async () => {
   return (
     <div className="flex h-dvh w-dvw flex-col items-center justify-center gap-8">
       <div className="fixed top-0 right-0 z-20 flex h-[70px] items-center justify-center px-5">
-        <PostSearch />
+        <PostSearch posts={posts} />
       </div>
 
       <PostFadeBlur>
