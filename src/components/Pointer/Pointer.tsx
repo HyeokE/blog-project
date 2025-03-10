@@ -32,14 +32,7 @@ export const PointerRoot = ({
   };
 
   return (
-    <div
-      onMouseMove={handleMouseMove}
-      style={{
-        cursor: 'none',
-      }}
-      ref={ref}
-      className={cn('relative', className)}
-    >
+    <div onMouseMove={handleMouseMove} ref={ref} className={cn('relative', className)}>
       <Pointer x={x} y={y} />
       {children}
     </div>
@@ -63,7 +56,7 @@ export const Pointer = ({ x, y }: { x: any; y: any }) => {
       width: 36,
       borderRadius: 36,
       backgroundColor: '#3a7bd5',
-      opacity: 1,
+      opacity: 0.4,
       x: '-50%',
       y: '-50%',
     },

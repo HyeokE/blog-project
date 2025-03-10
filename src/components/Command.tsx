@@ -42,7 +42,7 @@ const CommandMenu = ({ open, setOpen }: CommandMenuProps) => {
           >
             {/* Input Bar */}
             <Command.Input
-              className="w-full bg-transparent p-4 text-base outline-none placeholder:text-gray-400 dark:placeholder:text-neutral-500"
+              className="w-full bg-transparent p-4 text-base outline-hidden placeholder:text-gray-400 dark:placeholder:text-neutral-500"
               placeholder="Search posts..."
             />
 

@@ -11,7 +11,6 @@ const PostSearch = () => {
       <SearchIcon
         onClick={() => {
           setOpen(true);
-          console.log('Search clicked');
         }}
       />
       <CommandMenu setOpen={setOpen} open={open} />
