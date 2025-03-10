@@ -23,3 +23,9 @@ export const itemVariants: Variants = {
   },
   hidden: { opacity: 0, y: 20, transition: { duration: 0.2 } },
 };
+
+export const fadeVariants: Variants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+};

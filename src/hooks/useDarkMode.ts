@@ -5,10 +5,12 @@ export default function useDarkMode(defaultModeProp = 'light') {
   const [mode, setMode] = useState(defaultModeProp);
 
   useEffect(() => {
-    document.documentElement.setAttribute(
-      'data-mode',
-      document.documentElement.getAttribute('data-mode') ?? mode,
-    );
+    const defaultMode = document.documentElement.getAttribute('data-mode');
+    setMode(defaultMode || defaultModeProp);
+  }, [defaultModeProp]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-mode', mode);
   }, [mode]);
 
   const toggleMode = () => {

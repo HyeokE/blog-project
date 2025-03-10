@@ -18,7 +18,7 @@ export function NavDock() {
     {
       title: 'About Me',
       icon: <UserIcon />,
-      href: '#',
+      href: '/about',
     },
     {
       title: 'Change Theme',
@@ -31,10 +31,10 @@ export function NavDock() {
       <div
         className="absolute inset-0 bg-gradient-to-t from-background to-transparent"
         style={{
-          maskImage: 'linear-gradient(to bottom, transparent, black)',
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent, black)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
+          maskImage: 'linear-gradient(to bottom, transparent, rgba(0,0,0, 0.2))',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent, rgba(0,0,0, 0.2))',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
         }}
       />
       <Dock items={links} />
