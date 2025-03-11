@@ -1,8 +1,8 @@
 'use client';
-import type { MotionValue } from 'framer-motion';
-import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import type { MotionValue } from 'motion/react';
+import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import type { ClassValue } from 'clsx';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -38,59 +38,110 @@ export const Dock = ({
 
 const FloatingDockMobile = ({ items, className }: { items: DockItem[]; className?: string }) => {
   const [open, setOpen] = useState(false);
+  const dockRef = useRef<HTMLDivElement>(null);
+
+  // 외부 클릭 감지를 위한 useEffect
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dockRef.current && !dockRef.current.contains(event.target as Node) && open) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [open]);
+
+  // dock item 클릭 핸들러
+  const handleItemClick = (item: DockItem) => {
+    if (item.onClick) {
+      item.onClick();
+    }
+    setOpen(false);
+  };
+
   return (
-    <div className={cn('tablet:hidden relative block', className)}>
+    <div className={cn('tablet:hidden relative block', className)} ref={dockRef}>
       <AnimatePresence>
         {open && (
-          <motion.div
-            layoutId="nav"
-            className="absolute inset-x-0 bottom-full mb-2 flex flex-col gap-2"
-          >
-            {items.map((item, idx) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                exit={{
-                  opacity: 0,
-                  y: 10,
-                  transition: {
-                    delay: idx * 0.05,
-                  },
-                }}
-                transition={{ delay: (items.length - 1 - idx) * 0.05 }}
-              >
-                {item.href ? (
-                  <Link
-                    href={item.href}
-                    key={item.title}
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900"
-                  >
-                    <div className="h-4 w-4">{item.icon}</div>
-                  </Link>
-                ) : (
-                  <button
-                    key={item.title}
-                    onClick={item.onClick}
-                    className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900"
-                  >
-                    <div className="h-4 w-4">{item.icon}</div>
-                  </button>
-                )}
-              </motion.div>
-            ))}
-          </motion.div>
+          <>
+            {/* 블러 오버레이 */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-10 bg-black/30 backdrop-blur-sm"
+              onClick={() => setOpen(false)}
+            />
+            <motion.div
+              layoutId="nav"
+              className="absolute inset-x-0 bottom-full z-20 mb-2 flex flex-col gap-2"
+            >
+              {items.map((item, idx) => (
+                <motion.div
+                  key={item.title}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+                  exit={{
+                    opacity: 0,
+                    y: 10,
+                    transition: {
+                      delay: idx * 0.05,
+                    },
+                  }}
+                  transition={{ delay: (items.length - 1 - idx) * 0.05 }}
+                >
+                  {item.href ? (
+                    <Link
+                      href={item.href}
+                      key={item.title}
+                      className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900"
+                      onClick={() => setOpen(false)}
+                    >
+                      <div className="h-fit w-fit">{item.icon}</div>
+                    </Link>
+                  ) : (
+                    <button
+                      key={item.title}
+                      onClick={() => handleItemClick(item)}
+                      className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900"
+                    >
+                      <div className="h-fit w-fit">{item.icon}</div>
+                    </button>
+                  )}
+                </motion.div>
+              ))}
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-800"
+      <motion.button
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen(!open);
+        }}
+        whileTap={{ scale: 0.95 }}
+        className="relative z-20 flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 shadow-md transition-all dark:bg-neutral-800"
+        animate={{
+          backgroundColor: open ? 'var(--foreground)' : 'var(--background)',
+          color: open ? 'var(--background)' : 'var(--foreground)',
+        }}
       >
-        <MenuIcon />
-      </button>
+        <div className="flex h-6 w-6 items-center justify-center">
+          <MenuIcon
+            isOpen={open}
+            onClick={() => {
+              setOpen(!open);
+            }}
+          />
+        </div>
+      </motion.button>
     </div>
   );
 };

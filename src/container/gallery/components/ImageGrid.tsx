@@ -13,7 +13,7 @@ interface ImageGridProps {
  */
 const ImageGrid = ({ images, onImageClick }: ImageGridProps) => {
   return (
-    <div className="grid w-full grid-cols-2 gap-1 md:grid-cols-3 md:gap-2 lg:grid-cols-4 xl:grid-cols-5">
+    <div className="grid w-full grid-cols-2 gap-1 md:grid-cols-3 md:gap-3 lg:grid-cols-4 xl:grid-cols-5">
       {images.map((image, index) => (
         <ImageThumbnail key={image.id} image={image} index={index} onImageClick={onImageClick} />
       ))}

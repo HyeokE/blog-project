@@ -1,74 +1,76 @@
 'use client';
 
-import type { Variants } from 'motion/react';
-import { motion, useAnimation } from 'motion/react';
+import { motion } from 'motion/react';
+import { useEffect, useState } from 'react';
 
-const lineVariants: Variants = {
-  normal: {
-    rotate: 0,
-    y: 0,
-    opacity: 1,
-  },
-  animate: (custom: number) => ({
-    rotate: custom === 1 ? 45 : custom === 3 ? -45 : 0,
-    y: custom === 1 ? 6 : custom === 3 ? -6 : 0,
-    opacity: custom === 2 ? 0 : 1,
-    transition: {
-      type: 'spring',
-      stiffness: 260,
-      damping: 20,
-    },
-  }),
-};
+const MenuIcon = ({ isOpen, onClick }: { isOpen?: boolean; onClick?: () => void }) => {
+  const [isActive, setIsActive] = useState(false);
 
-const MenuIcon = () => {
-  const controls = useAnimation();
+  useEffect(() => {
+    setIsActive(Boolean(isOpen));
+  }, [isOpen]);
+
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    }
+  };
 
   return (
-    <div
-      className="cursor-pointer select-none p-2 hover:bg-accent rounded-md transition-colors duration-200 flex items-center justify-center"
-      onMouseEnter={() => controls.start('animate')}
-      onMouseLeave={() => controls.start('normal')}
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <motion.line
-          x1="4"
-          y1="6"
-          x2="20"
-          y2="6"
-          variants={lineVariants}
-          animate={controls}
-          custom={1}
+    <div className="flex h-6 w-6 items-center justify-center">
+      <div className="relative h-4 w-6 cursor-pointer" onClick={handleClick}>
+        {/* 상단 막대 */}
+        <motion.span
+          className="absolute top-0 right-0 left-0 h-0.5 rounded-full bg-current"
+          animate={{
+            top: isActive ? '50%' : '0%',
+            rotate: isActive ? 45 : 0,
+            translateY: isActive ? '-50%' : '0%',
+          }}
+          style={{
+            transformOrigin: 'center',
+            position: 'absolute',
+          }}
+          transition={{
+            type: 'spring',
+            stiffness: 260,
+            damping: 20,
+          }}
         />
-        <motion.line
-          x1="4"
-          y1="12"
-          x2="20"
-          y2="12"
-          variants={lineVariants}
-          animate={controls}
-          custom={2}
+
+        {/* 중간 막대 */}
+        <motion.span
+          className="absolute top-1/2 right-0 left-0 h-0.5 -translate-y-1/2 rounded-full bg-current"
+          animate={{
+            opacity: isActive ? 0 : 1,
+            scale: isActive ? 0 : 1,
+          }}
+          transition={{
+            type: 'spring',
+            stiffness: 260,
+            damping: 20,
+          }}
         />
-        <motion.line
-          x1="4"
-          y1="18"
-          x2="20"
-          y2="18"
-          variants={lineVariants}
-          animate={controls}
-          custom={3}
+
+        {/* 하단 막대 */}
+        <motion.span
+          className="absolute right-0 bottom-0 left-0 h-0.5 rounded-full bg-current"
+          animate={{
+            bottom: isActive ? '50%' : '0%',
+            rotate: isActive ? -45 : 0,
+            translateY: isActive ? '50%' : '0%',
+          }}
+          style={{
+            transformOrigin: 'center',
+            position: 'absolute',
+          }}
+          transition={{
+            type: 'spring',
+            stiffness: 260,
+            damping: 20,
+          }}
         />
-      </svg>
+      </div>
     </div>
   );
 };

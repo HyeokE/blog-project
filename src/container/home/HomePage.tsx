@@ -17,7 +17,7 @@ const HomePage = async () => {
       </div>
 
       <PostFadeBlur>
-        <div className="tablet:gap-6 flex h-[100vh] flex-row items-center justify-center gap-1 overflow-hidden">
+        <div className="tablet:gap-6 flex h-[100vh] flex-row items-center justify-center gap-1 overflow-hidden px-5">
           <div className="tablet:gap-4 flex flex-row gap-1">
             <div className="relative flex h-dvh min-w-[60px] items-center justify-center">
               <PostYearDigit />
