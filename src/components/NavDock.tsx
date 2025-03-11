@@ -34,12 +34,13 @@ export function NavDock() {
   return (
     <div className="fixed bottom-0 flex h-fit w-full items-center justify-center py-[20px]">
       <div
-        className="absolute inset-0 bg-linear-to-t from-background to-transparent"
+        className="from-background absolute inset-0 bg-linear-to-t to-transparent"
         style={{
           maskImage: 'linear-gradient(to bottom, transparent, rgba(0,0,0, 0.2))',
           WebkitMaskImage: 'linear-gradient(to bottom, transparent, rgba(0,0,0, 0.2))',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
+          opacity: mode === 'dark' ? 0.7 : 1,
         }}
       />
       <Dock items={links} />

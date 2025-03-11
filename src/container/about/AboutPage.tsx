@@ -6,7 +6,7 @@ const AboutPage = () => {
     <div className="dvh dvw relative overflow-hidden">
       <Background />
       <div className="absolute inset-0 z-0 h-full w-full overflow-y-auto">
-        <div className="relative z-10 w-full border border-white/70 bg-white/80 p-8 shadow-lg backdrop-blur-md dark:border-gray-700/30 dark:bg-gray-900/60 dark:text-white dark:shadow-gray-900/50">
+        <div className="relative z-10 h-full w-full border border-white/70 bg-white/80 p-8 shadow-lg backdrop-blur-md dark:border-gray-700/30 dark:bg-gray-900/60 dark:text-white dark:shadow-gray-900/50">
           {/* 프로필 헤더 */}
           <div className="mb-16 text-start">
             <h1 className="mb-6 text-5xl font-bold tracking-tight dark:text-white">

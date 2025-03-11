@@ -39,7 +39,7 @@ export const Dock = ({
 const FloatingDockMobile = ({ items, className }: { items: DockItem[]; className?: string }) => {
   const [open, setOpen] = useState(false);
   return (
-    <div className={cn('relative block tablet:hidden', className)}>
+    <div className={cn('tablet:hidden relative block', className)}>
       <AnimatePresence>
         {open && (
           <motion.div
@@ -102,7 +102,7 @@ const FloatingDockDesktop = ({ items, className }: { items: DockItem[]; classNam
       onMouseMove={(e) => mouseX.set(e.pageX)}
       onMouseLeave={() => mouseX.set(Infinity)}
       className={cn(
-        'mx-auto hidden h-16 items-end gap-4 rounded-2xl border-b-blue-400 bg-gray-50 px-4 pb-3 tablet:flex dark:bg-neutral-900',
+        'tablet:flex mx-auto hidden h-16 items-end gap-4 rounded-2xl border-b-blue-400 bg-gray-50 px-4 pb-3 dark:bg-neutral-900',
         className,
       )}
     >
@@ -169,7 +169,7 @@ function IconContainer({ mouseX, title, icon, href, onClick }: { mouseX: MotionV
                   initial={{ opacity: 0, y: 10, x: '-50%' }}
                   animate={{ opacity: 1, y: 0, x: '-50%' }}
                   exit={{ opacity: 0, y: 2, x: '-50%' }}
-                  className="absolute -top-8 left-1/2 w-fit -translate-x-1/2 whitespace-pre rounded-md border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs text-neutral-700 dark:border-neutral-900 dark:bg-neutral-800 dark:text-white"
+                  className="absolute -top-8 left-1/2 w-fit -translate-x-1/2 rounded-md border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs whitespace-pre text-neutral-700 dark:border-neutral-900 dark:bg-neutral-800 dark:text-white"
                 >
                   {title}
                 </motion.div>
@@ -198,7 +198,7 @@ function IconContainer({ mouseX, title, icon, href, onClick }: { mouseX: MotionV
                 initial={{ opacity: 0, y: 10, x: '-50%' }}
                 animate={{ opacity: 1, y: 0, x: '-50%' }}
                 exit={{ opacity: 0, y: 2, x: '-50%' }}
-                className="absolute -top-8 left-1/2 w-fit -translate-x-1/2 whitespace-pre rounded-md border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs text-neutral-700 dark:border-neutral-900 dark:bg-neutral-800 dark:text-white"
+                className="absolute -top-8 left-1/2 w-fit -translate-x-1/2 rounded-md border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs whitespace-pre text-neutral-700 dark:border-neutral-900 dark:bg-neutral-800 dark:text-white"
               >
                 {title}
               </motion.div>

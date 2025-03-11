@@ -87,15 +87,13 @@ const GalleryPage = () => {
     : null;
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-start pt-10 pb-20">
+    <div className="flex h-full w-full flex-col items-center justify-start pt-5 pb-20">
       <motion.div
         className="w-full max-w-[1280px] px-4 md:max-w-6xl"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
-        <h1 className="mb-6 text-3xl font-bold">갤러리</h1>
-
         {/* 로딩 상태 표시 */}
         {isLoading && <LoadingState />}
 
