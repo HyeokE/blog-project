@@ -67,20 +67,12 @@ export const loadImagesMetadata = async (imageList: ImageData[]): Promise<ImageD
       return [];
     }
 
-    // 기본 URL 설정 (서버 측에서는 process.env.NEXT_PUBLIC_API_URL 또는 기본값 사용)
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_URL ||
-      (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
-
     // 모든 이미지에 대해 메타데이터 파싱
     const updatedImages = await Promise.all(
       imageList.map(async (image) => {
         try {
-          // 상대 경로를 절대 URL로 변환
-          const absoluteImageUrl = new URL(image.src, baseUrl).toString();
-
-          // 절대 URL로 메타데이터 파싱
-          const { metadata, hasValidMetadata } = await parseImageMetadata(absoluteImageUrl);
+          // 파일 시스템에서 직접 메타데이터 파싱 (상대 경로 사용)
+          const { metadata, hasValidMetadata } = await parseImageMetadata(image.src);
           return { ...image, metadata, hasValidMetadata };
         } catch (error) {
           console.error(`이미지 ${image.id}의 메타데이터 로딩 실패:`, error);
