@@ -10,15 +10,13 @@ export async function GET() {
     // public/images 디렉토리 경로
     const imagesDirectory = path.join(process.cwd(), 'public', 'images');
 
-    console.log('이미지 디렉토리 경로:', imagesDirectory);
-
     // 디렉토리가 존재하는지 확인
     if (!fs.existsSync(imagesDirectory)) {
       console.error('이미지 디렉토리를 찾을 수 없습니다:', imagesDirectory);
       // 디렉토리가 없으면 생성 시도
       try {
         fs.mkdirSync(imagesDirectory, { recursive: true });
-        console.log('이미지 디렉토리를 생성했습니다:', imagesDirectory);
+
         // 빈 배열 반환 (이미지 없음)
         return NextResponse.json({ images: [] });
       } catch (mkdirError) {
@@ -32,15 +30,12 @@ export async function GET() {
 
     // 디렉토리 내용 읽기
     const fileNames = fs.readdirSync(imagesDirectory);
-    console.log('이미지 디렉토리 내 파일 수:', fileNames.length);
 
     // 이미지 파일만 필터링
     const imageFiles = fileNames.filter((fileName) => {
       const extension = path.extname(fileName).toLowerCase();
       return SUPPORTED_EXTENSIONS.includes(extension);
     });
-
-    console.log('필터링된 이미지 파일 수:', imageFiles.length);
 
     // 이미지 데이터 구성
     const images = imageFiles.map((fileName, index) => ({
