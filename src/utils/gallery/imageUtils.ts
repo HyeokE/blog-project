@@ -1,5 +1,7 @@
 import type { ImageMetadata } from './metadataUtils';
 import { parseImageMetadata } from './metadataUtils';
+import fs from 'fs';
+import path from 'path';
 
 /**
  * 이미지 데이터 인터페이스 정의
@@ -12,83 +14,46 @@ export interface ImageData {
   hasValidMetadata?: boolean; // 유효한 메타데이터가 있는지 표시
 }
 
+// 지원하는 이미지 확장자
+const SUPPORTED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+
 /**
- * 서버 API를 통해 이미지 목록을 가져오는 함수
- * @param retryCount 재시도 횟수 (기본값: 3)
- * @param retryDelay 재시도 간격 (밀리초, 기본값: 1000)
+ * public/images 폴더에서 이미지 목록을 가져오는 함수
  */
-export const fetchImagesList = async (retryCount = 3, retryDelay = 1000): Promise<ImageData[]> => {
-  let lastError: Error | null = null;
+export const fetchImagesList = async (): Promise<ImageData[]> => {
+  try {
+    // public/images 디렉토리 경로
+    const imagesDirectory = path.join(process.cwd(), 'public', 'images');
 
-  // 재시도 로직
-  for (let attempt = 0; attempt <= retryCount; attempt++) {
-    try {
-      // 첫 시도가 아니면 지연 시간 적용
-      if (attempt > 0) {
-        console.info(`이미지 목록 가져오기 재시도 중... (${attempt}/${retryCount})`);
-        await new Promise((resolve) => setTimeout(resolve, retryDelay));
-      }
-
-      // API에서 이미지 목록 가져오기 (동적 데이터)
-      const baseUrl =
-        process.env.NEXT_PUBLIC_API_URL ||
-        (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
-
-      const apiUrl = new URL('/api/images', baseUrl).toString();
-
-      const response = await fetch(apiUrl, {
-        cache: 'no-store', // 항상 최신 데이터 가져오기
-        // 네트워크 타임아웃 설정
-        signal: AbortSignal.timeout(10000),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text().catch(() => '응답 텍스트를 읽을 수 없음');
-        throw new Error(`이미지 목록을 가져오는데 실패했습니다: ${response.status} - ${errorText}`);
-      }
-
-      const data = await response.json();
-
-      // 응답 데이터 검증
-      if (!data) {
-        throw new Error('응답 데이터가 비어있습니다');
-      }
-
-      if (!data.images) {
-        // 오류 메시지가 있으면 표시
-        if (data.error) {
-          throw new Error(`API 오류: ${data.error} ${data.details ? `(${data.details})` : ''}`);
-        }
-        throw new Error('응답에 images 필드가 없습니다');
-      }
-
-      if (!Array.isArray(data.images)) {
-        throw new Error('이미지 데이터 형식이 올바르지 않습니다 (배열이 아님)');
-      }
-
-      // 기본 메타데이터 필드 추가
-      const imagesWithMetadata = data.images.map((img: Omit<ImageData, 'metadata'>) => ({
-        ...img,
-        metadata: {},
-      }));
-
-      return imagesWithMetadata;
-    } catch (error) {
-      console.error(
-        `이미지 목록을 가져오는 중 오류 발생 (시도 ${attempt + 1}/${retryCount + 1}):`,
-        error,
-      );
-      lastError = error instanceof Error ? error : new Error(String(error));
-
-      // 마지막 시도가 아니면 계속 재시도
-      if (attempt < retryCount) {
-        continue;
-      }
+    // 디렉토리가 존재하는지 확인
+    if (!fs.existsSync(imagesDirectory)) {
+      console.error('이미지 디렉토리를 찾을 수 없습니다:', imagesDirectory);
+      return [];
     }
-  }
 
-  // 모든 재시도 실패 시
-  throw lastError || new Error('알 수 없는 오류로 이미지 목록을 가져오지 못했습니다');
+    // 디렉토리 내용 읽기
+    const fileNames = fs.readdirSync(imagesDirectory);
+
+    // 이미지 파일만 필터링
+    const imageFiles = fileNames.filter((fileName) => {
+      const extension = path.extname(fileName).toLowerCase();
+      return SUPPORTED_EXTENSIONS.includes(extension);
+    });
+
+    // 이미지 데이터 구성
+    const images = imageFiles.map((fileName, index) => ({
+      id: index + 1,
+      src: `/images/${fileName}`,
+      alt: `갤러리 이미지 ${index + 1}`,
+      metadata: {},
+    }));
+
+    return images;
+  } catch (error) {
+    console.error('이미지 목록을 가져오는 중 오류 발생:', error);
+    // 오류 발생 시 빈 배열 반환
+    return [];
+  }
 };
 
 /**
@@ -102,11 +67,20 @@ export const loadImagesMetadata = async (imageList: ImageData[]): Promise<ImageD
       return [];
     }
 
+    // 기본 URL 설정 (서버 측에서는 process.env.NEXT_PUBLIC_API_URL 또는 기본값 사용)
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_URL ||
+      (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+
     // 모든 이미지에 대해 메타데이터 파싱
     const updatedImages = await Promise.all(
       imageList.map(async (image) => {
         try {
-          const { metadata, hasValidMetadata } = await parseImageMetadata(image.src);
+          // 상대 경로를 절대 URL로 변환
+          const absoluteImageUrl = new URL(image.src, baseUrl).toString();
+
+          // 절대 URL로 메타데이터 파싱
+          const { metadata, hasValidMetadata } = await parseImageMetadata(absoluteImageUrl);
           return { ...image, metadata, hasValidMetadata };
         } catch (error) {
           console.error(`이미지 ${image.id}의 메타데이터 로딩 실패:`, error);
