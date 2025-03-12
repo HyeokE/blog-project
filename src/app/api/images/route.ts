@@ -2,9 +2,8 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
-// 정적 생성을 위한 설정
-export const dynamic = 'force-static';
-export const revalidate = 3600; // 1시간마다 재검증
+// 동적 API 라우트 설정
+export const dynamic = 'force-dynamic';
 
 // 지원하는 이미지 확장자
 const SUPPORTED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];

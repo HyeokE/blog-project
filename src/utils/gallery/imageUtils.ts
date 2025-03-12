@@ -29,10 +29,15 @@ export const fetchImagesList = async (retryCount = 3, retryDelay = 1000): Promis
         await new Promise((resolve) => setTimeout(resolve, retryDelay));
       }
 
-      // API에서 이미지 목록 가져오기
-      // 정적 빌드를 위해 revalidate 옵션 추가 (0 대신 3600 사용)
-      const response = await fetch(`/api/images`, {
-        next: { revalidate: 3600 }, // 1시간마다 재검증
+      // API에서 이미지 목록 가져오기 (동적 데이터)
+      const baseUrl =
+        process.env.NEXT_PUBLIC_API_URL ||
+        (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+
+      const apiUrl = new URL('/api/images', baseUrl).toString();
+
+      const response = await fetch(apiUrl, {
+        cache: 'no-store', // 항상 최신 데이터 가져오기
         // 네트워크 타임아웃 설정
         signal: AbortSignal.timeout(10000),
       });
