@@ -92,7 +92,7 @@ const CommandMenu = ({ open, setOpen, initialPosts }: CommandMenuProps) => {
           }}
           className="fixed top-0 left-0 flex h-dvh w-dvw items-center justify-center"
         >
-          <Command>
+          <Command className="relative flex h-full w-full items-center justify-center">
             <DialogTitle hidden={true}>Search</DialogTitle>
             <DialogDescription hidden={true}>
               Global command menu for searching posts
@@ -106,7 +106,7 @@ const CommandMenu = ({ open, setOpen, initialPosts }: CommandMenuProps) => {
               exit="exit"
             />
             <motion.div
-              className="z-10 h-[600px] w-full max-w-[500px] min-w-[500px] overflow-hidden rounded-lg border border-gray-200/60 bg-white/95 text-black shadow-xl backdrop-blur-md dark:border-neutral-800/60 dark:bg-neutral-900/90 dark:text-neutral-100"
+              className="z-10 h-[600px] w-[90%] max-w-[500px] overflow-hidden rounded-lg border border-gray-200/60 bg-white/95 text-black shadow-xl backdrop-blur-md dark:border-neutral-800/60 dark:bg-neutral-900/90 dark:text-neutral-100"
               variants={dialogVariants}
               initial="initial"
               animate="animate"

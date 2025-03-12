@@ -33,6 +33,31 @@ const ImageMetadataDisplay = ({ metadata, isFullscreen = false }: ImageMetadataD
           )}
         </p>
       )}
+
+      {metadata.focalLength && (
+        <p className={`${textSize} text-white ${marginBottom}`}>
+          <span className="opacity-75">초점 거리: </span>
+          <span className="font-medium">{metadata.focalLength}</span>
+        </p>
+      )}
+      {metadata.aperture && (
+        <p className={`${textSize} text-white ${marginBottom}`}>
+          <span className="opacity-75">조리개: </span>
+          <span className="font-medium">{metadata.aperture}</span>
+        </p>
+      )}
+      {metadata.shutterSpeed && (
+        <p className={`${textSize} text-white ${marginBottom}`}>
+          <span className="opacity-75">셔터 스피드: </span>
+          <span className="font-medium">{metadata.shutterSpeed}</span>
+        </p>
+      )}
+      {metadata.iso && (
+        <p className={`${textSize} text-white ${marginBottom}`}>
+          <span className="opacity-75">ISO: </span>
+          <span className="font-medium">{metadata.iso}</span>
+        </p>
+      )}
       {metadata.lens && (
         <p className={`${textSize} text-white ${marginBottom}`}>
           <span className="opacity-75">렌즈: </span>

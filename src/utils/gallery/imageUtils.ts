@@ -17,8 +17,9 @@ export interface ImageData {
  */
 export const fetchImagesList = async (): Promise<ImageData[]> => {
   try {
-    // API에서 이미지 목록 가져오기
-    const response = await fetch('/api/images');
+    // API에서 이미지 목록 가져오기 (서버 컴포넌트에서 사용 가능하도록 절대 URL 사용)
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/images`, { cache: 'no-store' });
 
     if (!response.ok) {
       throw new Error(`이미지 목록을 가져오는데 실패했습니다: ${response.status}`);
@@ -51,14 +52,21 @@ export const loadImagesMetadata = async (imageList: ImageData[]): Promise<ImageD
     // 모든 이미지에 대해 메타데이터 파싱
     const updatedImages = await Promise.all(
       imageList.map(async (image) => {
-        const { metadata, hasValidMetadata } = await parseImageMetadata(image.src);
-        return { ...image, metadata, hasValidMetadata };
+        try {
+          const { metadata, hasValidMetadata } = await parseImageMetadata(image.src);
+          return { ...image, metadata, hasValidMetadata };
+        } catch (error) {
+          console.error(`이미지 ${image.id}의 메타데이터 로딩 실패:`, error);
+          // 개별 이미지 메타데이터 로딩 실패 시 기본값 반환
+          return { ...image, metadata: {}, hasValidMetadata: false };
+        }
       }),
     );
 
     return updatedImages;
   } catch (error) {
     console.error('이미지 메타데이터 로딩 오류:', error);
-    throw error;
+    // 오류 발생 시 원본 이미지 목록 반환
+    return imageList.map((image) => ({ ...image, metadata: {}, hasValidMetadata: false }));
   }
 };

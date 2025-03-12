@@ -37,6 +37,7 @@ const ImageThumbnail = ({ image, index, onImageClick }: ImageThumbnailProps) => 
           fill
           sizes="(max-width: 768px) 50vw, 33vw"
           className="object-cover transition-transform duration-300 group-hover:scale-110"
+          priority={index === 0}
         />
 
         {/* 이미지 정보 오버레이 - 메타데이터가 유효한 경우만 표시 */}
