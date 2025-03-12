@@ -3,5 +3,5 @@ export const BLOG_CONFIG = {
   NOTION_TOKEN: process.env.NOTION_TOKEN,
   NAVER_SITE_VERIFICATION: process.env.NAVER_SITE_VERIFICATION,
   GOOGLE_MEASUREMENT_ID: process.env.GOOGLE_MEASUREMENT_ID,
-  ORIGIN_URL: process.env.__NEXT_PRIVATE_ORIGIN ?? 'http://localhost:3000',
+  NEXT_PUBLIC_SITE_URL: process.env.__NEXT_PRIVATE_ORIGIN ?? 'http://localhost:3000',
 };

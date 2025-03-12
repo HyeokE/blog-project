@@ -42,7 +42,7 @@ export const getLocationFromCoordinates = async (lat: number, lng: number): Prom
     }
 
     // 로컬 API 라우트 호출 (서버 컴포넌트에서 사용 가능하도록 절대 URL 사용)
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
     const response = await fetch(`${baseUrl}/api/geocode?lat=${lat}&lng=${lng}`, {
       cache: 'no-store',
     });
@@ -128,7 +128,7 @@ export const parseImageMetadata = async (
     // 이미지 URL이 상대 경로인 경우 절대 URL로 변환
     const imageUrl = url.startsWith('http')
       ? url
-      : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}${url}`;
+      : `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}${url}`;
 
     // 실제 exifr 라이브러리를 사용하여 EXIF 데이터를 파싱합니다
     const response = await fetch(imageUrl, { cache: 'no-store' });
