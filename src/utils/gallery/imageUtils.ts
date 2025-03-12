@@ -29,9 +29,7 @@ export const fetchImagesList = async (retryCount = 3, retryDelay = 1000): Promis
         await new Promise((resolve) => setTimeout(resolve, retryDelay));
       }
 
-      // API에서 이미지 목록 가져오기 (서버 컴포넌트에서 사용 가능하도록 절대 URL 사용)
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-      const response = await fetch(`${baseUrl}/api/images`, {
+      const response = await fetch(`/api/images`, {
         cache: 'no-store',
         // 네트워크 타임아웃 설정
         signal: AbortSignal.timeout(10000),

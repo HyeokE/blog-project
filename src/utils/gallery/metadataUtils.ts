@@ -125,13 +125,8 @@ export const parseImageMetadata = async (
   url: string,
 ): Promise<{ metadata: ImageMetadata; hasValidMetadata: boolean }> => {
   try {
-    // 이미지 URL이 상대 경로인 경우 절대 URL로 변환
-    const imageUrl = url.startsWith('http')
-      ? url
-      : `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}${url}`;
-
     // 실제 exifr 라이브러리를 사용하여 EXIF 데이터를 파싱합니다
-    const response = await fetch(imageUrl, { cache: 'no-store' });
+    const response = await fetch(url, { cache: 'no-store' });
 
     // Blob 대신 ArrayBuffer 사용
     const arrayBuffer = await response.arrayBuffer();
