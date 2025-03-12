@@ -29,8 +29,10 @@ export const fetchImagesList = async (retryCount = 3, retryDelay = 1000): Promis
         await new Promise((resolve) => setTimeout(resolve, retryDelay));
       }
 
+      // API에서 이미지 목록 가져오기
+      // 정적 빌드를 위해 revalidate 옵션 추가 (0 대신 3600 사용)
       const response = await fetch(`/api/images`, {
-        cache: 'no-store',
+        next: { revalidate: 3600 }, // 1시간마다 재검증
         // 네트워크 타임아웃 설정
         signal: AbortSignal.timeout(10000),
       });

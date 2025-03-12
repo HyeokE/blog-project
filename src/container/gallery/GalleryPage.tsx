@@ -2,6 +2,10 @@ import React from 'react';
 import { fetchImagesList, loadImagesMetadata } from '@/utils/gallery/imageUtils';
 import GalleryClient from './components/GalleryClient';
 
+// 정적 생성을 위한 설정
+export const dynamic = 'force-static';
+export const revalidate = 3600; // 1시간마다 재검증
+
 /**
  * 갤러리 페이지 서버 컴포넌트
  */
