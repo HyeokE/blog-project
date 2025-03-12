@@ -22,7 +22,7 @@ const HomePage = async () => {
             <div className="relative flex h-[100vh] min-w-[60px] items-center justify-center">
               <PostYearDigit />
             </div>
-            <div className="h-[100vh]items-center relative flex justify-center">
+            <div className="relative flex h-[100vh] items-center justify-center">
               <PostMonthDigit />
             </div>
           </div>
