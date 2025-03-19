@@ -65,9 +65,9 @@ const GalleryClient = ({ initialImages, initialError = null }: GalleryClientProp
     : null;
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-start pt-3 pb-20">
+    <div className="flex h-full w-full flex-col items-center justify-start pt-0 pb-20">
       <motion.div
-        className="w-full max-w-[1280px] px-3 md:max-w-6xl"
+        className="w-full"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}

@@ -1,4 +1,3 @@
-import HomePage from '@/container/home/HomePage';
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { defaultLocale, getTranslations } from '@/i18n';
@@ -15,15 +14,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const translations = getTranslations(lang as any);
 
   return {
-    title: translations.home.meta.title,
-    description: translations.home.meta.description,
+    title: translations.gallery.meta.title,
+    description: translations.gallery.meta.description,
     openGraph: {
-      title: translations.home.meta.title,
-      description: translations.home.meta.description,
+      title: translations.gallery.meta.title,
+      description: translations.gallery.meta.description,
     },
   };
-}
-
-export default async function Home() {
-  return <HomePage />;
 }

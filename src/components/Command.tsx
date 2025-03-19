@@ -1,164 +1,191 @@
 'use client';
+import { useCallback, useEffect, useState } from 'react';
+import { Dialog } from '@radix-ui/react-dialog';
+import { Command as CommandPrimitive } from 'cmdk';
+import { useTranslation } from '@/hooks/useTranslation';
+import Link from 'next/link';
 import type { NotionPost } from '@/models/NotionPosts';
-import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
-import { Command } from 'cmdk';
-import { format } from 'date-fns';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { defaultLocale } from '@/i18n';
 
-type CommandMenuProps = {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  initialPosts: NotionPost[];
-};
-
-// 애니메이션 변수 정의
-const overlayVariants = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { duration: 0.4, ease: 'easeOut' } },
-  exit: { opacity: 0, transition: { duration: 0.3, ease: 'easeIn' } },
-};
-
-const dialogVariants = {
-  initial: { opacity: 0, scale: 0.96, y: 10 },
-  animate: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: {
-      type: 'spring',
-      stiffness: 400,
-      damping: 25,
-      mass: 1,
-      when: 'beforeChildren',
-    },
+// 스타일 정의
+const Command = {
+  Dialog: ({ children, ...props }: { children: React.ReactNode }) => {
+    return (
+      <Dialog {...props}>
+        <div className="fixed inset-0 z-50">
+          <div className="fixed inset-0 bg-black/10 backdrop-blur-sm dark:bg-black/50" />
+          <div className="fixed inset-x-0 top-[20%] mx-auto max-w-md">{children}</div>
+        </div>
+      </Dialog>
+    );
   },
-  exit: {
-    opacity: 0,
-    scale: 0.98,
-    y: 8,
-    transition: {
-      duration: 0.25,
-      ease: 'easeInOut',
-    },
+  Input: ({
+    value,
+    onValueChange,
+  }: {
+    value?: string;
+    onValueChange?: (value: string) => void;
+  }) => {
+    const { t } = useTranslation();
+    return (
+      <div className="flex items-center border-b border-gray-200 px-3 dark:border-neutral-800">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="mr-2 h-4 w-4 shrink-0 text-neutral-500"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+        <CommandPrimitive.Input
+          value={value}
+          onValueChange={onValueChange}
+          className="flex h-10 w-full bg-transparent py-3 text-sm outline-none placeholder:text-neutral-500"
+          placeholder={t('search.placeholder') || '포스트 검색...'}
+        />
+      </div>
+    );
   },
-};
+  List: ({ children }: { children: React.ReactNode }) => {
+    return (
+      <CommandPrimitive.List className="max-h-[300px] overflow-y-auto p-2">
+        {children}
+      </CommandPrimitive.List>
+    );
+  },
+  Empty: () => {
+    const { t } = useTranslation();
+    return (
+      <div className="py-6 text-center text-sm text-neutral-500">
+        {t('search.no_results') || '검색 결과가 없습니다.'}
+      </div>
+    );
+  },
+  Group: ({ heading, children }: { heading: string; children: React.ReactNode }) => {
+    return (
+      <CommandPrimitive.Group
+        className="overflow-hidden px-1 py-2 text-neutral-500"
+        heading={heading}
+      >
+        {children}
+      </CommandPrimitive.Group>
+    );
+  },
+  Item: ({
+    children,
+    value,
+    onSelect,
+    href,
+  }: {
+    children: React.ReactNode;
+    value?: string;
+    onSelect?: (value: string) => void;
+    href?: string;
+  }) => {
+    const { locale } = useTranslation();
 
-const CommandMenu = ({ open, setOpen, initialPosts }: CommandMenuProps) => {
-  const [isClosing, setIsClosing] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [inputRef, setInputRef] = useState<HTMLInputElement | null>(null);
+    // href가 있는 경우에만 Link 컴포넌트 사용, 없으면 div 사용
+    if (href) {
+      // 경로 처리: 한국어는 그대로, 영어는 /en 접두사
+      let path = href;
+      if (locale !== defaultLocale) {
+        path = `/${locale}${href}`;
+      }
 
-  // 다이얼로그가 열릴 때 input에 자동 포커스
-  useEffect(() => {
-    if (open && inputRef) {
-      setTimeout(() => {
-        inputRef.focus();
-      }, 100);
+      return (
+        <CommandPrimitive.Item
+          value={value}
+          onSelect={onSelect}
+          className="relative flex cursor-pointer items-center rounded-md px-2 py-1 text-sm text-neutral-700 select-none hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+        >
+          <Link href={path}>{children}</Link>
+        </CommandPrimitive.Item>
+      );
     }
-  }, [open, inputRef]);
 
-  // 닫기 핸들러 - 부드러운 종료를 위해 상태 관리
-  const handleClose = () => {
-    setIsClosing(true);
-    // 애니메이션 시간을 고려하여 setTimeout 설정
-    setTimeout(() => {
-      setOpen(false);
-      setIsClosing(false);
-    }, 300); // 애니메이션 종료 시간보다 살짝 길게 설정
-  };
+    // href가 없는 경우
+    return (
+      <CommandPrimitive.Item
+        value={value}
+        onSelect={onSelect}
+        className="relative flex cursor-pointer items-center rounded-md px-2 py-1 text-sm text-neutral-700 select-none hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+      >
+        <div>{children}</div>
+      </CommandPrimitive.Item>
+    );
+  },
+};
 
-  // 아이템 선택 핸들러
-  const handleItemSelect = (postId: string) => {
-    setIsClosing(true);
-    setTimeout(() => {
-      window.location.href = `/${postId}`;
-      setOpen(false);
-      setIsClosing(false);
-    }, 150);
-  };
+// 검색 컴포넌트
+function CommandMenu({
+  setOpen,
+  open,
+  initialPosts,
+}: {
+  setOpen: (open: boolean) => void;
+  open: boolean;
+  initialPosts: NotionPost[];
+}) {
+  const [query, setQuery] = useState('');
+  const [posts, setPosts] = useState<NotionPost[]>(initialPosts);
+  const { t } = useTranslation();
+
+  // 검색어에 따라 포스트 필터링
+  const searchPosts = useCallback(
+    (search: string) => {
+      if (!search) {
+        setPosts(initialPosts);
+        return;
+      }
+
+      const filtered = initialPosts.filter((post) =>
+        post.title?.toLowerCase().includes(search.toLowerCase()),
+      );
+      setPosts(filtered);
+    },
+    [initialPosts],
+  );
+
+  // 검색어 변경 시 필터링
+  useEffect(() => {
+    searchPosts(query);
+  }, [query, searchPosts]);
 
   return (
-    <AnimatePresence mode="wait">
-      {(open || isClosing) && (
-        <Command.Dialog
-          open={open}
-          onOpenChange={(open) => {
-            if (!open) {
-              handleClose();
-            } else {
-              setOpen(true);
-            }
-          }}
-          className="fixed top-0 left-0 flex h-dvh w-dvw items-center justify-center"
-        >
-          <Command className="relative flex h-full w-full items-center justify-center">
-            <DialogTitle hidden={true}>Search</DialogTitle>
-            <DialogDescription hidden={true}>
-              Global command menu for searching posts
-            </DialogDescription>
-            <motion.div
-              className="fixed top-0 left-0 h-full w-full bg-neutral-900/30 backdrop-blur-sm backdrop-filter dark:bg-neutral-950/40"
-              onClick={handleClose}
-              variants={overlayVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-            />
-            <motion.div
-              className="z-10 h-[600px] w-[90%] max-w-[500px] overflow-hidden rounded-lg border border-gray-200/60 bg-white/95 text-black shadow-xl backdrop-blur-md dark:border-neutral-800/60 dark:bg-neutral-900/90 dark:text-neutral-100"
-              variants={dialogVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-            >
-              {/* Input Bar */}
-              <Command.Input
-                ref={setInputRef}
-                className="w-full bg-transparent p-4 text-base outline-hidden placeholder:text-gray-400 dark:placeholder:text-neutral-400"
-                placeholder="포스트 검색..."
-                value={searchQuery}
-                onValueChange={setSearchQuery}
-              />
-
-              {/* List Area */}
-              <Command.List className="h-full overflow-auto p-2">
-                {/* Empty state */}
-                <Command.Empty className="p-4 text-sm text-gray-500 dark:text-neutral-400">
-                  검색 결과가 없습니다.
-                </Command.Empty>
-
-                <Command.Group>
-                  {initialPosts.map((post) => (
-                    <Command.Item
-                      key={post.id}
-                      className="flex cursor-pointer flex-col gap-1 rounded-md px-3 py-2 transition-all duration-150 data-[selected=true]:scale-[1.02] data-[selected=true]:bg-gray-100/80 data-[selected=true]:text-black dark:data-[selected=true]:bg-neutral-800/80 dark:data-[selected=true]:text-white"
-                      onSelect={() => handleItemSelect(post.id)}
-                      value={post.id}
-                    >
-                      <span className="text-xs text-gray-600 dark:text-neutral-400">
-                        {post.date?.start_date
-                          ? format(new Date(post.date.start_date), 'yyyy.MM.dd')
-                          : '날짜 없음'}
-                      </span>
-                      <span className="font-semibold text-black dark:text-neutral-100">
-                        {post.title}
-                      </span>
-                      {post.summary && (
-                        <span className="line-clamp-2 text-sm text-gray-700 dark:text-neutral-300">
-                          {post.summary}
-                        </span>
-                      )}
-                    </Command.Item>
-                  ))}
-                </Command.Group>
-              </Command.List>
-            </motion.div>
-          </Command>
-        </Command.Dialog>
-      )}
-    </AnimatePresence>
+    <CommandPrimitive.Dialog
+      open={open}
+      onOpenChange={setOpen}
+      className="overflow-hidden rounded-md border border-neutral-200 bg-white shadow-md dark:border-neutral-800 dark:bg-neutral-900"
+    >
+      <Command.Dialog>
+        <CommandPrimitive className="flex h-full w-full flex-col overflow-hidden rounded-md bg-white dark:bg-neutral-900">
+          <Command.Input value={query} onValueChange={setQuery} />
+          <Command.List>
+            {posts.length > 0 ? (
+              <Command.Group heading={t('search.posts') || '게시물'}>
+                {posts.map((post: NotionPost) => (
+                  <Command.Item key={post.id} value={post.title} href={`/${post.id}`}>
+                    <div className="flex flex-col">
+                      <span>{post.title}</span>
+                      <span className="text-xs text-neutral-500">{post.createdTime}</span>
+                    </div>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            ) : (
+              <Command.Empty />
+            )}
+          </Command.List>
+        </CommandPrimitive>
+      </Command.Dialog>
+    </CommandPrimitive.Dialog>
   );
-};
+}
 
 export default CommandMenu;

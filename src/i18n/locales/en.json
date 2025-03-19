@@ -1,0 +1,52 @@
+{
+  "common": {
+    "home": "Home",
+    "about": "About",
+    "gallery": "Gallery",
+    "contact": "Contact",
+    "language": "Language",
+    "theme": "Change Theme"
+  },
+  "home": {
+    "title": "Welcome",
+    "description": "This is a blog project.",
+    "meta": {
+      "title": "Blog | Home",
+      "description": "A personal blog sharing thoughts and articles on various topics."
+    }
+  },
+  "about": {
+    "title": "About",
+    "description": "Information about this blog.",
+    "meta": {
+      "title": "Blog | About",
+      "description": "Learn about the blog author and the purpose of this blog."
+    }
+  },
+  "gallery": {
+    "title": "Gallery",
+    "description": "Enjoy various photos.",
+    "meta": {
+      "title": "Blog | Gallery",
+      "description": "A gallery of photos and images on various topics."
+    },
+    "errors": {
+      "no_images": "No images found. Please add images to the public/images folder.",
+      "loading_error": "An error occurred while loading images",
+      "metadata_error": "An error occurred while loading image metadata"
+    }
+  },
+  "layout": {
+    "title": "HYEOK DEV",
+    "description": "The blog of software engineer HYEOK."
+  },
+  "errors": {
+    "notFound": "Page not found",
+    "goHome": "Go back home"
+  },
+  "search": {
+    "placeholder": "Search posts...",
+    "no_results": "No results found.",
+    "posts": "Posts"
+  }
+}

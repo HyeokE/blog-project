@@ -1,20 +1,32 @@
 import React from 'react';
-import GalleryPage from '@/container/gallery/GalleryPage';
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { defaultLocale, getTranslations } from '@/i18n';
+import GalleryPage from '@/container/gallery/GalleryPage';
 
-// 정적 생성 설정
-export const dynamic = 'force-static';
-export const revalidate = 3600; // 1시간마다 재검증
+async function getBrowserLanguage(): Promise<'ko' | 'en'> {
+  const headersList = await headers();
+  const acceptLanguage = headersList.get('accept-language') || '';
+  const preferredLanguage = acceptLanguage.split(',')[0].split('-')[0];
+  return ['ko', 'en'].includes(preferredLanguage)
+    ? (preferredLanguage as 'ko' | 'en')
+    : defaultLocale;
+}
 
-export const metadata: Metadata = {
-  title: 'HYEOK | 갤러리',
-  description: '취미로 촬영한 사진을 모아둔 갤러리 페이지입니다.',
-  openGraph: {
-    title: 'HYEOK | 갤러리',
-    description: '취미로 촬영한 사진을 모아둔 갤러리 페이지입니다.',
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await getBrowserLanguage();
+  const translations = getTranslations(lang);
 
-export default function Gallery() {
+  return {
+    title: translations.gallery.meta.title,
+    description: translations.gallery.meta.description,
+    openGraph: {
+      title: translations.gallery.meta.title,
+      description: translations.gallery.meta.description,
+    },
+  };
+}
+
+export default async function Page() {
   return <GalleryPage />;
 }
