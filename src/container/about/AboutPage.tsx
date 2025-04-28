@@ -1,10 +1,8 @@
 import React from 'react';
-import Background from './components/Background';
 
 const AboutPage = () => {
   return (
     <div className="relative min-h-dvh min-w-dvw overflow-hidden">
-      <Background />
       <div className="absolute inset-0 z-0 h-full w-full overflow-y-auto">
         <div className="tablet:p-6 laptop:p-8 relative z-10 h-fit min-h-dvh w-full border border-white/70 bg-white/80 p-4 shadow-lg backdrop-blur-md dark:border-gray-700/30 dark:bg-gray-900/60 dark:text-white dark:shadow-gray-900/50">
           {/* 프로필 헤더 */}

@@ -168,16 +168,16 @@ function CommandMenu({
           <Command.Input value={query} onValueChange={setQuery} />
           <Command.List>
             {posts.length > 0 ? (
-              <Command.Group heading={t('search.posts') || '게시물'}>
+              <>
                 {posts.map((post: NotionPost) => (
                   <Command.Item key={post.id} value={post.title} href={`/${post.id}`}>
-                    <div className="flex flex-col">
-                      <span>{post.title}</span>
-                      <span className="text-xs text-neutral-500">{post.createdTime}</span>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-md font-bold">{post.title}</span>
+                      <span className="text-sm opacity-80">{post.createdTime}</span>
                     </div>
                   </Command.Item>
                 ))}
-              </Command.Group>
+              </>
             ) : (
               <Command.Empty />
             )}

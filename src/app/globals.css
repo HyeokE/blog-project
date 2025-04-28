@@ -36,13 +36,13 @@
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fefbf6;
+  --foreground: #4b4d39;
 }
 
 html[data-mode='dark'] {
   --background: #0a0a0a;
-  --foreground: #ededed;
+  --foreground: #fefbf6;
 }
 
 body {
