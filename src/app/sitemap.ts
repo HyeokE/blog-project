@@ -1,6 +1,5 @@
 import { getAllPosts } from '@/apis/NotionService';
 import type { MetadataRoute } from 'next';
-import { locales, defaultLocale } from '@/i18n';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 기본 URL 설정
@@ -47,14 +46,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 한국어 URL 추가
   urls = [...urls, ...koStaticUrls, ...koPostUrls];
-
-  // 영어 등 다른 언어 URL 생성 - /en 등의 접두사 사용
-  for (const locale of locales.filter((l) => l !== defaultLocale)) {
     // 포스트 URL 생성
     const otherPostUrls = posts
       .filter((post) => post.id)
       .map((post) => ({
-        url: `${baseUrl}/${locale}/${post.id}`,
+        url: `${baseUrl}/${post.id}`,
         lastModified: new Date(post.date?.start_date || post.createdTime),
         changeFrequency: 'weekly' as const,
         priority: 0.8,
@@ -63,19 +59,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 정적 페이지 URL
     const otherStaticUrls = [
       {
-        url: `${baseUrl}/${locale}`,
+        url: baseUrl,
         lastModified: new Date(),
         changeFrequency: 'daily' as const,
         priority: 1.0,
       },
       {
-        url: `${baseUrl}/${locale}/about`,
+        url: `${baseUrl}/about`,
         lastModified: new Date(),
         changeFrequency: 'monthly' as const,
         priority: 0.7,
       },
       {
-        url: `${baseUrl}/${locale}/gallery`,
+        url: `${baseUrl}/gallery`,
         lastModified: new Date(),
         changeFrequency: 'weekly' as const,
         priority: 0.8,
@@ -84,7 +80,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // 다른 언어 URL 추가
     urls = [...urls, ...otherStaticUrls, ...otherPostUrls];
-  }
 
   return urls;
 }
