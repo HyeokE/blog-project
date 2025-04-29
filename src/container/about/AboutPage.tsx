@@ -1,5 +1,5 @@
 import React from 'react';
-import { Github, Mail, BookOpen, Coffee } from 'lucide-react';
+import { Github, Mail, Coffee } from 'lucide-react';
 
 const AboutPage = () => {
   return (
