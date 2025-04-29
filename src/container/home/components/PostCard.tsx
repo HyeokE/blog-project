@@ -24,21 +24,21 @@ const PostCard = ({ post }: PostCard) => {
     >
       <Link key={post.id} href={`/${post.id}`} className="max-w-[600px]:gap-1 flex flex-col gap-2">
         <motion.time
-          className="text-sm text-gray-600 dark:text-gray-400"
+          className="text-sm text-brand-500 dark:text-gray-400"
           layout
           layoutId={post.date.start_date}
         >
           {format(post.date.start_date, 'dd')}일
         </motion.time>
         <motion.h2
-          className="line-clamp-1 text-xl font-bold max-[600px]:text-lg"
+          className="line-clamp-1 text-xl text-brand-600 dark:text-brand-100 font-bold max-[600px]:text-lg"
           layoutId={post.title}
           layout
         >
           {post.title}
         </motion.h2>
         <div className="flex flex-col gap-0.5">
-          <motion.p className="line-clamp-1 text-base text-gray-700 max-[600px]:text-sm dark:text-gray-400">
+          <motion.p className="line-clamp-1 text-base text-brand-500 max-[600px]:text-sm dark:text-gray-400">
             {post.summary}
           </motion.p>
         </div>

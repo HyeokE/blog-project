@@ -38,7 +38,7 @@ export const NumberDigit = ({
           <motion.div
             key={year}
             layoutId={year.toString()}
-            className="flex h-[82px] w-fit items-center justify-center text-xl font-light text-gray-700"
+            className="flex h-[82px] w-fit items-center justify-center text-xl font-light text-brand-500"
           >
             {formatter ? formatter(year) : year}
           </motion.div>

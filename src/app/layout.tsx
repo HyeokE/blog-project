@@ -7,6 +7,7 @@ import { NavDock } from '@/components/NavDock';
 import { defaultLocale, getTranslations } from '@/i18n';
 import { headers } from 'next/headers';
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { DarkModeProvider } from '@/context/DarkModeContext';
 // 기본 메타데이터는 defaultLocale에서 가져옵니다
 const translations = getTranslations(defaultLocale);
 
@@ -51,12 +52,14 @@ export default async function RootLayout({ children }: RootLayoutProps) {
       <GoogleAnalytics gaId="G-07RYXQL1X0" />
       <Analytics/>
       <SpeedInsights/>
-        <PointerRoot>
-          <>
-            {children}
-            <NavDock />
-          </>
-        </PointerRoot>
+        <DarkModeProvider defaultMode="light">
+          <PointerRoot>
+            <>
+              {children}
+              <NavDock />
+            </>
+          </PointerRoot>
+        </DarkModeProvider>
       </body>
     </html>
   );

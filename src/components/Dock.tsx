@@ -73,12 +73,12 @@ const FloatingDockMobile = ({ items, className }: { items: DockItem[]; className
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-10 bg-black/30 backdrop-blur-sm"
+              className="fixed inset-0 z-10 bg-brand-100/30 backdrop-blur-sm"
               onClick={() => setOpen(false)}
             />
             <motion.div
               layoutId="nav"
-              className="absolute inset-x-0 bottom-full z-20 mb-2 flex flex-col gap-2"
+              className="absolute bg-brand-100 inset-x-0 bottom-full z-20 mb-2 flex flex-col gap-2"
             >
               {items.map((item, idx) => (
                 <motion.div
@@ -153,7 +153,7 @@ const FloatingDockDesktop = ({ items, className }: { items: DockItem[]; classNam
       onMouseMove={(e) => mouseX.set(e.pageX)}
       onMouseLeave={() => mouseX.set(Infinity)}
       className={cn(
-        'tablet:flex mx-auto hidden h-16 items-end gap-4 rounded-2xl border-b-blue-400 bg-gray-50 px-4 pb-3 dark:bg-neutral-900',
+        'tablet:flex mx-auto hidden h-16 items-end gap-4 rounded-2xl border-b-blue-400 bg-brand-200/50 px-4 pb-3 dark:bg-neutral-900',
         className,
       )}
     >
@@ -212,7 +212,7 @@ function IconContainer({ mouseX, title, icon, href, onClick }: { mouseX: MotionV
             style={{ width, height }}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
-            className="relative flex aspect-square items-center justify-center rounded-full bg-gray-200 dark:bg-neutral-800"
+            className="relative flex aspect-square items-center justify-center rounded-full bg-white dark:bg-neutral-800"
           >
             <AnimatePresence>
               {hovered && (
@@ -241,7 +241,7 @@ function IconContainer({ mouseX, title, icon, href, onClick }: { mouseX: MotionV
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           onClick={onClick}
-          className="relative flex aspect-square items-center justify-center rounded-full bg-gray-200 dark:bg-neutral-800"
+          className="relative flex aspect-square items-center justify-center rounded-full bg-white dark:bg-neutral-800"
         >
           <AnimatePresence>
             {hovered && (
