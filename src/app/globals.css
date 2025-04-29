@@ -11,15 +11,15 @@
   --breakpoint-tablet: 600px;
   --breakpoint-laptop: 1024px;
   --breakpoint-desktop: 1280px;
-  --color-brand-100: #EDEDEB;
-  --color-brand-200: #D2D2CE;
-  --color-brand-300: #B7B8B0;
-  --color-brand-400: #9C9D92;
+  --color-brand-100: #ededeb;
+  --color-brand-200: #d2d2ce;
+  --color-brand-300: #b7b8b0;
+  --color-brand-400: #9c9d92;
   --color-brand-500: #818274;
   --color-brand-600: #4b4d39;
   --color-brand-700: #404130;
   --color-brand-800: #353628;
-  --color-brand-900: #1E1F17;
+  --color-brand-900: #1e1f17;
 }
 
 /*
@@ -56,6 +56,5 @@ html[data-mode='dark'] {
 
 body {
   color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--background) / 60;
 }
