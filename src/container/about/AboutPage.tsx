@@ -67,7 +67,7 @@ const AboutPage = () => {
               <p className="text-brand-600 mb-6 dark:text-gray-300">Frontend Developer</p>
 
               <div className="mb-8">
-                <h4 className="mb-4 text-lg font-bold text-black dark:text-white">큐브(QDS)</h4>
+                <h4 className="mb-4 text-lg font-bold text-black dark:text-white">Qube(QDS).</h4>
                 <p className="text-brand-700 mb-6 dark:text-gray-300">
                   쿼타랩 디자인 시스템 'Qube'의 개발 및 유지보수를 주도적으로 담당했습니다. 관리되지
                   않던 디자인 시스템의 방향성을 재 정립하고, 프로덕트 안정성 향상이라는 목표를
@@ -119,7 +119,7 @@ const AboutPage = () => {
               </div>
 
               <div className="mb-8">
-                <h4 className="mb-4 text-lg font-bold text-black dark:text-white">쿼타북</h4>
+                <h4 className="mb-4 text-lg font-bold text-black dark:text-white">Quotabook.</h4>
                 <p className="text-brand-700 mb-6 dark:text-gray-300">
                   증권 관리 플랫폼 쿼타북을 유지보수 및 개발했습니다. "프로덕트 안정성 개선"이라는
                   미션을 달성하기 위한 여러 활동을 진행했습니다.
@@ -281,7 +281,7 @@ const AboutPage = () => {
             {/* GDSC DJU Web */}
             <div className="mb-16">
               <div className="mb-4 flex items-baseline justify-between">
-                <h3 className="text-xl font-medium text-black dark:text-white">GDSC DJU Web</h3>
+                <h3 className="text-xl font-bold text-black dark:text-white">GDSC DJU Web</h3>
                 <span className="text-brand-500 text-sm dark:text-gray-400">
                   2021.10.29 - 2021.12.27
                 </span>
@@ -315,7 +315,7 @@ const AboutPage = () => {
             {/* GDS */}
             <div className="mb-16">
               <div className="mb-4 flex items-baseline justify-between">
-                <h3 className="text-xl font-medium text-black dark:text-white">
+                <h3 className="text-xl font-bold text-black dark:text-white">
                   GDS (GDSC Design System)
                 </h3>
                 <span className="text-brand-500 text-sm dark:text-gray-400">2022.8 - 2022.12</span>
