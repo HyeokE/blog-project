@@ -21,7 +21,9 @@ const PostDetailPage = ({ post }: { post: PostDetailResponse }) => {
           {format(post.date.start_date, 'yyyy.MM.dd')}
         </motion.time>
       </div>
-      <NotionView recordMap={post.recordMap} />
+      <div className="mx-auto flex w-full max-w-[712px] flex-col gap-3">
+        <NotionView recordMap={post.recordMap} />
+      </div>
     </article>
   );
 };

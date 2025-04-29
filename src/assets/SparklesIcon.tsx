@@ -42,7 +42,7 @@ const SparklesIcon = () => {
 
   return (
     <div
-      className="hover:bg-accent flex cursor-pointer items-center justify-center rounded-md p-2 transition-colors duration-200 select-none"
+      className="hover:bg-accent flex cursor-pointer items-center justify-center rounded-full bg-white p-2 transition-colors duration-200 select-none"
       onMouseEnter={() => {
         sparkleControls.start('hover');
         starControls.start('blink', { delay: 1 });
