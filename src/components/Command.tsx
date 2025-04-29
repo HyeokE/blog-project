@@ -134,7 +134,6 @@ function CommandMenu({
 }) {
   const [query, setQuery] = useState('');
   const [posts, setPosts] = useState<NotionPost[]>(initialPosts);
-  const { t } = useTranslation();
 
   // 검색어에 따라 포스트 필터링
   const searchPosts = useCallback(
