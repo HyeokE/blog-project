@@ -45,7 +45,7 @@
 }
 
 :root {
-  --background: #fefbf6;
+  --background: rgba(254, 251, 246, 0.6);
   --foreground: #4b4d39;
 }
 
@@ -56,5 +56,5 @@ html[data-mode='dark'] {
 
 body {
   color: var(--foreground);
-  background: var(--background) / 60;
+  background: var(--background);
 }

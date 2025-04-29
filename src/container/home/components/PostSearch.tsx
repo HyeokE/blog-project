@@ -32,7 +32,7 @@ const PostSearch = ({ posts = [] }: PostSearchProps) => {
         }}
       >
         <SearchIcon />
-        <span className="text-sm text-gray-600 dark:text-neutral-400">
+        <span className="flex gap-1 text-sm text-gray-600 dark:text-neutral-400">
           <kbd className="hidden rounded bg-gray-200 px-1.5 py-0.5 md:inline dark:bg-neutral-800">
             Ctrl
           </kbd>

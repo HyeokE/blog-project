@@ -1,12 +1,12 @@
 import React from 'react';
-import { Github, Mail, BookOpen } from 'lucide-react';
+import { Github, Mail, BookOpen, Coffee } from 'lucide-react';
 
 const AboutPage = () => {
   return (
     <div className="bg-background/60 relative min-h-dvh min-w-dvw overflow-hidden dark:bg-gray-950">
-      <div className="mx-auto max-w-3xl px-6 py-16 sm:px-8 sm:py-24">
+      <div className="mx-auto max-w-3xl px-6 py-12 sm:px-8 sm:py-8">
         {/* 상단 내비게이션 */}
-        <nav className="mb-16 flex items-center justify-end">
+        <nav className="mb-12 flex items-center justify-end">
           <div className="flex space-x-4">
             <a
               href="mailto:jhjeong00@gmail.com"
@@ -25,13 +25,13 @@ const AboutPage = () => {
               <Github className="h-5 w-5" />
             </a>
             <a
-              href="https://hyeok.dev/"
+              href="https://calendar.notion.so/meet/jason-jeong/coffee-chat"
               target="_blank"
               rel="noopener noreferrer"
               className="text-brand-500 hover:text-black dark:text-gray-400 dark:hover:text-white"
               aria-label="Blog"
             >
-              <BookOpen className="h-5 w-5" />
+              <Coffee className="h-5 w-5" />
             </a>
           </div>
         </nav>
