@@ -40,6 +40,9 @@ const AboutPage = () => {
         <header className="mb-20">
           <h1 className="text-brand-700 mb-8 text-5xl font-extrabold dark:text-white">ABOUT.</h1>
           <p className="text-brand-700 mb-2 text-lg leading-relaxed dark:text-gray-300">
+            안녕하세요. 저는 정준혁입니다.
+          </p>
+          <p className="text-brand-700 mb-2 text-lg leading-relaxed dark:text-gray-300">
             문제를 정의하고 해결하는데 강점이 있습니다. 사용자를 먼저 생각하고 사용자의 불편함을
             해소하는데 집중합니다.
           </p>
@@ -375,12 +378,13 @@ const AboutPage = () => {
             <div className="mb-16">
               <div className="mb-2 flex items-baseline justify-between">
                 <h3 className="text-xl font-bold text-black dark:text-white">GDG Korea WebTech</h3>
-                <span className="text-brand-500 text-sm dark:text-gray-400">2023.03 - 현재</span>
+                <span className="text-brand-500 text-sm dark:text-gray-400">2023.03 - 2025.04</span>
               </div>
               <p className="text-brand-600 mb-6 dark:text-gray-300">Organizer</p>
 
               <p className="text-brand-700 mb-6 dark:text-gray-300">
-                구글의 웹 기술 기반 개발자 커뮤니티인 GDG Korea WebTech의 Organizer를 맡고 있습니다.
+                구글의 웹 기술 기반 개발자 커뮤니티인 GDG Korea WebTech의 Organizer를 맡아 여러
+                행사를 운영했습니다.
               </p>
             </div>
 

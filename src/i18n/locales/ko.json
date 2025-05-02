@@ -8,27 +8,27 @@
     "theme": "테마 변경"
   },
   "home": {
-    "title": "환영합니다",
-    "description": "이것은 블로그 프로젝트입니다.",
+    "title": "HYEOK | 블로그",
+    "description": "소프트웨어 엔지니어 정준혁의 블로그입니다.",
     "meta": {
-      "title": "블로그 | 홈",
-      "description": "다양한 주제의 글과 생각을 공유하는 개인 블로그입니다."
+      "title": "HYEOK | 블로그",
+      "description": "소프트웨어 엔지니어 정준혁의 블로그입니다."
     }
   },
   "about": {
-    "title": "소개",
-    "description": "이 블로그에 대한 정보입니다.",
+    "title": "HYEOK | 소개",
+    "description": "소프트웨어 엔지니어 정준혁입니다.",
     "meta": {
-      "title": "블로그 | 소개",
-      "description": "블로그 운영자에 대한 소개와 블로그의 목적을 설명합니다."
+      "title": "HYEOK | 소개",
+      "description": "소프트웨어 엔지니어 정준혁입니다."
     }
   },
   "gallery": {
-    "title": "갤러리",
-    "description": "다양한 사진들을 감상하세요.",
+    "title": "HYEOK | 갤러리",
+    "description": "소프트웨어 엔지니어 정준혁의 개인 사진을 모아둔 갤러리입니다.",
     "meta": {
-      "title": "블로그 | 갤러리",
-      "description": "다양한 주제의 사진과 이미지를 모아둔 갤러리입니다."
+      "title": "HYEOK | 갤러리",
+      "description": "소프트웨어 엔지니어 정준혁의 개인 사진을 모아둔 갤러리입니다."
     },
     "errors": {
       "no_images": "이미지를 찾을 수 없습니다. public/images 폴더에 이미지를 추가해주세요.",
@@ -37,8 +37,8 @@
     }
   },
   "layout": {
-    "title": "HYEOK DEV",
-    "description": "소프트웨어 엔지니어 HYEOK의 블로그 입니다."
+    "title": "HYEOK",
+    "description": "소프트웨어 엔지니어 정준혁의 블로그 입니다."
   },
   "errors": {
     "notFound": "페이지를 찾을 수 없습니다",

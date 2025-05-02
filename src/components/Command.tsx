@@ -6,6 +6,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import Link from 'next/link';
 import type { NotionPost } from '@/models/NotionPosts';
 import { defaultLocale } from '@/i18n';
+import { format } from 'date-fns';
 
 // 스타일 정의
 const Command = {
@@ -171,8 +172,10 @@ function CommandMenu({
                 {posts.map((post: NotionPost) => (
                   <Command.Item key={post.id} value={post.title} href={`/${post.id}`}>
                     <div className="flex flex-col gap-1">
-                      <span className="text-md font-bold">{post.title}</span>
-                      <span className="text-sm opacity-80">{post.createdTime}</span>
+                      <span className="text-base font-bold">{post.title}</span>
+                      <span className="text-xs font-light opacity-80">
+                        {format(post.createdTime, 'yyyy.MM.dd')}
+                      </span>
                     </div>
                   </Command.Item>
                 ))}
