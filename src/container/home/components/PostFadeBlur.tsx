@@ -6,11 +6,7 @@ interface FadeBlurProps {
 
 const PostFadeBlur = ({ children }: FadeBlurProps) => {
   return (
-    <div
-      className="absolute inset-0 overflow-y-scroll
-     snap-y snap-mandatory scroll-smooth
-      [mask-image:linear-gradient(to_bottom,transparent_5%,black_45%,black_65%,transparent_95%)]"
-    >
+    <div className="absolute inset-0 snap-y snap-mandatory overflow-y-scroll scroll-smooth [mask-image:linear-gradient(to_bottom,transparent_5%,#fefbf6_45%,#fefbf6_65%,transparent_95%)]">
       {children}
     </div>
   );
