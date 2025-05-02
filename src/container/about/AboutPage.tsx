@@ -429,23 +429,6 @@ const AboutPage = () => {
                   </p>
                 </li>
               </ul>
-
-              <h5 className="mb-4 text-base font-bold text-black dark:text-white">EVENT.</h5>
-              <ul className="mb-6 space-y-1">
-                <li className="flex">
-                  <span className="mr-4 text-gray-400">-</span>
-                  <p className="text-brand-700 dark:text-gray-300">
-                    <a
-                      href="https://festa.io/events/3446"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-brand-700 underline hover:text-black dark:text-gray-300 dark:hover:text-white"
-                    >
-                      2023 프론트엔드 트렌드 따라잡기
-                    </a>
-                  </p>
-                </li>
-              </ul>
             </div>
           </section>
 
