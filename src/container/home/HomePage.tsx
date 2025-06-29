@@ -8,7 +8,11 @@ import PostSection from '@/container/home/components/PostSection';
 import PostFadeBlur from '@/container/home/components/PostFadeBlur';
 import PostSearch from '@/container/home/components/PostSearch';
 
-const HomePage = async () => {
+interface HomePageProps {
+  locale: string;
+}
+
+const HomePage = async ({ locale: _locale }: HomePageProps) => {
   const posts = await getAllPosts({ includePages: false });
   return (
     <div className="flex h-dvh w-[100vw] flex-col items-center justify-center gap-8">
@@ -29,7 +33,7 @@ const HomePage = async () => {
           <div className="relative flex h-dvh max-w-[612px] flex-col gap-8">
             {/* Post Point Border  */}
             <div className="pointer-events-none absolute top-0 right-0 bottom-0 left-0 z-10 flex items-center justify-center select-none">
-              <div className="flex h-[120px] w-full border-y-[1px] border-solid border-brand-300 select-none" />
+              <div className="border-brand-300 flex h-[120px] w-full border-y-[1px] border-solid select-none" />
             </div>
             <motion.div className="scrollbar-hide snap-y overflow-y-scroll">
               <PostSection posts={posts} />
