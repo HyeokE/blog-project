@@ -9,7 +9,7 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
 
-  return generateLocalizedMetadata(locale, 'home.meta.title', 'home.meta.description', '/');
+  return generateLocalizedMetadata(locale, 'home.meta.title', 'home.meta.description');
 }
 
 export default async function Home({ params }: PageProps) {

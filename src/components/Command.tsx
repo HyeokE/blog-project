@@ -135,7 +135,7 @@ function CommandMenu({
 }) {
   const [query, setQuery] = useState('');
   const [posts, setPosts] = useState<NotionPost[]>(initialPosts);
-
+  const { locale } = useTranslation();
   // 검색어에 따라 포스트 필터링
   const searchPosts = useCallback(
     (search: string) => {
@@ -170,7 +170,7 @@ function CommandMenu({
             {posts.length > 0 ? (
               <>
                 {posts.map((post: NotionPost) => (
-                  <Command.Item key={post.id} value={post.title} href={`/${post.id}`}>
+                  <Command.Item key={post.id} value={post.title} href={`${locale}/${post.id}`}>
                     <div className="flex flex-col gap-1">
                       <span className="text-base font-bold">{post.title}</span>
                       <span className="text-xs font-light opacity-80">
