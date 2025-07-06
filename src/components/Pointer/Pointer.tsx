@@ -76,6 +76,7 @@ export const Pointer = ({ x, y }: { x: any; y: any }) => {
       style={{
         top: y,
         left: x,
+        zIndex: 1000,
       }}
       initial="default"
       variants={variants}
