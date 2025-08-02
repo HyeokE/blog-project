@@ -13,11 +13,7 @@ const PostDetailPage = ({ post }: { post: PostDetailResponse }) => {
         <motion.h1 className="text-3xl font-bold text-gray-900 dark:text-gray-200">
           {post.title}
         </motion.h1>
-        <motion.time
-          layout
-          layoutId={post.date.start_date}
-          className="text-sm text-gray-600 dark:text-gray-400"
-        >
+        <motion.time className="text-sm text-gray-600 dark:text-gray-400">
           {format(post.date.start_date, 'yyyy.MM.dd')}
         </motion.time>
       </div>

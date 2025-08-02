@@ -71,6 +71,9 @@ dependencies:
   notion-utils:
     specifier: ^6.16.0
     version: 6.16.0
+  overlay-kit:
+    specifier: ^1.8.4
+    version: 1.8.4(react-dom@18.3.1)(react@18.3.1)
   react:
     specifier: ^18.3.1
     version: 18.3.1
@@ -4003,6 +4006,16 @@ packages:
       type-check: 0.4.0
       word-wrap: 1.2.5
     dev: true
+
+  /overlay-kit@1.8.4(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-CqFrMWStiLDqW6jr8Zj9O/n8eSBAnrHe2w6M77cFiEn724xmigk56sPcYtQXCYDcbvwV47oJjoKQQvfutL5yFw==}
+    peerDependencies:
+      react: ^16.8 || ^17 || ^18 || ^19
+      react-dom: ^16.8 || ^17 || ^18 || ^19
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    dev: false
 
   /own-keys@1.0.1:
     resolution: {integrity: sha512-qFOyK5PjiWZd+QQIh+1jhdb9LpxTF0qs7Pm8o5QHYZ0M3vKqSqzsZaEB6oWlxZ+q2sJBMI/Ktgd2N5ZwQoRHfg==}
