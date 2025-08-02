@@ -9,6 +9,7 @@ import { headers } from 'next/headers';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { DarkModeProvider } from '@/context/DarkModeContext';
 import OverlayProvider from '@/context/OverlayProvider';
+import { LayoutGroup } from 'motion/react';
 
 // 기본 메타데이터는 defaultLocale에서 가져옵니다
 const translations = getTranslations(defaultLocale);
@@ -56,10 +57,10 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <OverlayProvider>
           <DarkModeProvider defaultMode="light">
             <PointerRoot>
-              <>
+              <LayoutGroup>
                 {children}
                 <NavDock />
-              </>
+              </LayoutGroup>
             </PointerRoot>
           </DarkModeProvider>
         </OverlayProvider>
