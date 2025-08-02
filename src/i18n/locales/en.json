@@ -8,26 +8,25 @@
     "theme": "Change Theme"
   },
   "home": {
-    "title": "Welcome",
-    "description": "This is a blog project.",
+    "title": "HYEOK | Blog",
     "meta": {
-      "title": "Blog | Home",
+      "title": "HYEOK | Blog",
       "description": "A personal blog sharing thoughts and articles on various topics."
     }
   },
   "about": {
-    "title": "About",
-    "description": "Information about this blog.",
+    "title": "HYEOK | About",
+    "description": "",
     "meta": {
-      "title": "Blog | About",
-      "description": "Learn about the blog author and the purpose of this blog."
+      "title": "HYEOK | About",
+      "description": ""
     }
   },
   "gallery": {
-    "title": "Gallery",
+    "title": "HYEOK | Gallery",
     "description": "Enjoy various photos.",
     "meta": {
-      "title": "Blog | Gallery",
+      "title": "HYEOK | Gallery",
       "description": "A gallery of photos and images on various topics."
     },
     "errors": {
@@ -38,7 +37,7 @@
   },
   "layout": {
     "title": "HYEOK DEV",
-    "description": "The blog of software engineer HYEOK."
+    "description": "The blog of software engineer JunHyeok."
   },
   "errors": {
     "notFound": "Page not found",
