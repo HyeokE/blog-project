@@ -122,7 +122,7 @@ const AboutPage = () => {
                         디자인 시스템의 무분별한 커스텀이 발생하는 문제를 개선
                       </span>
                       <br />
-                      <span className="text-brand-700 dark:text-gray-300">
+                      <span className="text-brand-700 font-light dark:text-gray-300">
                         커스텀을 하게 된 원인을 파악하고 시스템 사용 규칙을 정리하여 챕터 내에
                         공유함으로서 일관된 컴포넌트 사용을 장려하였습니다. 또한 컴포넌트의 역할에
                         따른 prop를 추가하여 커스텀이 발생하는 상황을 방지했습니다.
@@ -146,11 +146,7 @@ const AboutPage = () => {
                     <p>
                       <span className="text-brand-700 font-medium dark:text-gray-300">
                         코드 상 버그가 자주 발생하는 문제를 해결하기 위해 테스트 라이브러리를
-                        도입하고
-                      </span>
-                      <br />
-                      <span className="text-brand-700 font-light dark:text-gray-300">
-                        시스템 컴포넌트의 테스트 커버리지를 높혔습니다.
+                        도입하고 시스템 컴포넌트의 테스트 커버리지를 높혔습니다.
                       </span>
                     </p>
                   </li>
@@ -159,9 +155,6 @@ const AboutPage = () => {
                     <p>
                       <span className="text-brand-700 font-medium dark:text-gray-300">
                         시스템의 파편화를 제어하기 위한 개발자 경험과 유연한 시멘틱 태그를 제공하기
-                      </span>
-                      <br />
-                      <span className="text-brand-700 dark:text-gray-300">
                         위한 Polymorphic 컴포넌트를 개발하여 개선했습니다.
                       </span>
                     </p>
@@ -211,7 +204,7 @@ const AboutPage = () => {
                         컴포넌트에 적절하지 않은 스멘틱 태그가 사용되는 문제를 해결
                       </span>
                       <br />
-                      <span className="text-brand-700 dark:text-gray-300">
+                      <span className="text-brand-700 font-light dark:text-gray-300">
                         개발자 경험과 유연한 시멘틱 태그를 제공하기 위한 Polymorphic 컴포넌트를
                         개발하여 개선했습니다.
                       </span>
@@ -225,7 +218,7 @@ const AboutPage = () => {
                         개선
                       </span>
                       <br />
-                      <span className="text-brand-700 dark:text-gray-300">
+                      <span className="text-brand-700 font-light dark:text-gray-300">
                         SVG 아이콘을 변경하거나 수정할 때의 비용감소를 위해 아이콘 컴포넌트 변환 SVG
                         →
                       </span>
@@ -254,7 +247,7 @@ const AboutPage = () => {
                         프로젝트 내부에 명세되지 않은 라이브러리를 참조하는 이슈 개선
                       </span>
                       <br />
-                      <span className="text-brand-700 dark:text-gray-300">
+                      <span className="text-brand-700 font-light dark:text-gray-300">
                         명세되지 않은 라이브러리를 참조하는 이슈를 yarn berry 도입으로 해결했습니다.
                       </span>
                     </p>
@@ -275,12 +268,14 @@ const AboutPage = () => {
                         지속 가능한 코드와 개발 문화를 만들기 위해 노력했습니다.
                       </span>
                       <br />
-                      <span className="text-brand-700 dark:text-gray-300">
+                      <span className="text-brand-700 font-light dark:text-gray-300">
                         코드 스타일의 일관성을 위해 공통 lint 규칙을 설정하고 코드 컨벤션 문서를
                         작성했습니다.
                       </span>
                       <br />
-                      주간 프론트엔드 회의를 주관하며 코드리뷰를 도입했습니다.
+                      <span className="text-brand-700 font-light dark:text-gray-300">
+                        주간 프론트엔드 회의를 주관하며 코드리뷰를 도입했습니다.
+                      </span>
                     </p>
                   </li>
                 </ul>
