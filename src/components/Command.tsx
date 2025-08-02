@@ -7,15 +7,24 @@ import Link from 'next/link';
 import type { NotionPost } from '@/models/NotionPosts';
 import { defaultLocale } from '@/i18n';
 import { format } from 'date-fns';
+import { X } from 'lucide-react';
 
 // 스타일 정의
 const Command = {
-  Dialog: ({ children, ...props }: { children: React.ReactNode }) => {
+  Dialog: ({ children, onClose, ...props }: { children: React.ReactNode; onClose: () => void }) => {
     return (
       <Dialog {...props}>
         <div className="fixed inset-0 z-50">
-          <div className="fixed inset-0 bg-black/10 backdrop-blur-sm dark:bg-black/50" />
-          <div className="fixed inset-x-0 top-[20%] mx-auto max-w-md">{children}</div>
+          <div className="fixed inset-0 bg-black/10 backdrop-blur-xs dark:bg-black/50" />
+          <div className="flex justify-end p-2">
+            <button
+              onClick={onClose}
+              className="bg-background absolute top-4 right-4 flex h-6 w-6 cursor-pointer items-center justify-center rounded-md text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 dark:hover:text-neutral-300"
+            >
+              <X size={20} />
+            </button>
+          </div>
+          <div className="fixed inset-x-0 top-[20%] mx-auto max-w-md p-5">{children}</div>
         </div>
       </Dialog>
     );
@@ -163,7 +172,7 @@ function CommandMenu({
       onOpenChange={setOpen}
       className="overflow-hidden rounded-md border border-neutral-200 bg-white shadow-md dark:border-neutral-800 dark:bg-neutral-900"
     >
-      <Command.Dialog>
+      <Command.Dialog onClose={() => setOpen(false)}>
         <CommandPrimitive className="flex h-full w-full flex-col overflow-hidden rounded-md bg-white dark:bg-neutral-900">
           <Command.Input value={query} onValueChange={setQuery} />
           <Command.List>
