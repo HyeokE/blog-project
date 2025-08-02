@@ -1,13 +1,11 @@
 'use client';
-import React from 'react';
-import type { NotionPosts } from '@/models/NotionPosts';
-import PostYearDigit from '@/container/home/components/PostYearDigit';
-import PostMonthDigit from '@/container/home/components/PostMonthDigit';
-import * as motion from 'motion/react-client';
-import PostSection from '@/container/home/components/PostSection';
 import PostFadeBlur from '@/container/home/components/PostFadeBlur';
+import PostMonthDigit from '@/container/home/components/PostMonthDigit';
 import PostSearch from '@/container/home/components/PostSearch';
-import { BookText, BookUser } from 'lucide-react';
+import PostSection from '@/container/home/components/PostSection';
+import PostYearDigit from '@/container/home/components/PostYearDigit';
+import type { NotionPosts } from '@/models/NotionPosts';
+import * as motion from 'motion/react-client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -22,13 +20,15 @@ const HomeLayout = ({ posts }: HomeLayoutProps) => {
       <div className="fixed top-0 right-0 z-20 flex h-[70px] items-center justify-center gap-4 px-5">
         {pathname === '/personal' ? (
           <Link href="/" className="flex items-center gap-1">
-            <BookText className="text-foreground" size={20} />
-            <span className="text-foreground text-xs">DevLog</span>
+            <span className="text-foreground bg-foreground/20 rounded-md px-2 py-1 text-xs">
+              Dev Blog
+            </span>
           </Link>
         ) : (
           <Link href="/personal" className="flex items-center gap-1">
-            <BookUser className="text-foreground" size={20} />
-            <span className="text-foreground text-xs">Personal</span>
+            <span className="text-foreground bg-foreground/20 rounded-md px-2 py-1 text-xs">
+              Personal Blog
+            </span>
           </Link>
         )}
         <PostSearch posts={posts} />
