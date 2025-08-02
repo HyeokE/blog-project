@@ -64,8 +64,19 @@ const AboutPage = () => {
 
             <div className="mb-16">
               <div className="mb-4 flex items-baseline justify-between">
+                <h3 className="text-xl font-bold text-black dark:text-white">SkinSeoul</h3>
+                <span className="text-brand-500 text-sm dark:text-gray-400">
+                  (Singapore) 2025.02 - Present
+                </span>
+              </div>
+              <p className="text-brand-600 mb-6 dark:text-gray-300">Software Engineer</p>
+            </div>
+            <div className="mb-16">
+              <div className="mb-4 flex items-baseline justify-between">
                 <h3 className="text-xl font-bold text-black dark:text-white">쿼타랩</h3>
-                <span className="text-brand-500 text-sm dark:text-gray-400">2024.05 - 2025.01</span>
+                <span className="text-brand-500 text-sm dark:text-gray-400">
+                  (Korea) 2024.05 - 2025.01
+                </span>
               </div>
               <p className="text-brand-600 mb-6 dark:text-gray-300">Frontend Developer</p>
 
@@ -162,7 +173,9 @@ const AboutPage = () => {
             <div className="mb-16">
               <div className="mb-4 flex items-baseline justify-between">
                 <h3 className="text-xl font-bold text-black dark:text-white">샤플앤컴퍼니</h3>
-                <span className="text-brand-500 text-sm dark:text-gray-400">2023.01 - 2024.05</span>
+                <span className="text-brand-500 text-sm dark:text-gray-400">
+                  (Korea) 2023.01 - 2024.05
+                </span>
               </div>
               <p className="text-brand-600 mb-6 dark:text-gray-300">Frontend Developer</p>
 
