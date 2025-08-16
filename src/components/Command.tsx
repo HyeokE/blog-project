@@ -15,7 +15,10 @@ const Command = {
     return (
       <Dialog {...props}>
         <div className="fixed inset-0 z-50">
-          <div className="fixed inset-0 bg-black/10 backdrop-blur-xs dark:bg-black/50" />
+          <div
+            className="fixed inset-0 bg-black/10 backdrop-blur-xs dark:bg-black/50"
+            onClick={onClose}
+          />
           <div className="flex justify-end p-2">
             <button
               onClick={onClose}
@@ -24,7 +27,12 @@ const Command = {
               <X size={20} />
             </button>
           </div>
-          <div className="fixed inset-x-0 top-[20%] mx-auto max-w-md p-5">{children}</div>
+          <div
+            className="fixed inset-x-0 top-[20%] mx-auto max-w-[500px] p-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {children}
+          </div>
         </div>
       </Dialog>
     );
