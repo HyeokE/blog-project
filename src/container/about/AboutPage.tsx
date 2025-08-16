@@ -70,6 +70,15 @@ const AboutPage = () => {
                 </span>
               </div>
               <p className="text-brand-600 mb-6 dark:text-gray-300">Software Engineer</p>
+              <div className="mb-8">
+                <h4 className="mb-4 text-lg font-bold text-black dark:text-white">
+                  SkinSeoul(Website).
+                </h4>
+                <p className="text-brand-700 mb-6 dark:text-gray-300">
+                  스킨서울의 초기 멤버로 합류하여 워드프레스로 작성된 기존 웹사이트를 Next.js로
+                  마이그레이션했습니다.
+                </p>
+              </div>
             </div>
             <div className="mb-16">
               <div className="mb-4 flex items-baseline justify-between">
