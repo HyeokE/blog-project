@@ -18,7 +18,7 @@ interface ThumbnailTransitionProps {
 export default function ThumbnailTransition({
   title,
   date,
-  useTransition = true,
+  useTransition = false,
   href,
   children,
   className,
