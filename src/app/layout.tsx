@@ -4,29 +4,28 @@ import { PointerRoot } from '@/components/Pointer/Pointer';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { Analytics } from '@vercel/analytics/react';
 import { NavDock } from '@/components/NavDock';
-import { defaultLocale, getTranslations } from '@/i18n';
-import { headers } from 'next/headers';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { DarkModeProvider } from '@/context/DarkModeContext';
 import OverlayProvider from '@/context/OverlayProvider';
 import { LayoutGroup } from 'motion/react';
 
+export const revalidate = 3600;
+
 // 기본 메타데이터는 defaultLocale에서 가져옵니다
-const translations = getTranslations(defaultLocale);
 
 export const metadata: Metadata = {
-  title: translations.layout.title,
-  description: translations.layout.description,
+  title: 'HYEOK.DEV',
+  description: 'HYEOK.DEV',
   metadataBase: new URL('https://hyeok.dev'),
   openGraph: {
-    title: translations.layout.title,
-    description: translations.layout.description,
+    title: 'HYEOK.DEV',
+    description: 'HYEOK.DEV',
     images: [
       {
         url: '/opengraph.png',
         width: 1200,
         height: 630,
-        alt: translations.layout.title,
+        alt: 'HYEOK.DEV OpenGraph image',
       },
     ],
     type: 'website',
@@ -35,8 +34,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: translations.layout.title,
-    description: translations.layout.description,
+    title: 'HYEOK.DEV',
+    description: 'HYEOK.DEV',
     images: ['/opengraph.png'],
   },
 };
@@ -52,18 +51,9 @@ interface RootLayoutProps {
   children: React.ReactNode;
 }
 
-async function getBrowserLanguage(): Promise<string> {
-  const headersList = await headers();
-  const acceptLanguage = headersList.get('accept-language') || '';
-  const preferredLanguage = acceptLanguage.split(',')[0].split('-')[0];
-  return ['ko', 'en'].includes(preferredLanguage) ? preferredLanguage : defaultLocale;
-}
-
 export default async function RootLayout({ children }: RootLayoutProps) {
-  const locale = await getBrowserLanguage();
-
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning>
       <head>
         <link
           href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/static/woff2/SUIT.css"
