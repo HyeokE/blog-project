@@ -27,7 +27,6 @@ const PostCard = ({ post }: PostCard) => {
         href={`/${post.id}`}
         title={post.title}
         date={post.date.start_date}
-        useTransition
         className="max-w-[600px]:gap-1 flex flex-col gap-2"
       >
         <motion.time
