@@ -60,6 +60,9 @@ export default async function RootLayout({ children }: RootLayoutProps) {
               <LayoutGroup>
                 {children}
                 <NavDock />
+                <p className="text-foreground fixed right-4 bottom-4 text-sm">
+                  ©{new Date().getFullYear()}. Jason Jeong All rights reserved.
+                </p>
               </LayoutGroup>
             </PointerRoot>
           </DarkModeProvider>
