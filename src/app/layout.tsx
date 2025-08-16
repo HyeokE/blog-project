@@ -20,23 +20,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'HYEOK.DEV',
     description: 'HYEOK.DEV',
-    images: [
-      {
-        url: '/opengraph.png',
-        width: 1200,
-        height: 630,
-        alt: 'HYEOK.DEV OpenGraph image',
-      },
-    ],
     type: 'website',
     locale: 'ko_KR',
     siteName: 'HYEOK',
   },
   twitter: {
-    card: 'summary_large_image',
     title: 'HYEOK.DEV',
     description: 'HYEOK.DEV',
-    images: ['/opengraph.png'],
   },
 };
 
