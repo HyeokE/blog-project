@@ -23,9 +23,8 @@ export async function generateMetadata({
 
   return {
     title: properties.title || 'Default Title',
-    openGraph: {
-      images: [`/api/og?title=${encodeURIComponent(properties.title)}`], // 동적 이미지 경로
-    },
+    description: properties.summary || 'Default Description',
+
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'), // 기본 URL 설정
   };
 }

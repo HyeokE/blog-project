@@ -19,14 +19,14 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://hyeok.dev'),
   openGraph: {
     title: 'HYEOK.DEV',
-    description: 'HYEOK.DEV',
+    description: '소프트웨어 엔지니어 Jason의 블로그입니다.',
     type: 'website',
     locale: 'ko_KR',
     siteName: 'HYEOK',
   },
   twitter: {
     title: 'HYEOK.DEV',
-    description: 'HYEOK.DEV',
+    description: '소프트웨어 엔지니어 Jason의 블로그입니다.',
   },
 };
 
