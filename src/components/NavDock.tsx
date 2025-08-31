@@ -46,7 +46,7 @@ export function NavDock() {
 
   return (
     <div className="fixed right-0 bottom-5 left-0 z-50">
-      <div className="fixed bottom-0 flex h-fit w-full items-center justify-center py-[20px]">
+      <div className="fixed bottom-0 flex h-fit w-full items-center tablet:justify-center py-[20px] px-5">
         <div
           className="from-background absolute inset-0 bg-linear-to-t to-transparent"
           style={{
@@ -57,7 +57,7 @@ export function NavDock() {
             opacity: mode === 'dark' ? 0.7 : 1,
           }}
         />
-        <Dock items={items} desktopClassName="mx-auto w-fit" mobileClassName="mx-auto w-fit" />
+        <Dock items={items} desktopClassName="mx-auto w-fit" mobileClassName=" w-fit" />
       </div>
     </div>
   );

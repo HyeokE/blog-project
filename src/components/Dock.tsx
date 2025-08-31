@@ -78,7 +78,7 @@ const FloatingDockMobile = ({ items, className }: { items: DockItem[]; className
             />
             <motion.div
               layoutId="nav"
-              className="absolute inset-x-0 bottom-full z-20 mb-2 flex flex-col gap-2"
+              className="absolute inset-x-0 bottom-full z-20 mb-4 flex flex-col gap-3"
             >
               {items.map((item, idx) => (
                 <motion.div
@@ -101,18 +101,20 @@ const FloatingDockMobile = ({ items, className }: { items: DockItem[]; className
                     <Link
                       href={item.href}
                       key={item.title}
-                      className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900"
+                      className="flex items-center gap-2 w-fit"
                       onClick={() => setOpen(false)}
                     >
-                      <div className="h-fit w-fit">{item.icon}</div>
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900">{item.icon}</div>
+                      <span className="text-lg whitespace-nowrap">{item.title}</span>
                     </Link>
                   ) : (
                     <button
                       key={item.title}
+                      className="flex items-center gap-2 w-fit"
                       onClick={() => handleItemClick(item)}
-                      className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900"
                     >
-                      <div className="h-fit w-fit">{item.icon}</div>
+                      <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900">{item.icon}</div>
+                      <span className="text-lg whitespace-nowrap">{item.title}</span>
                     </button>
                   )}
                 </motion.div>
