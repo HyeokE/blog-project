@@ -1,6 +1,6 @@
 import React from 'react';
-import type { ImageMetadata } from '@/utils/gallery/metadataUtils';
-import { getMapLink } from '@/utils/gallery/metadataUtils';
+import type { ImageMetadata } from '@/utils/gallery/metadataClient';
+import { getMapLink } from '@/utils/gallery/metadataClient';
 
 interface ImageMetadataDisplayProps {
   metadata: ImageMetadata;
