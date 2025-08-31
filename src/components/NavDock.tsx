@@ -57,7 +57,7 @@ export function NavDock() {
             opacity: mode === 'dark' ? 0.7 : 1,
           }}
         />
-        <Dock items={items} desktopClassName="mx-auto w-fit" mobileClassName=" w-fit" />
+        <Dock items={items} desktopClassName="mx-auto w-fit" mobileClassName="fixed left-4 bottom-4 w-fit" />
       </div>
     </div>
   );
