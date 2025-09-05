@@ -1,7 +1,23 @@
-const current = new Date();
-const tomorrow = new Date(current);
-tomorrow.setDate(tomorrow.getDate() + 1);
-tomorrow.setHours(0, 0, 0, 0);
+const timeZone = 'Asia/Seoul';
+
+function formatYmdInTimeZone(date: Date, tz: string): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: tz,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
+}
+
+function getPostYmd(post: any, tz: string): string {
+  const start: string | undefined = post?.date?.start_date;
+  if (start) {
+    return start.slice(0, 10);
+  }
+  const createdStr: string | undefined = post?.createdTime;
+  const created = createdStr ? new Date(createdStr) : new Date(0);
+  return formatYmdInTimeZone(created, tz);
+}
 
 export default function filterPublishedPosts({
   posts,
@@ -21,8 +37,9 @@ export default function filterPublishedPosts({
     )
 
     .filter((post: any) => {
-      const postDate = new Date(post?.date?.start_date || post.createdTime);
-      return post.title && post.slug && post?.status?.[0] === 'Published' && postDate < tomorrow;
+      const todayYmd = formatYmdInTimeZone(new Date(), timeZone);
+      const postYmd = getPostYmd(post, timeZone);
+      return post.title && post.slug && post?.status?.[0] === 'Published' && postYmd <= todayYmd;
     });
   return publishedPosts;
 }
