@@ -40,7 +40,6 @@ const FloatingDockMobile = ({ items, className }: { items: DockItem[]; className
   const [open, setOpen] = useState(false);
   const dockRef = useRef<HTMLDivElement>(null);
 
-  // 외부 클릭 감지를 위한 useEffect
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dockRef.current && !dockRef.current.contains(event.target as Node) && open) {
