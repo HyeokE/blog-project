@@ -49,6 +49,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
           href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/static/woff2/SUIT.css"
           rel="stylesheet"
         />
+        <meta name="naver-site-verification" content="6db56d77a544952e591331d6016ed98ce862c631" />
       </head>
 
       <body>
