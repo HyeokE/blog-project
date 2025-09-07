@@ -2,6 +2,8 @@ import { getAllPosts } from '@/apis/NotionService';
 
 import type { Metadata } from 'next';
 import type { NotionPosts } from '@/models/NotionPosts';
+import { parseISO, format } from 'date-fns';
+import { ko } from 'date-fns/locale';
 
 import { getPageDetail } from '@/utils/notion/getPageDetail';
 import PostDetailPage from '@/container/PostDetail/PostDetailPage';
@@ -28,13 +30,51 @@ export async function generateMetadata({
   try {
     const { slug: id } = await params;
     const properties = await getPageDetail(id);
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const title = properties.title || 'Default Title';
+    const description = properties.summary || 'Default Description';
+
+    // Build /api/og URL with params (Festy-style)
+    const apiOg = new URL('/api/og', siteUrl).toString();
+    
+    const startDate = properties.date?.start_date;
+    const dateStr = startDate
+      ? format(parseISO(startDate), 'yyyy.MM.dd(eee)', { locale: ko })
+      : '';
+    const searchparams = {
+      header: 'HYEOK.DEV',
+      title,
+    
+      date: dateStr,
+    } as const;
+    const ogImageUrl = `${apiOg}?${new URLSearchParams(searchparams).toString()}`;
+    
     return {
-      title: properties.title || 'Default Title',
-      description: properties.summary || 'Default Description',
-      metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+      title,
+      description,
+      metadataBase: new URL(siteUrl),
+      openGraph: {
+        title,
+        description,
+        url: new URL(`/${id}`, siteUrl).toString(),
+        type: 'article',
+        images: [
+          {
+            url: ogImageUrl,
+            width: 1200,
+            height: 630,
+            alt: title,
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: [ogImageUrl],
+      },
     };
   } catch {
-    // 페이지가 존재하지 않으면 404로 처리되므로, 메타데이터는 최소값으로 반환
     return {
       title: 'Not Found',
       description: 'The requested post could not be found.',
