@@ -29,7 +29,7 @@
     "framer-motion": "^11.18.2",
     "lucide-react": "^0.503.0",
     "motion": "^11.18.2",
-    "next": "^15.3.1",
+    "next": "^15.5.9",
     "notion-client": "^6.16.0",
     "notion-utils": "^6.16.0",
     "overlay-kit": "^1.8.4",
