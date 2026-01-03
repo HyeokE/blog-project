@@ -30,14 +30,18 @@ const GalleryClient = ({ initialImages, initialError = null }: GalleryClientProp
   };
 
   const nextImage = () => {
-    if (selectedImage === null || images.length === 0) return;
+    if (selectedImage === null || images.length === 0) {
+      return;
+    }
     const currentIndex = images.findIndex((img) => img.id === selectedImage);
     const nextIndex = (currentIndex + 1) % images.length;
     setSelectedImage(images[nextIndex].id);
   };
 
   const prevImage = () => {
-    if (selectedImage === null || images.length === 0) return;
+    if (selectedImage === null || images.length === 0) {
+      return;
+    }
     const currentIndex = images.findIndex((img) => img.id === selectedImage);
     const prevIndex = (currentIndex - 1 + images.length) % images.length;
     setSelectedImage(images[prevIndex].id);

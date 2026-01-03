@@ -1,5 +1,3 @@
-import React from 'react';
-import Image from 'next/image';
 import * as motion from 'motion/react-client';
 import type { ImageData } from '@/utils/gallery/imageUtils';
 import ImageMetadataDisplay from './ImageMetadataDisplay';
