@@ -8,7 +8,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { DarkModeProvider } from '@/context/DarkModeContext';
 import OverlayProvider from '@/context/OverlayProvider';
 import { LayoutGroup } from 'motion/react';
-import { SilkBackground } from '@/components/SilkBackground';
+import CurrentLayoutExtras from '@/container/designs/current/RootLayoutExtras';
 
 export const revalidate = 3600;
 
@@ -63,7 +63,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <GoogleAnalytics gaId="G-07RYXQL1X0" />
         <Analytics />
         <SpeedInsights />
-        <SilkBackground />
+        <CurrentLayoutExtras />
         <div id="portal-root" />
         <OverlayProvider>
           <DarkModeProvider defaultMode="light">

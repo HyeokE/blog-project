@@ -1,4 +1,4 @@
-import PersonalPage from '@/container/personal/PersonalPage';
+import CurrentPersonalPage from '@/container/designs/current/PersonalPage';
 
 export const metadata = {
   title: 'Hyeok | Personal',
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default async function Personal() {
-  return <PersonalPage />;
+  return <CurrentPersonalPage />;
 }
