@@ -13,8 +13,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 먼저 기본 로케일(한국어)에 대한 URL 생성 - 루트 경로 사용
   // 루트 경로에 해당하는 한국어 URL들
+  // personal 태그만 단독으로 있는 글은 제외 (다른 태그와 함께 있으면 포함)
   const koPostUrls = posts
     .filter((post) => post.id)
+    .filter((post) => {
+      if (!post.tags || post.tags.length === 0) {
+        return true;
+      }
+      if (post.tags.length === 1 && post.tags[0].toLowerCase().includes('personal')) {
+        return false;
+      }
+      return true;
+    })
     .map((post) => ({
       url: `${baseUrl}/${post.id}`,
       lastModified: new Date(post.date?.start_date || post.createdTime),
@@ -47,8 +57,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 한국어 URL 추가
   urls = [...urls, ...koStaticUrls, ...koPostUrls];
     // 포스트 URL 생성
+    // personal 태그만 단독으로 있는 글은 제외 (다른 태그와 함께 있으면 포함)
     const otherPostUrls = posts
       .filter((post) => post.id)
+      .filter((post) => {
+        if (!post.tags || post.tags.length === 0) {
+          return true;
+        }
+        if (post.tags.length === 1 && post.tags[0].toLowerCase().includes('personal')) {
+          return false;
+        }
+        return true;
+      })
       .map((post) => ({
         url: `${baseUrl}/${post.id}`,
         lastModified: new Date(post.date?.start_date || post.createdTime),

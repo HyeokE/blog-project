@@ -5,9 +5,16 @@ import { BlogList } from './components/BlogList';
 
 const CloudHomePage = async () => {
   const posts = await getAllPosts({ includePages: false });
-  const filteredPosts = posts.filter(
-    (post) => !post.tags?.some((tag) => tag.toLowerCase().includes('personal')),
-  );
+  // personal 태그만 단독으로 있는 글은 제외 (다른 태그와 함께 있으면 포함)
+  const filteredPosts = posts.filter((post) => {
+    if (!post.tags || post.tags.length === 0) {
+      return true;
+    }
+    if (post.tags.length === 1 && post.tags[0].toLowerCase().includes('personal')) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <CloudLayout>
