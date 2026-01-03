@@ -2,7 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import * as motion from 'motion/react-client';
 import type { ImageData } from '@/utils/gallery/imageUtils';
-import ImageMetadataDisplay from './ImageMetadataDisplay';
+import ImageMetadataDisplay from '@/container/gallery/components/ImageMetadataDisplay';
 
 interface ImageThumbnailProps {
   image: ImageData;
@@ -10,14 +10,11 @@ interface ImageThumbnailProps {
   onImageClick: (id: number) => void;
 }
 
-/**
- * 갤러리에 표시될 개별 이미지 썸네일 컴포넌트
- */
 const ImageThumbnail = ({ image, index, onImageClick }: ImageThumbnailProps) => {
   return (
     <motion.div
       key={image.id}
-      className="group relative mb-4 break-inside-avoid cursor-pointer overflow-hidden rounded-lg"
+      className="group relative aspect-square cursor-pointer overflow-hidden"
       onClick={() => onImageClick(image.id)}
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -28,17 +25,16 @@ const ImageThumbnail = ({ image, index, onImageClick }: ImageThumbnailProps) => 
       }}
       whileTap={{ scale: 0.98 }}
     >
-      {/* 이미지 래퍼 */}
-      <div className="relative w-full overflow-hidden">
-        {/* 원본 비율 유지 이미지 */}
-        <img
+      <div className="relative h-full w-full overflow-hidden">
+        <Image
           src={image.src}
           alt={image.alt}
-          loading="lazy"
-          className="h-auto w-full select-none"
+          fill
+          sizes="(max-width: 768px) 50vw, 33vw"
+          className="object-cover transition-transform duration-300 group-hover:scale-110"
+          priority={index === 0}
         />
 
-        {/* 이미지 정보 오버레이 - 메타데이터가 유효한 경우만 표시 */}
         {image.hasValidMetadata && (
           <div
             className="absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/80 to-transparent p-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
@@ -53,3 +49,5 @@ const ImageThumbnail = ({ image, index, onImageClick }: ImageThumbnailProps) => 
 };
 
 export default ImageThumbnail;
+
+

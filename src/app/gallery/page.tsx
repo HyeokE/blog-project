@@ -2,7 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { defaultLocale, getTranslations } from '@/i18n';
-import GalleryPage from '@/container/gallery/GalleryPage';
+import CurrentGalleryPage from '@/container/designs/current/GalleryPage';
 
 async function getBrowserLanguage(): Promise<'ko' | 'en'> {
   const headersList = await headers();
@@ -28,5 +28,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page() {
-  return <GalleryPage />;
+  return <CurrentGalleryPage />;
 }

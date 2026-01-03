@@ -68,16 +68,16 @@ export const PostCard = ({ id, title, excerpt, date, category }: PostCardProps) 
           opacity,
           filter: blur,
         }}
-        className="relative mx-auto flex w-full max-w-[90%] cursor-pointer snap-center flex-col rounded-xl backdrop-blur-[2px] transition-colors duration-500 md:max-w-2xl md:py-8"
+        className="relative flex w-full max-w-full cursor-pointer snap-center flex-col rounded-xl backdrop-blur-[2px] transition-colors duration-500 md:max-w-2xl py-6 md:py-8"
       >
-        <div className="flex h-full transform-gpu flex-col justify-center">
+        <div className="flex h-full w-full transform-gpu flex-col justify-center">
           <div className="mb-2 flex items-center space-x-2 text-[9px] tracking-widest text-[#8a8a8a] uppercase md:space-x-3 md:text-[10px]">
             {category && <span className="font-medium text-[#6a6a6a]">{category}</span>}
             {category && <span className="h-2 w-px bg-[#dcd9d2]" />}
             <span>{date}</span>
           </div>
 
-          <h3 className="font-serif-home mb-2 text-xl leading-tight font-semibold text-[#3a3a3a] md:text-3xl">
+          <h3 className="font-serif-home mb-2 text-xl leading-tight font-semibold text-[#3a3a3a] md:text-2xl">
             {title}
           </h3>
 
@@ -87,11 +87,7 @@ export const PostCard = ({ id, title, excerpt, date, category }: PostCardProps) 
             </p>
           )}
 
-          <div className="mt-4 hidden translate-y-2 transform opacity-0 transition-all duration-300 md:block">
-            <span className="border-b border-[#4a4a4a] pb-0.5 text-xs font-medium text-[#4a4a4a]">
-              Read more
-            </span>
-          </div>
+          
         </div>
       </motion.article>
     </Link>

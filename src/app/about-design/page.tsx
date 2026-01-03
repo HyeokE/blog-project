@@ -15,8 +15,7 @@ export default function AboutDesignPage() {
         >
           <div className="flex flex-col items-center">
             <div
-              className="h-72 w-48 rounded-sm shadow-lg md:h-80 md:w-56"
-              style={{ backgroundColor: '#F0EDE5' }}
+              className="h-72 w-48 rounded-sm shadow-lg md:h-80 md:w-56 bg-cloud-dancer"
             />
             <p className="mt-4 text-xs tracking-widest text-[#8a8a8a] uppercase">
               Pantone 11-4201 TCX

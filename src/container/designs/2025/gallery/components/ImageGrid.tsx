@@ -1,19 +1,15 @@
 import React from 'react';
 import type { ImageData } from '@/utils/gallery/imageUtils';
-import ImageThumbnail from './ImageThumbnail';
+import ImageThumbnail from '@/container/designs/2025/gallery/components/ImageThumbnail';
 
 interface ImageGridProps {
   images: ImageData[];
   onImageClick: (id: number) => void;
 }
 
-/**
- * 이미지 그리드 컴포넌트
- * 썸네일들을 그리드 형태로 배치합니다
- */
 const ImageGrid = ({ images, onImageClick }: ImageGridProps) => {
   return (
-    <div className="w-full columns-1 gap-4 px-4 sm:columns-2 md:columns-3 lg:columns-3 xl:columns-4 2xl:columns-5 [column-fill:_balance]">
+    <div className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {images.map((image, index) => (
         <ImageThumbnail key={image.id} image={image} index={index} onImageClick={onImageClick} />
       ))}
@@ -22,3 +18,5 @@ const ImageGrid = ({ images, onImageClick }: ImageGridProps) => {
 };
 
 export default ImageGrid;
+
+

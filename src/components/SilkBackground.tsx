@@ -35,24 +35,11 @@ export const SilkBackground = () => {
     let width = 0;
     let height = 0;
     let animationId: number;
-    let time = 0;
     const clouds: Cloud[] = [];
     const CLOUD_COUNT = 15;
 
-    const lerpColor = (
-      r1: number,
-      g1: number,
-      b1: number,
-      r2: number,
-      g2: number,
-      b2: number,
-      t: number,
-    ) => {
-      const r = Math.round(r1 + (r2 - r1) * t);
-      const g = Math.round(g1 + (g2 - g1) * t);
-      const b = Math.round(b1 + (b2 - b1) * t);
-      return `rgb(${r}, ${g}, ${b})`;
-    };
+    // Colors are fixed by design spec:
+    // Cloud Dancer (#f0efec) and Sky (#d4e5f1)
 
     const createCloud = (): Cloud => {
       const scale = 0.5 + Math.random();
@@ -95,8 +82,9 @@ export const SilkBackground = () => {
               puff.radius,
             );
 
-            gradient.addColorStop(0, `rgba(255, 255, 255, ${puff.alpha})`);
-            gradient.addColorStop(0.5, `rgba(255, 255, 255, ${puff.alpha * 0.5})`);
+            // Cloud Dancer (RGB 240, 239, 235) - #f0efeb
+            gradient.addColorStop(0, `rgba(240, 239, 235, ${puff.alpha})`);
+            gradient.addColorStop(0.5, `rgba(240, 239, 235, ${puff.alpha * 0.5})`);
             gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
 
             drawCtx.fillStyle = gradient;
@@ -124,20 +112,13 @@ export const SilkBackground = () => {
     };
 
     const animate = () => {
-      time += 0.002;
-      const cycle = (Math.sin(time) + 1) / 2;
-
       ctx.clearRect(0, 0, width, height);
 
       const skyGradient = ctx.createLinearGradient(0, 0, 0, height);
-
-      const topColor = lerpColor(221, 238, 255, 216, 214, 208, cycle);
-      const midColor = lerpColor(245, 249, 255, 230, 228, 223, cycle);
-      const botColor = lerpColor(255, 255, 255, 240, 238, 233, cycle);
-
-      skyGradient.addColorStop(0, topColor);
-      skyGradient.addColorStop(0.6, midColor);
-      skyGradient.addColorStop(1, botColor);
+      // Sky color fixed to #d4e5f1 (RGB 212, 229, 241)
+      const skyColor = 'rgb(212, 229, 241)';
+      skyGradient.addColorStop(0, skyColor);
+      skyGradient.addColorStop(1, skyColor);
 
       ctx.fillStyle = skyGradient;
       ctx.fillRect(0, 0, width, height);
@@ -161,9 +142,9 @@ export const SilkBackground = () => {
   }, []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-0 h-full w-full bg-[#EAE8E4]">
+    <div className="pointer-events-none fixed inset-0 z-0 h-full w-full bg-cloud-dancer">
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/10" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-cloud-dancer/10" />
     </div>
   );
 };
