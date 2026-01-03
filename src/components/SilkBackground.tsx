@@ -39,7 +39,7 @@ export const SilkBackground = () => {
     const CLOUD_COUNT = 15;
 
     // Colors are fixed by design spec:
-    // Cloud Dancer (#f0efec) and Sky (#d4e5f1)
+    // White clouds on Cloud Dancer (#f0efec) sky
 
     const createCloud = (): Cloud => {
       const scale = 0.5 + Math.random();
@@ -82,9 +82,9 @@ export const SilkBackground = () => {
               puff.radius,
             );
 
-            // Cloud Dancer (RGB 240, 239, 235) - #f0efeb
-            gradient.addColorStop(0, `rgba(240, 239, 235, ${puff.alpha})`);
-            gradient.addColorStop(0.5, `rgba(240, 239, 235, ${puff.alpha * 0.5})`);
+            // White clouds
+            gradient.addColorStop(0, `rgba(255, 255, 255, ${puff.alpha})`);
+            gradient.addColorStop(0.5, `rgba(255, 255, 255, ${puff.alpha * 0.5})`);
             gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
 
             drawCtx.fillStyle = gradient;
@@ -115,8 +115,8 @@ export const SilkBackground = () => {
       ctx.clearRect(0, 0, width, height);
 
       const skyGradient = ctx.createLinearGradient(0, 0, 0, height);
-      // Sky color fixed to #d4e5f1 (RGB 212, 229, 241)
-      const skyColor = 'rgb(212, 229, 241)';
+      // Cloud Dancer (RGB 240, 239, 236) - #f0efec
+      const skyColor = 'rgb(240, 239, 236)';
       skyGradient.addColorStop(0, skyColor);
       skyGradient.addColorStop(1, skyColor);
 

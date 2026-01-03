@@ -16,7 +16,7 @@ interface HomeLayoutProps {
 const HomeLayout = ({ posts }: HomeLayoutProps) => {
   const pathname = usePathname();
   return (
-    <div className="flex h-dvh w-[100vw] flex-col items-center justify-center gap-8">
+    <div className="font-suit flex h-dvh w-[100vw] flex-col items-center justify-center gap-8">
       <div className="fixed top-0 right-0 z-20 flex h-[70px] items-center justify-center gap-4 px-5">
         {pathname === '/personal' &&(
           <Link href="/" className="flex items-center gap-1">

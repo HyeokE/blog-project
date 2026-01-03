@@ -3,7 +3,7 @@ import './globals.css';
 import { PointerRoot } from '@/components/Pointer/Pointer';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { Analytics } from '@vercel/analytics/react';
-import { NavDock } from '@/components/NavDock';
+import CurrentRootDock from '@/container/designs/current/RootDock';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { DarkModeProvider } from '@/context/DarkModeContext';
 import OverlayProvider from '@/context/OverlayProvider';
@@ -70,7 +70,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             <PointerRoot>
               <LayoutGroup>
                 {children}
-                <NavDock />
+                <CurrentRootDock />
                 {/* <p className="text-foreground fixed right-4 bottom-4 text-sm">
                   ©{new Date().getFullYear()}. Jason Jeong
                 </p> */}

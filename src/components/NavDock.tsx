@@ -7,18 +7,26 @@ import { SparklesIcon } from '@/assets/SparklesIcon';
 import { SunIcon } from '@/assets/SunIcon';
 import useDarkMode from '@/hooks/useDarkMode';
 import { useTranslation } from '@/hooks/useTranslation';
+import { usePathname } from 'next/navigation';
 
 export function NavDock() {
   const { t } = useTranslation();
   const [mode, toggleMode] = useDarkMode('light');
+  const pathname = usePathname();
+  const yearMatch = pathname?.match(/^\/(\d{4})(?:\/|$)/);
+  const yearPrefix = yearMatch ? `/${yearMatch[1]}` : '';
+  const yearAwarePaths = new Set<string>(['/', '/gallery', '/personal', '/about']);
 
   // 경로 생성 함수: 한국어는 루트 경로, 영어는 /en 경로 사용
   const getPath = (path: string) => {
-    // if (locale === defaultLocale) {
-      return path; // 한국어인 경우 그대로 사용
-    // } else {
-    //   return `/${locale}${path}`; // 영어인 경우 /en 접두사 추가
-    // }
+    // 연도 컨텍스트가 있으면 연도별 라우트가 존재하는 경로에만 접두사를 붙임
+    if (yearPrefix && yearAwarePaths.has(path)) {
+      if (path === '/') {
+        return `${yearPrefix}`;
+      }
+      return `${yearPrefix}${path}`;
+    }
+    return path;
   };
 
   const items: DockItem[] = [

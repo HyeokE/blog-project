@@ -42,12 +42,25 @@ export default function AboutDesignPage() {
               </p>
               <p>포근한 구름 위를 걷는 듯한 편안함을 경험하길 바랍니다.</p>
             </div>
-            <Link
-              href="/"
-              className="mt-8 inline-block border-b border-[#4a4a4a] pb-1 text-sm text-[#4a4a4a] transition-colors hover:text-[#2a2a2a]"
-            >
-              ← Back to Blog
-            </Link>
+            
+            {/* Navigation Links */}
+            <div className="mt-12 flex items-center gap-8 border-t border-[#e0e0e0] pt-8">
+              <Link
+                href="/"
+                className="group flex items-center gap-2 text-sm text-[#6a6a6a] transition-colors hover:text-[#3a3a3a]"
+              >
+                <span className="transition-transform group-hover:-translate-x-1">←</span>
+                <span>Blog</span>
+              </Link>
+              <div className="h-4 w-px bg-[#d0d0d0]" />
+              <Link
+                href="/designs"
+                className="group flex items-center gap-2 text-sm text-[#6a6a6a] transition-colors hover:text-[#3a3a3a]"
+              >
+                <span>Legacy Designs</span>
+                <span className="transition-transform group-hover:translate-x-1">→</span>
+              </Link>
+            </div>
           </div>
         </motion.div>
       </div>

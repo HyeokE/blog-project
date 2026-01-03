@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { ScrollContext } from '@/context/ScrollContext';
 import { useRef, type ReactNode } from 'react';
 
@@ -24,10 +25,18 @@ export const CloudLayout = ({ children }: CloudLayoutProps) => {
             <div className="flex space-x-6 text-sm text-[#8a8a8a]">
               <a
                 href="https://github.com/HyeokE"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="transition-colors hover:text-[#4a4a4a]"
               >
                 GitHub
               </a>
+              <Link
+                href="/designs"
+                className="transition-colors hover:text-[#4a4a4a]"
+              >
+                Legacy Designs
+              </Link>
             </div>
             <p className="text-xs text-[#8a8a8a]/60">
               © {new Date().getFullYear()} Jason Jeong. All rights reserved.
