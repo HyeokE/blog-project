@@ -17,6 +17,9 @@ export default {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
       },
+      fontFamily: {
+        harmonais: ['Harmonais', 'Pretendard', 'sans-serif'],
+      },
     },
   },
   plugins: [require('tailwind-scrollbar-hide')],

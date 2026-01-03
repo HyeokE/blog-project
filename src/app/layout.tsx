@@ -8,6 +8,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { DarkModeProvider } from '@/context/DarkModeContext';
 import OverlayProvider from '@/context/OverlayProvider';
 import { LayoutGroup } from 'motion/react';
+import { SilkBackground } from '@/components/SilkBackground';
 
 export const revalidate = 3600;
 
@@ -46,16 +47,23 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     <html lang="ko" suppressHydrationWarning>
       <head>
         <link
-          href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/static/woff2/SUIT.css"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+          rel="stylesheet"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Gowun+Batang:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap"
           rel="stylesheet"
         />
         <meta name="naver-site-verification" content="6db56d77a544952e591331d6016ed98ce862c631" />
       </head>
 
-      <body>
+      <body suppressHydrationWarning>
         <GoogleAnalytics gaId="G-07RYXQL1X0" />
         <Analytics />
         <SpeedInsights />
+        <SilkBackground />
         <div id="portal-root" />
         <OverlayProvider>
           <DarkModeProvider defaultMode="light">
@@ -63,9 +71,9 @@ export default async function RootLayout({ children }: RootLayoutProps) {
               <LayoutGroup>
                 {children}
                 <NavDock />
-                <p className="text-foreground fixed right-4 bottom-4 text-sm">
+                {/* <p className="text-foreground fixed right-4 bottom-4 text-sm">
                   ©{new Date().getFullYear()}. Jason Jeong
-                </p>
+                </p> */}
               </LayoutGroup>
             </PointerRoot>
           </DarkModeProvider>

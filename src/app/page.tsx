@@ -1,5 +1,5 @@
-import HomePage from '@/container/home/HomePage';
+import CloudHomePage from '@/container/cloud-home/CloudHomePage';
 
 export default async function Home() {
-  return <HomePage />;
+  return <CloudHomePage />;
 }

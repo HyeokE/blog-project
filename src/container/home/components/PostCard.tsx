@@ -15,10 +15,6 @@ const PostCard = ({ post }: PostCard) => {
     <motion.div
       key={post.id}
       variants={itemVariants}
-      whileHover={{
-        scale: 1.01,
-        transition: { duration: 0.2 },
-      }}
       className="post-list snap-center"
       data-post-date={post.date.start_date}
     >

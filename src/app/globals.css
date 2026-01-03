@@ -2,6 +2,79 @@
 
 @plugin 'tailwind-scrollbar-hide';
 
+@font-face {
+  font-family: 'Harmonais';
+  src: url('/fonts/Harmonais-Visual-HV-Muse-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* SUIT Variable Weights */
+@font-face {
+  font-family: 'SUIT';
+  src: url('/fonts/SUIT-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SUIT';
+  src: url('/fonts/SUIT-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SUIT';
+  src: url('/fonts/SUIT-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SUIT';
+  src: url('/fonts/SUIT-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SUIT';
+  src: url('/fonts/SUIT-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SUIT';
+  src: url('/fonts/SUIT-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SUIT';
+  src: url('/fonts/SUIT-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SUIT';
+  src: url('/fonts/SUIT-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SUIT';
+  src: url('/fonts/SUIT-Heavy.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 @custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
 
 @theme {
@@ -21,6 +94,8 @@
   --color-brand-700: #404130;
   --color-brand-800: #353628;
   --color-brand-900: #1e1f17;
+
+  --font-harmonais: 'Harmonais', 'Pretendard', sans-serif;
 }
 
 /*
@@ -42,7 +117,23 @@
 }
 
 * {
-  font-family: 'SUIT', sans-serif;
+  font-family: 'Pretendard', sans-serif;
+}
+
+.font-serif-home {
+  font-family: 'Crimson Pro', 'Gowun Batang', serif;
+}
+
+.font-sans-home {
+  font-family: 'DM Sans', sans-serif;
+}
+
+.font-harmonais {
+  font-family: 'Harmonais', 'Pretendard', sans-serif;
+}
+
+.font-suit * {
+  font-family: 'SUIT', 'Pretendard', sans-serif;
 }
 
 :root {
