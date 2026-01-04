@@ -26,8 +26,8 @@ const ImageThumbnail = ({ image, index: _index, onImageClick }: ImageThumbnailPr
   
   // row span 계산 (10px 단위)
   const rowSpan = isWide
-    ? Math.ceil(aspectRatio * 18) // 가로 사진: 2:3 비율
-    : Math.ceil(aspectRatio * 10); // 세로 사진: 3:2 비율
+    ? Math.ceil(aspectRatio * 20) // 가로 사진: 2:3 비율
+    : Math.ceil(aspectRatio * 12); // 세로 사진: 3:2 비율
 
   return (
     <motion.div
