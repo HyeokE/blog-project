@@ -58,7 +58,7 @@ export const PostCard = ({ id, title, excerpt, date, category }: PostCardProps) 
   });
 
   return (
-    <Link href={`/${id}`} className="m-0">
+    <Link href={`/${id}`} className="m-0 w-full">
       <motion.article
         ref={ref}
         style={{
@@ -68,7 +68,7 @@ export const PostCard = ({ id, title, excerpt, date, category }: PostCardProps) 
           opacity,
           filter: blur,
         }}
-        className="relative flex w-full max-w-full cursor-pointer snap-center flex-col rounded-xl backdrop-blur-[2px] transition-colors duration-500 md:max-w-2xl py-6 md:py-8"
+        className="relative flex w-full cursor-pointer snap-center flex-col rounded-xl backdrop-blur-[2px] transition-colors duration-500 py-8 md:py-8"
       >
         <div className="flex h-full w-full transform-gpu flex-col justify-center">
           <div className="mb-2 flex items-center space-x-2 text-[9px] tracking-widest text-[#8a8a8a] uppercase md:space-x-3 md:text-[10px]">
@@ -82,7 +82,7 @@ export const PostCard = ({ id, title, excerpt, date, category }: PostCardProps) 
           </h3>
 
           {excerpt && (
-            <p className="line-clamp-3 max-w-xl text-sm leading-relaxed font-light text-[#6a6a6a] md:text-base">
+            <p className="line-clamp-3 text-sm leading-relaxed font-light text-[#6a6a6a] md:text-base">
               {excerpt}
             </p>
           )}

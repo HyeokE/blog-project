@@ -3,7 +3,7 @@ import { Github, Mail, Coffee } from 'lucide-react';
 
 const AboutPage = () => {
   return (
-    <div className="font-suit bg-background/60 relative min-h-dvh min-w-dvw overflow-hidden dark:bg-gray-950">
+    <div className="font-suit bg-cloud-dancer/30 relative min-h-dvh min-w-dvw overflow-hidden dark:bg-gray-950">
       <div className="mx-auto max-w-3xl px-6 py-12 sm:px-8 sm:py-8">
         {/* 상단 내비게이션 */}
         <nav className="mb-12 flex items-center justify-end">

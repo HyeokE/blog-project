@@ -85,6 +85,21 @@ const GalleryClient = ({ initialImages, initialError = null }: GalleryClientProp
 
         {/* 이미지가 없을 때 메시지 */}
         {!isLoading && !error && images.length === 0 && <EmptyGallery />}
+        
+        {/* 저작권 표기 */}
+        {!isLoading && !error && images.length > 0 && (
+          <motion.div
+            className="mt-16 mb-8 px-4 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+          >
+            <div className="text-sm text-[#8a8a8a]">
+              <p>© {new Date().getFullYear()} Jason Jeong. All rights reserved.</p>
+              <p className="mt-1">모든 사진의 저작권은 블로그 작성자에게 있습니다. 무단 배포 및 사용을 금지합니다.</p>
+            </div>
+          </motion.div>
+        )}
       </motion.div>
 
       {/* 전체 화면 이미지 뷰어 */}
