@@ -16,24 +16,22 @@ const ImageThumbnail = ({ image, index: _index, onImageClick }: ImageThumbnailPr
   // 서버에서 계산된 비율 정보 사용
   const isWide = image.isWide || false;
   
-  // 고정 비율 사용
-  // 세로 사진: 3:2 (높이:너비) → aspect ratio = 1.5
-  // 가로 사진: 2:3 (높이:너비) → aspect ratio = 0.667
-  const aspectRatio = isWide ? (2 / 3) : (3 / 2);
-  
   // 가로 사진인 경우 2열, 세로 사진인 경우 1열
   const colSpan = isWide ? 2 : 1;
   
-  // row span 계산 (10px 단위)
-  const rowSpan = isWide
-    ? Math.ceil(aspectRatio * 20) // 가로 사진: 2:3 비율
-    : Math.ceil(aspectRatio * 12); // 세로 사진: 3:2 비율
+  // CSS aspect-ratio로 반응형 대응
+  // 세로 사진: width:height = 2:3 → aspect-ratio = 2/3 (높이가 1.5배)
+  // 가로 사진: width:height = 4:3 → aspect-ratio = 4/3 (높이를 조금 더)
+  const aspectRatio = isWide ? '4 / 3' : '2 / 3';
 
   return (
     <motion.div
       key={image.id}
       className="group relative cursor-pointer overflow-hidden rounded-lg"
-      style={{ gridRowEnd: `span ${rowSpan}`, gridColumn: `span ${colSpan}` }}
+      style={{
+        gridColumn: `span ${colSpan}`,
+        aspectRatio: aspectRatio,
+      }}
       onClick={() => onImageClick(image.id)}
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
