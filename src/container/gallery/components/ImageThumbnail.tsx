@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import * as motion from 'motion/react-client';
 import type { ImageData } from '@/utils/gallery/imageUtils';
 import ImageMetadataDisplay from './ImageMetadataDisplay';
@@ -11,7 +12,7 @@ interface ImageThumbnailProps {
 /**
  * 갤러리에 표시될 개별 이미지 썸네일 컴포넌트
  */
-const ImageThumbnail = ({ image, index, onImageClick }: ImageThumbnailProps) => {
+const ImageThumbnail = ({ image, index: _index, onImageClick }: ImageThumbnailProps) => {
   // 서버에서 계산된 비율 정보 사용
   const isWide = image.isWide || false;
   
@@ -43,11 +44,14 @@ const ImageThumbnail = ({ image, index, onImageClick }: ImageThumbnailProps) => 
       whileTap={{ scale: 0.98 }}
     >
       {/* 원본 비율 유지 이미지 */}
-      <img
+      <Image
         src={image.src}
         alt={image.alt}
-        loading="lazy"
-        className="h-full w-full select-none object-cover"
+        fill
+        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+        className="select-none object-cover"
+        placeholder={image.blurDataURL ? 'blur' : 'empty'}
+        blurDataURL={image.blurDataURL}
       />
 
       {/* 이미지 정보 오버레이 - 메타데이터가 유효한 경우만 표시 */}

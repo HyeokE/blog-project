@@ -16,6 +16,7 @@ export interface ImageData {
   height?: number; // 이미지 세로 크기
   aspectRatio?: number; // 비율 (height / width)
   isWide?: boolean; // 가로 사진 여부
+  blurDataURL?: string; // 블러 플레이스홀더 URL
 }
 
 // 지원하는 이미지 확장자
@@ -61,21 +62,33 @@ export const fetchImagesList = async (): Promise<ImageData[]> => {
 };
 
 /**
- * 이미지 크기 정보를 가져오는 함수
+ * 이미지 크기 정보와 블러 플레이스홀더를 가져오는 함수
  */
 const getImageDimensions = async (
   imagePath: string,
-): Promise<{ width: number; height: number } | null> => {
+): Promise<{ width: number; height: number; blurDataURL: string } | null> => {
   try {
     const sharp = (await import('sharp')).default;
     const filePath = path.join(process.cwd(), 'public', imagePath);
+    
+    // 메타데이터 가져오기
     const metadata = await sharp(filePath).metadata();
+    
+    // 블러 플레이스홀더 생성 (작은 크기로 리사이즈 후 base64 변환)
+    const blurBuffer = await sharp(filePath)
+      .resize(10) // 작은 크기로 리사이즈
+      .blur()
+      .toBuffer();
+    
+    const blurDataURL = `data:image/jpeg;base64,${blurBuffer.toString('base64')}`;
+    
     return {
       width: metadata.width || 0,
       height: metadata.height || 0,
+      blurDataURL,
     };
   } catch (error) {
-    console.error(`이미지 크기 정보를 가져올 수 없습니다 (${imagePath}):`, error);
+    console.error(`이미지 정보를 가져올 수 없습니다 (${imagePath}):`, error);
     return null;
   }
 };
@@ -98,7 +111,7 @@ export const loadImagesMetadata = async (imageList: ImageData[]): Promise<ImageD
           // 파일 시스템에서 직접 메타데이터 파싱 (상대 경로 사용)
           const { metadata, hasValidMetadata } = await parseImageMetadata(image.src);
           
-          // 이미지 크기 정보 가져오기
+          // 이미지 크기 정보와 블러 플레이스홀더 가져오기
           const dimensions = await getImageDimensions(image.src);
           
           if (dimensions) {
@@ -113,6 +126,7 @@ export const loadImagesMetadata = async (imageList: ImageData[]): Promise<ImageD
               height: dimensions.height,
               aspectRatio,
               isWide,
+              blurDataURL: dimensions.blurDataURL,
             };
           }
           
