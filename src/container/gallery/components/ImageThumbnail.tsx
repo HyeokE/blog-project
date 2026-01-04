@@ -22,7 +22,7 @@ const ImageThumbnail = ({ image, index: _index, onImageClick }: ImageThumbnailPr
   // CSS aspect-ratio로 반응형 대응
   // 세로 사진: width:height = 2:3 → aspect-ratio = 2/3 (높이가 1.5배)
   // 가로 사진: width:height = 4:3 → aspect-ratio = 4/3 (높이를 조금 더)
-  const aspectRatio = isWide ? '4 / 3' : '2 / 3';
+  const aspectRatio = isWide ? '3 / 2' : '2 / 3';
 
   return (
     <motion.div
