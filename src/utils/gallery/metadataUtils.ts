@@ -9,6 +9,7 @@ export interface ImageMetadata {
   lens?: string;
   device?: string;
   dateTime?: string;
+  dateTimeOriginal?: Date; // 정렬을 위한 원본 Date 객체
   aperture?: string;
   shutterSpeed?: string;
   iso?: string;
@@ -353,9 +354,10 @@ const processExifData = async (
     const focalLength = exifData.FocalLength ? `${exifData.FocalLength}mm` : undefined;
 
     // 날짜 포맷팅
-    const dateTime = exifData.DateTimeOriginal
-      ? formatDate(new Date(exifData.DateTimeOriginal))
+    const dateTimeOriginal = exifData.DateTimeOriginal
+      ? new Date(exifData.DateTimeOriginal)
       : undefined;
+    const dateTime = dateTimeOriginal ? formatDate(dateTimeOriginal) : undefined;
 
     // 메타데이터 객체 구성
     const metadata: ImageMetadata = {
@@ -363,6 +365,7 @@ const processExifData = async (
       lens: exifData.LensModel,
       device: exifData.Model || exifData.Make,
       dateTime,
+      dateTimeOriginal,
       aperture,
       shutterSpeed,
       iso,

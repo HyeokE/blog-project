@@ -12,6 +12,10 @@ export interface ImageData {
   alt: string;
   metadata: ImageMetadata;
   hasValidMetadata?: boolean; // 유효한 메타데이터가 있는지 표시
+  width?: number; // 이미지 가로 크기
+  height?: number; // 이미지 세로 크기
+  aspectRatio?: number; // 비율 (height / width)
+  isWide?: boolean; // 가로 사진 여부
 }
 
 // 지원하는 이미지 확장자
@@ -57,6 +61,26 @@ export const fetchImagesList = async (): Promise<ImageData[]> => {
 };
 
 /**
+ * 이미지 크기 정보를 가져오는 함수
+ */
+const getImageDimensions = async (
+  imagePath: string,
+): Promise<{ width: number; height: number } | null> => {
+  try {
+    const sharp = (await import('sharp')).default;
+    const filePath = path.join(process.cwd(), 'public', imagePath);
+    const metadata = await sharp(filePath).metadata();
+    return {
+      width: metadata.width || 0,
+      height: metadata.height || 0,
+    };
+  } catch (error) {
+    console.error(`이미지 크기 정보를 가져올 수 없습니다 (${imagePath}):`, error);
+    return null;
+  }
+};
+
+/**
  * 이미지 목록에 대한 메타데이터를 로드하는 함수
  */
 export const loadImagesMetadata = async (imageList: ImageData[]): Promise<ImageData[]> => {
@@ -73,6 +97,25 @@ export const loadImagesMetadata = async (imageList: ImageData[]): Promise<ImageD
         try {
           // 파일 시스템에서 직접 메타데이터 파싱 (상대 경로 사용)
           const { metadata, hasValidMetadata } = await parseImageMetadata(image.src);
+          
+          // 이미지 크기 정보 가져오기
+          const dimensions = await getImageDimensions(image.src);
+          
+          if (dimensions) {
+            const aspectRatio = dimensions.height / dimensions.width;
+            const isWide = aspectRatio < 0.9; // 가로 사진 판단 기준
+            
+            return {
+              ...image,
+              metadata,
+              hasValidMetadata,
+              width: dimensions.width,
+              height: dimensions.height,
+              aspectRatio,
+              isWide,
+            };
+          }
+          
           return { ...image, metadata, hasValidMetadata };
         } catch (error) {
           console.error(`이미지 ${image.id}의 메타데이터 로딩 실패:`, error);

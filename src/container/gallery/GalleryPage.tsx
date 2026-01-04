@@ -34,8 +34,15 @@ export default async function GalleryPage() {
       // 이미지 메타데이터 로드
       const imagesWithMetadata = await loadImagesMetadata(imagesList);
 
+      // 날짜별로 정렬 (최신순, EXIF 날짜가 없으면 맨 뒤로)
+      const sortedImages = imagesWithMetadata.sort((a, b) => {
+        const dateA = a.metadata?.dateTimeOriginal || new Date(0);
+        const dateB = b.metadata?.dateTimeOriginal || new Date(0);
+        return dateB.getTime() - dateA.getTime(); // 최신순
+      });
+
       // 클라이언트 컴포넌트에 데이터 전달
-      return <GalleryClient initialImages={imagesWithMetadata} />;
+      return <GalleryClient initialImages={sortedImages} />;
     } catch (metadataError) {
       console.error('메타데이터 로딩 중 오류 발생:', metadataError);
       // 메타데이터 로딩 실패 시 기본 이미지 목록 사용
