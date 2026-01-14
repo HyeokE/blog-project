@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useDarkMode } from '@/context/DarkModeContext';
 
 interface Puff {
   x: number;
@@ -21,6 +22,7 @@ interface Cloud {
 
 export const SilkBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { mode } = useDarkMode();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -82,10 +84,11 @@ export const SilkBackground = () => {
               puff.radius,
             );
 
-            // White clouds
-            gradient.addColorStop(0, `rgba(255, 255, 255, ${puff.alpha})`);
-            gradient.addColorStop(0.5, `rgba(255, 255, 255, ${puff.alpha * 0.5})`);
-            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            // 다크모드에 따른 구름 색상 변경 - 클라우드 댄서 따뜻한 톤 유지
+            const cloudColor = mode === 'dark' ? '45, 43, 41' : '255, 255, 255';
+            gradient.addColorStop(0, `rgba(${cloudColor}, ${puff.alpha})`);
+            gradient.addColorStop(0.5, `rgba(${cloudColor}, ${puff.alpha * 0.5})`);
+            gradient.addColorStop(1, `rgba(${cloudColor}, 0)`);
 
             drawCtx.fillStyle = gradient;
             drawCtx.beginPath();
@@ -115,8 +118,8 @@ export const SilkBackground = () => {
       ctx.clearRect(0, 0, width, height);
 
       const skyGradient = ctx.createLinearGradient(0, 0, 0, height);
-      // Cloud Dancer (RGB 240, 239, 236) - #f0efec
-      const skyColor = 'rgb(240, 239, 236)';
+      // 다크모드에 따른 배경색 변경 - 클라우드 댄서 따뜻한 톤 유지
+      const skyColor = mode === 'dark' ? 'rgb(26, 25, 24)' : 'rgb(240, 239, 236)';
       skyGradient.addColorStop(0, skyColor);
       skyGradient.addColorStop(1, skyColor);
 
@@ -139,7 +142,7 @@ export const SilkBackground = () => {
       window.removeEventListener('resize', init);
       cancelAnimationFrame(animationId);
     };
-  }, []);
+  }, [mode]);
 
   return (
     <div className="pointer-events-none fixed inset-0 z-0 h-full w-full bg-cloud-dancer">

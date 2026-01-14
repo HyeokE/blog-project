@@ -21,7 +21,7 @@ const CloudHomePage = async () => {
       <HeroSection />
       <section className="snap-center px-6 py-20">
         <div className="mx-auto max-w-3xl">
-          <h2 className="font-serif-home mb-16 text-center text-2xl text-[#4a4a4a]/80 italic">
+          <h2 className="font-serif-home mb-16 text-center text-2xl text-muted-foreground italic">
             Latest Writings
           </h2>
           <BlogList posts={filteredPosts.slice(0, 8)} />

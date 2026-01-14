@@ -71,18 +71,18 @@ export const PostCard = ({ id, title, excerpt, date, category }: PostCardProps) 
         className="relative flex w-full cursor-pointer snap-center flex-col rounded-xl backdrop-blur-[2px] transition-colors duration-500 py-8 md:py-8"
       >
         <div className="flex h-full w-full transform-gpu flex-col justify-center">
-          <div className="mb-2 flex items-center space-x-2 text-[9px] tracking-widest text-[#8a8a8a] uppercase md:space-x-3 md:text-[10px]">
-            {category && <span className="font-medium text-[#6a6a6a]">{category}</span>}
-            {category && <span className="h-2 w-px bg-[#dcd9d2]" />}
+          <div className="mb-2 flex items-center space-x-2 text-[9px] tracking-widest text-brand-500 uppercase md:space-x-3 md:text-[10px]">
+            {category && <span className="font-medium text-brand-600">{category}</span>}
+            {category && <span className="h-2 w-px bg-border" />}
             <span>{date}</span>
           </div>
 
-          <h3 className="font-serif-home mb-2 text-xl leading-tight font-semibold text-[#3a3a3a] md:text-2xl">
+          <h3 className="font-serif-home mb-2 text-xl leading-tight font-semibold text-foreground md:text-2xl">
             {title}
           </h3>
 
           {excerpt && (
-            <p className="line-clamp-3 text-sm leading-relaxed font-light text-[#6a6a6a] md:text-base">
+            <p className="line-clamp-3 text-sm leading-relaxed font-light text-muted-foreground md:text-base">
               {excerpt}
             </p>
           )}

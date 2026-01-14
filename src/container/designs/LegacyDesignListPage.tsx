@@ -22,11 +22,11 @@ export default function LegacyDesignListPage() {
         >
           {/* Header */}
           <div className="mb-16 text-center">
-            <div className="mb-4 h-px w-12 mx-auto bg-[#4a4a4a]/20" />
-            <h1 className="font-serif-home mb-2 text-4xl text-[#3a3a3a] italic">
+            <div className="mb-4 h-px w-12 mx-auto bg-border" />
+            <h1 className="font-serif-home mb-2 text-4xl text-foreground italic">
               Legacy Designs
             </h1>
-            <p className="text-sm text-[#8a8a8a] tracking-wide">
+            <p className="text-sm text-muted-foreground tracking-wide">
               과거 디자인 아카이브
             </p>
           </div>
@@ -37,22 +37,22 @@ export default function LegacyDesignListPage() {
               <Link
                 key={design.year}
                 href={`/${design.year}`}
-                className="group block border-b border-[#e0e0e0] pb-6 pt-6 first:pt-0 transition-colors hover:border-[#4a4a4a]/40"
+                className="group block border-b border-border pb-6 pt-6 first:pt-0 transition-colors hover:border-foreground/40"
               >
                 <div className="flex items-baseline justify-between">
                   <div className="flex-1">
                     <div className="mb-2 flex items-baseline gap-3">
-                      <span className="text-xs tracking-widest text-[#8a8a8a] uppercase">
+                      <span className="text-xs tracking-widest text-muted-foreground uppercase">
                         {design.year}
                       </span>
-                      <span className="h-px w-6 bg-[#d0d0d0]" />
+                      <span className="h-px w-6 bg-border" />
                     </div>
-                    <h2 className="font-serif-home mb-1 text-2xl text-[#3a3a3a] italic transition-colors group-hover:text-[#2a2a2a]">
+                    <h2 className="font-serif-home mb-1 text-2xl text-foreground italic transition-colors group-hover:text-foreground">
                       {design.title}
                     </h2>
-                    <p className="text-sm text-[#6a6a6a]">{design.description}</p>
+                    <p className="text-sm text-muted-foreground">{design.description}</p>
                   </div>
-                  <span className="ml-4 text-[#8a8a8a] transition-all duration-300 group-hover:translate-x-1 group-hover:text-[#4a4a4a]">
+                  <span className="ml-4 text-muted-foreground transition-all duration-300 group-hover:translate-x-1 group-hover:text-foreground">
                     →
                   </span>
                 </div>
@@ -61,18 +61,18 @@ export default function LegacyDesignListPage() {
           </div>
 
           {/* Navigation */}
-          <div className="flex items-center justify-center gap-6 border-t border-[#e0e0e0] pt-8">
+          <div className="flex items-center justify-center gap-6 border-t border-border pt-8">
             <Link
               href="/"
-              className="group flex items-center gap-2 text-sm text-[#6a6a6a] transition-colors hover:text-[#3a3a3a]"
+              className="group flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               <span className="transition-transform group-hover:-translate-x-1">←</span>
               <span>Blog</span>
             </Link>
-            <div className="h-4 w-px bg-[#d0d0d0]" />
+            <div className="h-4 w-px bg-border" />
             <Link
               href="/about-design"
-              className="group flex items-center gap-2 text-sm text-[#6a6a6a] transition-colors hover:text-[#3a3a3a]"
+              className="group flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               <span>About Design</span>
               <span className="transition-transform group-hover:translate-x-1">→</span>

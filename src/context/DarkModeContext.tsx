@@ -9,6 +9,8 @@ type DarkModeContextType = {
 
 const DarkModeContext = createContext<DarkModeContextType | undefined>(undefined);
 
+const STORAGE_KEY = 'theme-mode';
+
 export function DarkModeProvider({ 
   children, 
   defaultMode = 'light' 
@@ -17,17 +19,22 @@ export function DarkModeProvider({
   defaultMode?: string;
 }) {
   const [mode, setMode] = useState(defaultMode);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const storedMode = document.documentElement.getAttribute('data-mode');
-    if (storedMode) {
-      setMode(storedMode);
+    const savedMode = localStorage.getItem(STORAGE_KEY);
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialMode = savedMode || (prefersDark ? 'dark' : 'light');
+    setMode(initialMode);
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      document.documentElement.setAttribute('data-mode', mode);
+      localStorage.setItem(STORAGE_KEY, mode);
     }
-  }, [defaultMode]);
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-mode', mode);
-  }, [mode]);
+  }, [mode, mounted]);
 
   const toggleMode = (): void => {
     setMode((prevMode) => (prevMode === 'dark' ? 'light' : 'dark'));

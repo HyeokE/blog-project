@@ -46,6 +46,18 @@ export default async function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                var savedMode = localStorage.getItem('theme-mode');
+                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var mode = savedMode || (prefersDark ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-mode', mode);
+              })();
+            `,
+          }}
+        />
         <link
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
           rel="stylesheet"
@@ -63,10 +75,10 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <GoogleAnalytics gaId="G-07RYXQL1X0" />
         <Analytics />
         <SpeedInsights />
-        <CurrentLayoutExtras />
         <div id="portal-root" />
         <OverlayProvider>
           <DarkModeProvider defaultMode="light">
+            <CurrentLayoutExtras />
             <PointerRoot>
               <LayoutGroup>
                 {children}

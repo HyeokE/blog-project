@@ -1,7 +1,4 @@
-import { getAllPosts } from '@/apis/NotionService';
-
 import type { Metadata } from 'next';
-import type { NotionPosts } from '@/models/NotionPosts';
 import { parseISO, format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
@@ -82,17 +79,5 @@ export async function generateMetadata({
     };
   }
 }
-export const dynamic = 'force-static';
-export const revalidate = 3600;
 
-export async function generateStaticParams() {
-  const posts: NotionPosts = await getAllPosts({
-    includePages: false,
-  });
-
-  return posts
-    .filter((post) => post.id) // id가 있는 post만 포함
-    .map((post) => ({
-      slug: String(post.id),
-    }));
-}
+export const revalidate = 60000;

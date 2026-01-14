@@ -6,7 +6,7 @@ import React from 'react';
 const LoadingState = () => {
   return (
     <div className="flex w-full items-center justify-center py-20">
-      <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-blue-500"></div>
+      <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-300 border-t-brand-600 dark:border-brand-700 dark:border-t-brand-400"></div>
     </div>
   );
 };

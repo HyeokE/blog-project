@@ -103,7 +103,7 @@ const FloatingDockMobile = ({ items, className }: { items: DockItem[]; className
                       className="flex items-center gap-2 w-fit"
                       onClick={() => setOpen(false)}
                     >
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900">{item.icon}</div>
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-card dark:bg-brand-200">{item.icon}</div>
                       <span className="text-lg whitespace-nowrap">{item.title}</span>
                     </Link>
                   ) : (
@@ -112,7 +112,7 @@ const FloatingDockMobile = ({ items, className }: { items: DockItem[]; className
                       className="flex items-center gap-2 w-fit"
                       onClick={() => handleItemClick(item)}
                     >
-                      <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-900">{item.icon}</div>
+                      <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-card dark:bg-brand-200">{item.icon}</div>
                       <span className="text-lg whitespace-nowrap">{item.title}</span>
                     </button>
                   )}
@@ -128,7 +128,7 @@ const FloatingDockMobile = ({ items, className }: { items: DockItem[]; className
           setOpen(!open);
         }}
         whileTap={{ scale: 0.95 }}
-        className="relative z-20 flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 shadow-md transition-all dark:bg-neutral-800"
+        className="relative z-20 flex h-10 w-10 items-center justify-center rounded-full bg-card shadow-md transition-all dark:bg-brand-200"
         animate={{
           backgroundColor: open ? 'var(--foreground)' : 'var(--background)',
           color: open ? 'var(--background)' : 'var(--foreground)',
@@ -154,7 +154,7 @@ const FloatingDockDesktop = ({ items, className }: { items: DockItem[]; classNam
       onMouseMove={(e) => mouseX.set(e.pageX)}
       onMouseLeave={() => mouseX.set(Infinity)}
       className={cn(
-        'tablet:flex bg-brand-200/50 mx-auto hidden h-16 items-end gap-4 rounded-2xl border-b-blue-400 px-4 pb-3 dark:bg-neutral-900',
+        'tablet:flex bg-brand-200/50 mx-auto hidden h-16 items-end gap-4 rounded-2xl px-4 pb-3 dark:bg-brand-200/50',
         className,
       )}
     >
@@ -213,7 +213,7 @@ function IconContainer({ mouseX, title, icon, href, onClick }: { mouseX: MotionV
             style={{ width, height }}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
-            className="relative flex aspect-square items-center justify-center rounded-full bg-white dark:bg-neutral-800"
+            className="relative flex aspect-square items-center justify-center rounded-full bg-card dark:bg-brand-200"
           >
             <AnimatePresence>
               {hovered && (
@@ -221,7 +221,7 @@ function IconContainer({ mouseX, title, icon, href, onClick }: { mouseX: MotionV
                   initial={{ opacity: 0, y: 10, x: '0%' }}
                   animate={{ opacity: 1, y: 0, x: '0%' }}
                   exit={{ opacity: 0, y: 2, x: '0%' }}
-                  className="border-brand-200 absolute bottom-full left-1/2 mb-2 w-fit -translate-x-1/2 rounded-md border bg-[#fefbf6] px-2 py-0.5 text-xs whitespace-pre text-neutral-700 dark:border-neutral-900 dark:bg-neutral-800 dark:text-white"
+                  className="absolute bottom-full left-1/2 mb-2 w-fit -translate-x-1/2 rounded-md border border-border bg-card px-2 py-0.5 text-xs whitespace-pre text-foreground"
                 >
                   {title}
                 </motion.div>
@@ -242,7 +242,7 @@ function IconContainer({ mouseX, title, icon, href, onClick }: { mouseX: MotionV
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           onClick={onClick}
-          className="relative flex aspect-square items-center justify-center rounded-full bg-white dark:bg-neutral-800"
+          className="relative flex aspect-square items-center justify-center rounded-full bg-card dark:bg-brand-200"
         >
           <AnimatePresence>
             {hovered && (
@@ -250,7 +250,7 @@ function IconContainer({ mouseX, title, icon, href, onClick }: { mouseX: MotionV
                 initial={{ opacity: 0, y: 10, x: '0%' }}
                 animate={{ opacity: 1, y: 0, x: '0%' }}
                 exit={{ opacity: 0, y: 2, x: '0%' }}
-                className="absolute bottom-full left-1/2 mb-2 w-fit -translate-x-1/2 rounded-md border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs whitespace-pre text-neutral-700 dark:border-neutral-900 dark:bg-neutral-800 dark:text-white"
+                className="absolute bottom-full left-1/2 mb-2 w-fit -translate-x-1/2 rounded-md border border-border bg-card px-2 py-0.5 text-xs whitespace-pre text-foreground"
               >
                 {title}
               </motion.div>

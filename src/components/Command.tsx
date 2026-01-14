@@ -46,7 +46,7 @@ const Command = {
   }) => {
     const { t } = useTranslation();
     return (
-      <div className="flex items-center border-b border-gray-200 px-3 dark:border-neutral-800">
+      <div className="flex items-center border-b border-border px-3">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="mr-2 h-4 w-4 shrink-0 text-neutral-500"
@@ -120,7 +120,7 @@ const Command = {
         <CommandPrimitive.Item
           value={value}
           onSelect={onSelect}
-          className="relative flex cursor-pointer items-center rounded-md px-2 py-1 text-sm text-neutral-700 select-none hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+          className="relative flex cursor-pointer items-center rounded-md px-2 py-1 text-sm text-foreground select-none hover:bg-muted"
         >
           <Link href={path}>{children}</Link>
         </CommandPrimitive.Item>
@@ -132,7 +132,7 @@ const Command = {
       <CommandPrimitive.Item
         value={value}
         onSelect={onSelect}
-        className="relative flex cursor-pointer items-center rounded-md px-2 py-1 text-sm text-neutral-700 select-none hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+        className="relative flex cursor-pointer items-center rounded-md px-2 py-1 text-sm text-foreground select-none hover:bg-muted"
       >
         <div>{children}</div>
       </CommandPrimitive.Item>
@@ -178,10 +178,10 @@ function CommandMenu({
     <CommandPrimitive.Dialog
       open={open}
       onOpenChange={setOpen}
-      className="overflow-hidden rounded-md border border-neutral-200 bg-white shadow-md dark:border-neutral-800 dark:bg-neutral-900"
+      className="overflow-hidden rounded-md border border-border bg-card shadow-md"
     >
       <Command.Dialog onClose={() => setOpen(false)}>
-        <CommandPrimitive className="flex h-full w-full flex-col overflow-hidden rounded-md bg-white dark:bg-neutral-900">
+        <CommandPrimitive className="flex h-full w-full flex-col overflow-hidden rounded-md bg-card">
           <Command.Input value={query} onValueChange={setQuery} />
           <Command.List>
             {posts.length > 0 ? (

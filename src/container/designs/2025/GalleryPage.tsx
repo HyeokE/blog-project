@@ -1,21 +1,12 @@
 import React from 'react';
 import { fetchImagesList, loadImagesMetadata } from '@/utils/gallery/imageUtils';
 import GalleryClient from '@/container/designs/2025/gallery/components/GalleryClient';
-import { headers } from 'next/headers';
 import { defaultLocale, getTranslations } from '@/i18n';
 
-async function getBrowserLanguage(): Promise<'ko' | 'en'> {
-  const headersList = await headers();
-  const acceptLanguage = headersList.get('accept-language') || '';
-  const preferredLanguage = acceptLanguage.split(',')[0].split('-')[0];
-  return ['ko', 'en'].includes(preferredLanguage)
-    ? (preferredLanguage as 'ko' | 'en')
-    : defaultLocale;
-}
+export const dynamic = 'force-static';
 
 export default async function GalleryPage2025() {
-  const lang = await getBrowserLanguage();
-  const translations = getTranslations(lang);
+  const translations = getTranslations(defaultLocale);
 
   try {
     const imagesList = await fetchImagesList();

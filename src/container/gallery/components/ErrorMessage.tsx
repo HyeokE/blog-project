@@ -10,11 +10,11 @@ interface ErrorMessageProps {
  */
 const ErrorMessage = ({ message, onRetry }: ErrorMessageProps) => {
   return (
-    <div className="my-10 w-full rounded-lg bg-red-50 p-4 text-center text-red-600">
+    <div className="my-10 w-full rounded-lg bg-red-50 p-4 text-center text-red-600 dark:bg-red-950 dark:text-red-400">
       <p>{message}</p>
       <button
         onClick={onRetry}
-        className="mt-2 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+        className="mt-2 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
       >
         다시 시도
       </button>
