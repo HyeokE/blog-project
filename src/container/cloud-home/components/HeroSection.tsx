@@ -6,12 +6,7 @@ import { useEffect } from 'react';
 
 const DESCRIPTION = 'A collection of writings on code, life.';
 
-const DESCRIPTION_INVERT_MASK = {
-  WebkitMaskImage:
-    'radial-gradient(ellipse 16rem 8rem at 50% 128%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 34%, rgba(0, 0, 0, 0.72) 52%, rgba(0, 0, 0, 0) 72%)',
-  maskImage:
-    'radial-gradient(ellipse 16rem 8rem at 50% 128%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 34%, rgba(0, 0, 0, 0.72) 52%, rgba(0, 0, 0, 0) 72%)',
-} as const;
+
 
 const SKY_BOTTOM_MASK = {
   WebkitMaskImage:
