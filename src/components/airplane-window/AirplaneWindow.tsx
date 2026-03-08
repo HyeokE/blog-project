@@ -1,6 +1,8 @@
 'use client';
 
 import { motion } from 'motion/react';
+import { useEffect, useRef } from 'react';
+import { useDarkMode } from '@/context/DarkModeContext';
 
 interface AirplaneWindowProps {
   size: 'hero' | 'about';
@@ -40,6 +42,164 @@ const cloudPaths = [
   // Small wispy cloud
   'M8,40 Q8,30 20,28 Q25,16 40,20 Q52,12 60,22 Q70,18 75,28 Q85,26 85,38 Q85,48 72,50 L15,50 Q8,50 8,40Z',
 ];
+
+interface Puff {
+  x: number;
+  y: number;
+  radius: number;
+  alpha: number;
+}
+
+interface Cloud {
+  x: number;
+  y: number;
+  speed: number;
+  scale: number;
+  puffs: Puff[];
+  update: () => void;
+  draw: (ctx: CanvasRenderingContext2D) => void;
+}
+
+function WindowCloudCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { mode } = useDarkMode();
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      return;
+    }
+
+    let width = 0;
+    let height = 0;
+    let animationId = 0;
+    const clouds: Cloud[] = [];
+    const CLOUD_COUNT = 7;
+
+    const createCloud = (): Cloud => {
+      const scale = 0.45 + Math.random() * 0.55;
+      const puffCount = 8 + Math.floor(Math.random() * 6);
+      const horizontalSpread = Math.max(80, width * 0.5);
+      const verticalSpread = Math.max(36, height * 0.22);
+      const baseRadius = Math.max(12, Math.min(width, height) * 0.08);
+      const puffs: Puff[] = [];
+
+      for (let i = 0; i < puffCount; i++) {
+        puffs.push({
+          x: (Math.random() - 0.5) * horizontalSpread * scale,
+          y: (Math.random() - 0.5) * verticalSpread * scale,
+          radius: (baseRadius + Math.random() * baseRadius * 1.1) * scale,
+          alpha: 0.2 + Math.random() * 0.25,
+        });
+      }
+
+      const cloud: Cloud = {
+        x: Math.random() * width,
+        y: Math.random() * (height * 0.42) + height * 0.12,
+        speed: 0.06 + Math.random() * 0.08,
+        scale,
+        puffs,
+        update() {
+          this.x += this.speed;
+          if (this.x - horizontalSpread > width) {
+            this.x = -horizontalSpread * 0.7;
+            this.y = Math.random() * (height * 0.42) + height * 0.12;
+          }
+        },
+        draw(drawCtx: CanvasRenderingContext2D) {
+          drawCtx.save();
+          drawCtx.translate(this.x, this.y);
+
+          for (const puff of this.puffs) {
+            const gradient = drawCtx.createRadialGradient(
+              puff.x,
+              puff.y,
+              0,
+              puff.x,
+              puff.y,
+              puff.radius,
+            );
+
+            const cloudColor = mode === 'dark' ? '45, 43, 41' : '255, 255, 255';
+            gradient.addColorStop(0, `rgba(${cloudColor}, ${puff.alpha})`);
+            gradient.addColorStop(0.5, `rgba(${cloudColor}, ${puff.alpha * 0.55})`);
+            gradient.addColorStop(1, `rgba(${cloudColor}, 0)`);
+
+            drawCtx.fillStyle = gradient;
+            drawCtx.beginPath();
+            drawCtx.arc(puff.x, puff.y, puff.radius, 0, Math.PI * 2);
+            drawCtx.fill();
+          }
+
+          drawCtx.restore();
+        },
+      };
+
+      return cloud;
+    };
+
+    const init = () => {
+      const rect = canvas.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
+
+      if (!width || !height) {
+        return;
+      }
+
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.imageSmoothingEnabled = true;
+
+      clouds.length = 0;
+      for (let i = 0; i < CLOUD_COUNT; i++) {
+        clouds.push(createCloud());
+      }
+    };
+
+    const animate = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      clouds.forEach((cloud) => {
+        cloud.update();
+        cloud.draw(ctx);
+      });
+
+      const hazeColor = mode === 'dark' ? '52, 48, 44' : '240, 239, 236';
+      const horizonHaze = ctx.createLinearGradient(0, height * 0.48, 0, height);
+      horizonHaze.addColorStop(0, `rgba(${hazeColor}, 0)`);
+      horizonHaze.addColorStop(0.45, `rgba(${hazeColor}, 0.28)`);
+      horizonHaze.addColorStop(1, `rgba(${hazeColor}, 0.92)`);
+
+      ctx.fillStyle = horizonHaze;
+      ctx.fillRect(0, height * 0.44, width, height * 0.56);
+
+      animationId = requestAnimationFrame(animate);
+    };
+
+    const resizeObserver = new ResizeObserver(() => {
+      init();
+    });
+
+    resizeObserver.observe(canvas);
+    init();
+    animate();
+
+    return () => {
+      resizeObserver.disconnect();
+      cancelAnimationFrame(animationId);
+    };
+  }, [mode]);
+
+  return <canvas ref={canvasRef} aria-hidden="true" className="absolute inset-0 h-full w-full" />;
+}
 
 function DriftingCloud({
   path,
@@ -105,6 +265,7 @@ function DriftingCloud({
 export function AirplaneWindow({ size }: AirplaneWindowProps) {
   const c = sizeConfig[size];
   const prefix = size === 'hero' ? 'h' : 'a';
+  const useCanvasClouds = size === 'about';
 
   return (
     <motion.div
@@ -138,6 +299,8 @@ export function AirplaneWindow({ size }: AirplaneWindowProps) {
                 transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
                 className="absolute inset-0 bg-gradient-to-b from-[#bfc5d1] to-[#ead5c4]"
               />
+
+              {useCanvasClouds && <WindowCloudCanvas />}
 
               {/* Sun glow */}
               <motion.div
@@ -180,118 +343,122 @@ export function AirplaneWindow({ size }: AirplaneWindowProps) {
                 className="absolute inset-0 z-20 bg-gradient-to-b from-[#d0cdc7] to-[#c4c1bb] dark:from-[#2f2d2a] dark:to-[#252321]"
               />
 
-              {/* === Drifting SVG clouds === */}
-              <DriftingCloud
-                path={cloudPaths[0]}
-                startX={-120}
-                endX={350}
-                top="12%"
-                scale={0.9}
-                duration={18}
-                delay={2}
-                opacity={0.7}
-                filterId={`${prefix}-dc1`}
-              />
-              <DriftingCloud
-                path={cloudPaths[1]}
-                startX={300}
-                endX={-150}
-                top="28%"
-                scale={0.7}
-                duration={15}
-                delay={3}
-                opacity={0.6}
-                filterId={`${prefix}-dc2`}
-              />
-              <DriftingCloud
-                path={cloudPaths[2]}
-                startX={-100}
-                endX={320}
-                top="20%"
-                scale={0.5}
-                duration={22}
-                delay={4}
-                opacity={0.45}
-                filterId={`${prefix}-dc3`}
-              />
-              <DriftingCloud
-                path={cloudPaths[0]}
-                startX={250}
-                endX={-130}
-                top="38%"
-                scale={0.6}
-                duration={20}
-                delay={2.5}
-                opacity={0.55}
-                filterId={`${prefix}-dc4`}
-              />
+              {!useCanvasClouds && (
+                <>
+                  {/* === Drifting SVG clouds === */}
+                  <DriftingCloud
+                    path={cloudPaths[0]}
+                    startX={-120}
+                    endX={350}
+                    top="12%"
+                    scale={0.9}
+                    duration={18}
+                    delay={2}
+                    opacity={0.7}
+                    filterId={`${prefix}-dc1`}
+                  />
+                  <DriftingCloud
+                    path={cloudPaths[1]}
+                    startX={300}
+                    endX={-150}
+                    top="28%"
+                    scale={0.7}
+                    duration={15}
+                    delay={3}
+                    opacity={0.6}
+                    filterId={`${prefix}-dc2`}
+                  />
+                  <DriftingCloud
+                    path={cloudPaths[2]}
+                    startX={-100}
+                    endX={320}
+                    top="20%"
+                    scale={0.5}
+                    duration={22}
+                    delay={4}
+                    opacity={0.45}
+                    filterId={`${prefix}-dc3`}
+                  />
+                  <DriftingCloud
+                    path={cloudPaths[0]}
+                    startX={250}
+                    endX={-130}
+                    top="38%"
+                    scale={0.6}
+                    duration={20}
+                    delay={2.5}
+                    opacity={0.55}
+                    filterId={`${prefix}-dc4`}
+                  />
 
-              {/* === Cloud bank — multi-layer SVG sea of clouds === */}
-              <div className="absolute right-[-20%] bottom-0 left-[-20%] h-[48%]">
-                {/* Back layer */}
-                <motion.svg
-                  aria-hidden="true"
-                  animate={{ x: [3, -3, 3] }}
-                  transition={{ duration: 50, repeat: Infinity, ease: 'easeInOut' }}
-                  viewBox="0 0 600 120"
-                  preserveAspectRatio="none"
-                  className="absolute top-0 right-0 left-0 h-12 w-full -translate-y-[25%] opacity-50 sm:h-14 md:h-16"
-                >
-                  <ellipse cx="100" cy="95" rx="70" ry="30" fill="#e4dfd8" />
-                  <ellipse cx="280" cy="90" rx="60" ry="28" fill="#e8e2db" />
-                  <ellipse cx="450" cy="92" rx="65" ry="30" fill="#e4dfd8" />
-                </motion.svg>
+                  {/* === Cloud bank — multi-layer SVG sea of clouds === */}
+                  <div className="absolute right-[-20%] bottom-0 left-[-20%] h-[48%]">
+                    {/* Back layer */}
+                    <motion.svg
+                      aria-hidden="true"
+                      animate={{ x: [3, -3, 3] }}
+                      transition={{ duration: 50, repeat: Infinity, ease: 'easeInOut' }}
+                      viewBox="0 0 600 120"
+                      preserveAspectRatio="none"
+                      className="absolute top-0 right-0 left-0 h-12 w-full -translate-y-[25%] opacity-50 sm:h-14 md:h-16"
+                    >
+                      <ellipse cx="100" cy="95" rx="70" ry="30" fill="#e4dfd8" />
+                      <ellipse cx="280" cy="90" rx="60" ry="28" fill="#e8e2db" />
+                      <ellipse cx="450" cy="92" rx="65" ry="30" fill="#e4dfd8" />
+                    </motion.svg>
 
-                {/* Mid layer */}
-                <motion.svg
-                  aria-hidden="true"
-                  animate={{ x: [6, -6, 6] }}
-                  transition={{ duration: 38, repeat: Infinity, ease: 'easeInOut' }}
-                  viewBox="0 0 600 120"
-                  preserveAspectRatio="none"
-                  className="absolute top-0 right-0 left-0 h-14 w-full -translate-y-[30%] opacity-70 sm:h-16 md:h-20"
-                >
-                  <defs>
-                    <filter id={c.filterId2}>
-                      <feGaussianBlur stdDeviation="2" />
-                    </filter>
-                  </defs>
-                  <g filter={`url(#${c.filterId2})`}>
-                    <ellipse cx="60" cy="88" rx="55" ry="28" fill="#ece9e4" />
-                    <ellipse cx="190" cy="82" rx="65" ry="32" fill="#e8e2db" />
-                    <ellipse cx="340" cy="86" rx="50" ry="26" fill="#ece9e4" />
-                    <ellipse cx="500" cy="84" rx="60" ry="30" fill="#e8e2db" />
-                  </g>
-                </motion.svg>
+                    {/* Mid layer */}
+                    <motion.svg
+                      aria-hidden="true"
+                      animate={{ x: [6, -6, 6] }}
+                      transition={{ duration: 38, repeat: Infinity, ease: 'easeInOut' }}
+                      viewBox="0 0 600 120"
+                      preserveAspectRatio="none"
+                      className="absolute top-0 right-0 left-0 h-14 w-full -translate-y-[30%] opacity-70 sm:h-16 md:h-20"
+                    >
+                      <defs>
+                        <filter id={c.filterId2}>
+                          <feGaussianBlur stdDeviation="2" />
+                        </filter>
+                      </defs>
+                      <g filter={`url(#${c.filterId2})`}>
+                        <ellipse cx="60" cy="88" rx="55" ry="28" fill="#ece9e4" />
+                        <ellipse cx="190" cy="82" rx="65" ry="32" fill="#e8e2db" />
+                        <ellipse cx="340" cy="86" rx="50" ry="26" fill="#ece9e4" />
+                        <ellipse cx="500" cy="84" rx="60" ry="30" fill="#e8e2db" />
+                      </g>
+                    </motion.svg>
 
-                {/* Front layer — main cloud tops */}
-                <motion.svg
-                  aria-hidden="true"
-                  animate={{ x: [-10, 10, -10] }}
-                  transition={{ duration: 28, repeat: Infinity, ease: 'easeInOut' }}
-                  viewBox="0 0 600 120"
-                  preserveAspectRatio="none"
-                  className="absolute top-0 right-0 left-0 h-16 w-full -translate-y-[40%] sm:h-20 md:h-24"
-                >
-                  <defs>
-                    <filter id={c.filterId}>
-                      <feGaussianBlur stdDeviation="2.5" />
-                    </filter>
-                  </defs>
-                  <g filter={`url(#${c.filterId})`}>
-                    <ellipse cx="40" cy="85" rx="60" ry="32" fill="#f0efec" fillOpacity="0.95" />
-                    <ellipse cx="140" cy="78" rx="70" ry="38" fill="#ede7e0" />
-                    <ellipse cx="250" cy="83" rx="55" ry="30" fill="#f0efec" fillOpacity="0.92" />
-                    <ellipse cx="350" cy="76" rx="65" ry="35" fill="#ece4dc" fillOpacity="0.95" />
-                    <ellipse cx="460" cy="80" rx="58" ry="32" fill="#f0efec" />
-                    <ellipse cx="560" cy="77" rx="62" ry="34" fill="#ede7e0" fillOpacity="0.95" />
-                  </g>
-                  <rect x="0" y="88" width="600" height="32" fill="#f0efec" />
-                </motion.svg>
+                    {/* Front layer — main cloud tops */}
+                    <motion.svg
+                      aria-hidden="true"
+                      animate={{ x: [-10, 10, -10] }}
+                      transition={{ duration: 28, repeat: Infinity, ease: 'easeInOut' }}
+                      viewBox="0 0 600 120"
+                      preserveAspectRatio="none"
+                      className="absolute top-0 right-0 left-0 h-16 w-full -translate-y-[40%] sm:h-20 md:h-24"
+                    >
+                      <defs>
+                        <filter id={c.filterId}>
+                          <feGaussianBlur stdDeviation="2.5" />
+                        </filter>
+                      </defs>
+                      <g filter={`url(#${c.filterId})`}>
+                        <ellipse cx="40" cy="85" rx="60" ry="32" fill="#f0efec" fillOpacity="0.95" />
+                        <ellipse cx="140" cy="78" rx="70" ry="38" fill="#ede7e0" />
+                        <ellipse cx="250" cy="83" rx="55" ry="30" fill="#f0efec" fillOpacity="0.92" />
+                        <ellipse cx="350" cy="76" rx="65" ry="35" fill="#ece4dc" fillOpacity="0.95" />
+                        <ellipse cx="460" cy="80" rx="58" ry="32" fill="#f0efec" />
+                        <ellipse cx="560" cy="77" rx="62" ry="34" fill="#ede7e0" fillOpacity="0.95" />
+                      </g>
+                      <rect x="0" y="88" width="600" height="32" fill="#f0efec" />
+                    </motion.svg>
 
-                {/* Solid cloud floor */}
-                <div className="absolute inset-0 top-4 bg-[#f0efec]" />
-              </div>
+                    {/* Solid cloud floor */}
+                    <div className="absolute inset-0 top-4 bg-[#f0efec]" />
+                  </div>
+                </>
+              )}
 
               {/* Glass reflection & depth */}
               <div className="pointer-events-none absolute inset-0 z-30 bg-gradient-to-br from-white/[0.08] via-transparent to-transparent" />

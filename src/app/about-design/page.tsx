@@ -19,14 +19,6 @@ export default function AboutDesignPage() {
             >
               Pantone 11-4201 TCX
             </motion.p>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 2.2, duration: 0.8 }}
-              className="font-serif-home mt-1 text-lg font-medium text-card-foreground"
-            >
-              Cloud Dancer
-            </motion.p>
           </div>
 
           <motion.div
@@ -40,12 +32,11 @@ export default function AboutDesignPage() {
             </h1>
             <div className="space-y-6 leading-relaxed text-muted-foreground">
               <p className="font-serif-home text-lg text-card-foreground italic">
-                Inspired by Pantone 2026 Color of the Year, Cloud Dancer.
+                Inspired by Pantone 2026 Color of the Year.
               </p>
-              <div className="my-6 h-px w-12 bg-border" />
+              <div className="font-serif-home my-6 h-px w-12 bg-border" />
               <p>
-                올해의 블로그 디자인은 Pantone 2026 Color of the Year,{' '}
-                <span className="font-serif-home italic">Cloud Dancer</span>에서 영감을 받았습니다.
+                올해의 블로그 디자인은 Pantone 2026 Color of the Year에서 영감을 받았습니다.
               </p>
             </div>
 

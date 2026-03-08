@@ -1,9 +1,7 @@
 'use client';
 
-import { motion, useScroll, useTransform } from 'motion/react';
 import Link from 'next/link';
-import { useRef, useState, useEffect } from 'react';
-import { useScrollContext } from '@/context/ScrollContext';
+import { useEffect, useRef } from 'react';
 
 interface PostCardProps {
   id: string;
@@ -15,60 +13,29 @@ interface PostCardProps {
 }
 
 export const PostCard = ({ id, title, excerpt, date, category }: PostCardProps) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const containerRef = useScrollContext();
-  const [isMobile, setIsMobile] = useState(false);
-  const [isReady, setIsReady] = useState(false);
+  const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    const el = ref.current;
+    if (!el) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        el.toggleAttribute('data-in-view', entry.isIntersecting);
+      },
+      { threshold: 0.15 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
-
-  useEffect(() => {
-    const checkReady = () => {
-      if (containerRef?.current) {
-        setIsReady(true);
-      }
-    };
-    checkReady();
-    const timer = setTimeout(checkReady, 100);
-    return () => clearTimeout(timer);
-  }, [containerRef]);
-
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    container: isReady && containerRef ? containerRef : undefined,
-    offset: ['start end', 'end start'],
-  });
-
-  const rotateValue = isMobile ? 2 : 4;
-  const xValue = isMobile ? 5 : 10;
-
-  const rotate = useTransform(scrollYProgress, [0, 0.5, 1], [-rotateValue, 0, rotateValue]);
-  const x = useTransform(scrollYProgress, [0, 0.5, 1], [-xValue, 0, -xValue]);
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.95, 1, 0.95]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.5, 0.8, 1], [0.6, 0.85, 1, 0.85, 0.6]);
-
-  const blur = useTransform(scrollYProgress, (v) => {
-    const dist = Math.abs(v - 0.5);
-    return `blur(${dist * 1.5}px)`;
-  });
 
   return (
     <Link href={`/${id}`} className="m-0 w-full">
-      <motion.article
+      <article
         ref={ref}
-        style={{
-          rotate,
-          x,
-          scale,
-          opacity,
-          filter: blur,
-        }}
-        className="relative flex w-full cursor-pointer snap-center flex-col rounded-xl backdrop-blur-[2px] transition-colors duration-500 py-8 md:py-8"
+        className="post-card relative flex w-full cursor-pointer snap-center flex-col rounded-xl backdrop-blur-[2px] py-8 md:py-8"
       >
         <div className="flex h-full w-full transform-gpu flex-col justify-center">
           <div className="mb-2 flex items-center space-x-2 text-[9px] tracking-widest text-brand-500 uppercase md:space-x-3 md:text-[10px]">
@@ -86,10 +53,8 @@ export const PostCard = ({ id, title, excerpt, date, category }: PostCardProps) 
               {excerpt}
             </p>
           )}
-
-          
         </div>
-      </motion.article>
+      </article>
     </Link>
   );
 };

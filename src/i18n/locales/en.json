@@ -15,11 +15,11 @@
     }
   },
   "about": {
-    "title": "HYEOK | About",
-    "description": "",
+    "title": "HYEOK | Portfolio",
+    "description": "The portfolio of frontend engineer Junhyeok Jeong, focused on product UX and design systems.",
     "meta": {
-      "title": "HYEOK | About",
-      "description": ""
+      "title": "HYEOK | Portfolio",
+      "description": "The portfolio of frontend engineer Junhyeok Jeong, focused on product UX and design systems."
     }
   },
   "gallery": {

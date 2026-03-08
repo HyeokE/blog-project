@@ -1,5 +1,3 @@
-'use client';
-
 import type { NotionPosts } from '@/models/NotionPosts';
 import { PostCard } from './PostCard';
 
@@ -18,10 +16,7 @@ const formatDate = (dateString: string): string => {
 
 export const BlogList = ({ posts }: BlogListProps) => {
   return (
-    <div
-      className="mx-auto flex max-w-3xl flex-col space-y-16 py-20"
-      style={{ perspective: '2000px', perspectiveOrigin: '50% 50%' }}
-    >
+    <div className="mx-auto flex max-w-3xl flex-col space-y-16 py-20 [perspective:2000px]">
       {posts.map((post) => (
         <PostCard
           key={post.id}

@@ -83,9 +83,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
               <LayoutGroup>
                 {children}
                 <CurrentRootDock />
-                {/* <p className="text-foreground fixed right-4 bottom-4 text-sm">
-                  ©{new Date().getFullYear()}. Jason Jeong
-                </p> */}
+                
               </LayoutGroup>
             </PointerRoot>
           </DarkModeProvider>

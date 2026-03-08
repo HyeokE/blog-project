@@ -15,7 +15,7 @@ export function NavDock() {
   const pathname = usePathname();
   const yearMatch = pathname?.match(/^\/(\d{4})(?:\/|$)/);
   const yearPrefix = yearMatch ? `/${yearMatch[1]}` : '';
-  const yearAwarePaths = new Set<string>(['/', '/gallery', '/personal', '/about']);
+  const yearAwarePaths = new Set<string>(['/', '/gallery', '/personal']);
 
   // 경로 생성 함수: 한국어는 루트 경로, 영어는 /en 경로 사용
   const getPath = (path: string) => {
