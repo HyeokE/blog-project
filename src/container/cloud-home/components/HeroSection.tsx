@@ -4,7 +4,7 @@ import { motion, useSpring, useTransform } from 'motion/react';
 import Link from 'next/link';
 import { useEffect } from 'react';
 
-const DESCRIPTION = 'A collection of writings on code, life, and the warm hush before night.';
+const DESCRIPTION = 'A collection of writings on code, life.';
 
 const DESCRIPTION_INVERT_MASK = {
   WebkitMaskImage:
@@ -31,6 +31,11 @@ const REFLECTION_MASK = {
     'linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.38) 8%, rgba(0, 0, 0, 0.96) 18%, rgba(0, 0, 0, 0.96) 82%, rgba(0, 0, 0, 0.38) 92%, rgba(0, 0, 0, 0) 100%)',
   ].join(', '),
   maskComposite: 'intersect',
+} as const;
+
+const SAFARI_BLUR_FIX = {
+  transform: 'translateZ(0)',
+  backfaceVisibility: 'hidden',
 } as const;
 
 export const HeroSection = () => {
@@ -61,9 +66,9 @@ export const HeroSection = () => {
         <div className="absolute inset-x-0 top-0 h-[56%] md:h-[55%]" style={SKY_BOTTOM_MASK}>
           <div className="absolute bottom-0 left-1/2 h-[18rem] w-[18rem] -translate-x-1/2 translate-y-[46%] sm:h-[21rem] sm:w-[21rem] md:h-[24rem] md:w-[24rem]">
             <motion.div style={{ y: sunY, opacity: sunOpacity }} className="relative h-full w-full">
-              <div className="absolute inset-0 rounded-full bg-[#cf3f36]/40 blur-[92px] dark:bg-[#d8a63d]/22" />
-              <div className="absolute top-1/2 left-1/2 h-28 w-[20rem] -translate-x-1/2 -translate-y-[8%] rounded-full bg-[#d85f53]/16 blur-[42px] sm:h-32 sm:w-[24rem] md:h-36 md:w-[32rem] dark:bg-[#d8a63d]/14" />
-              <div className="absolute top-1/2 left-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#d85f53]/90 blur-[12px] sm:h-48 sm:w-48 md:h-56 md:w-56 dark:bg-[#f1c35f]/42" />
+              <div style={SAFARI_BLUR_FIX} className="absolute inset-0 rounded-full bg-[#cf3f36]/40 blur-[92px] dark:bg-[#d8a63d]/22" />
+              <div style={SAFARI_BLUR_FIX} className="absolute top-1/2 left-1/2 h-28 w-[20rem] -translate-x-1/2 -translate-y-[8%] rounded-full bg-[#d85f53]/16 blur-[42px] sm:h-32 sm:w-[24rem] md:h-36 md:w-[32rem] dark:bg-[#d8a63d]/14" />
+              <div style={SAFARI_BLUR_FIX} className="absolute top-1/2 left-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#d85f53]/90 blur-[12px] sm:h-48 sm:w-48 md:h-56 md:w-56 dark:bg-[#f1c35f]/42" />
             </motion.div>
           </div>
         </div>
@@ -77,7 +82,7 @@ export const HeroSection = () => {
             style={{ y: reflectionY, opacity: reflectionOpacity }}
             className="absolute inset-x-0 top-0"
           >
-            <div className="absolute top-0 left-1/2 h-[26rem] w-[20rem] -translate-x-1/2 blur-[68px] sm:h-[30rem] sm:w-[24rem] md:h-[34rem] md:w-[28rem]">
+            <div style={SAFARI_BLUR_FIX} className="absolute top-0 left-1/2 h-[26rem] w-[20rem] -translate-x-1/2 blur-[68px] sm:h-[30rem] sm:w-[24rem] md:h-[34rem] md:w-[28rem]">
               <div className="h-full w-full bg-[radial-gradient(ellipse_46%_68%_at_50%_0%,_rgba(216,95,83,0.44)_0%,_rgba(216,95,83,0.22)_22%,_rgba(216,95,83,0.06)_52%,_rgba(216,95,83,0)_82%)] dark:bg-[radial-gradient(ellipse_46%_68%_at_50%_0%,_rgba(232,191,92,0.3)_0%,_rgba(232,191,92,0.14)_22%,_rgba(232,191,92,0.04)_52%,_rgba(232,191,92,0)_82%)]" />
             </div>
           </motion.div>
@@ -93,26 +98,20 @@ export const HeroSection = () => {
         <p className="font-serif-home text-foreground/55 mb-3 text-[11px] tracking-[0.18em] uppercase italic sm:mb-4 sm:text-sm sm:tracking-[0.22em]">
           {today}
         </p>
-        <h1 className="font-serif-home text-foreground mx-auto max-w-[11ch] text-[3.35rem] leading-[0.86] font-semibold italic sm:max-w-none sm:text-6xl md:text-7xl">
-          Above the Clouds
+        <h1 className="font-serif-home uppercase text-foreground mx-auto max-w-[11ch] text-[3.35rem] leading-[0.86] font-medium italic sm:max-w-none sm:text-6xl md:text-7xl">
+          ABOVE THE CLOUDS
         </h1>
 
         <div className="relative mx-auto mt-5 max-w-[22rem] sm:mt-6 sm:max-w-[34rem]">
-          <p className="text-brand-500 dark:text-brand-500 whitespace-normal text-balance text-sm leading-7 sm:text-base sm:leading-8 md:text-lg">
+          <p className="text-brand-400 uppercase dark:text-brand-400 whitespace-normal text-balance text-sm leading-7 sm:text-base sm:leading-8 md:text-lg">
             {DESCRIPTION}
           </p>
-          <p
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 hidden whitespace-normal text-balance text-sm leading-7 text-white sm:block sm:text-base sm:leading-8 md:text-lg"
-            style={DESCRIPTION_INVERT_MASK}
-          >
-            {DESCRIPTION}
-          </p>
+          
         </div>
 
         <Link
           href="/about-design"
-          className="border-border text-foreground hover:border-foreground/25 mt-6 inline-flex rounded-full border px-5 py-3 text-[11px] tracking-[0.14em] uppercase backdrop-blur-md transition-colors sm:mt-8 sm:px-6 sm:text-xs sm:tracking-[0.16em]"
+          className="border-foreground/15 text-foreground hover:border-foreground/25 mt-6 inline-flex rounded-full border px-5 py-3 text-[11px] tracking-[0.14em] uppercase backdrop-blur-md transition-colors sm:mt-8 sm:px-6 sm:text-xs sm:tracking-[0.16em]"
         >
           About Design
         </Link>
