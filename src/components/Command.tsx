@@ -6,9 +6,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Dialog } from '@radix-ui/react-dialog';
 import { Command as CommandPrimitive } from 'cmdk';
 import { useTranslation } from '@/hooks/useTranslation';
-import Link from 'next/link';
+import ThemedLink from '@/components/ThemedLink';
 import type { NotionPost } from '@/models/NotionPosts';
-import { defaultLocale } from '@/i18n';
 import { format } from 'date-fns';
 import { X } from 'lucide-react';
 
@@ -124,16 +123,8 @@ const Command = {
     postId?: string;
     position?: number;
   }) => {
-    const { locale } = useTranslation();
-
     // href가 있는 경우에만 Link 컴포넌트 사용, 없으면 div 사용
     if (href) {
-      // 경로 처리: 한국어는 그대로, 영어는 /en 접두사
-      let path = href;
-      if (locale !== defaultLocale) {
-        path = `/${locale}${href}`;
-      }
-
       return (
         <CommandPrimitive.Item
           asChild
@@ -145,15 +136,15 @@ const Command = {
           onSelect={onSelect}
           className="text-foreground hover:bg-muted relative flex cursor-pointer items-center rounded-md px-2 py-1 text-sm select-none"
         >
-          <Link
+          <ThemedLink
             data-analytics-label={ANALYTICS_ELEMENTS.SEARCH_RESULT}
             data-analytics-section={ANALYTICS_SECTIONS.SEARCH}
             data-analytics-id={postId}
             data-analytics-position={position}
-            href={path}
+            href={href}
           >
             {children}
-          </Link>
+          </ThemedLink>
         </CommandPrimitive.Item>
       );
     }

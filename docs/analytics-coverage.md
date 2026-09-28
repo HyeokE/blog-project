@@ -60,7 +60,7 @@ Its diagnostic reports the current number of instrumented roots and narrow excep
 - Analytics unit and source coverage checks: 13 passed; TypeScript passed. Changed TypeScript files pass ESLint with three existing Dock declaration-order warnings.
 - Aside Browser: `/resume` redirects to `/about`; all seven contact/project links have section and per-link IDs.
 - Wall search: a query with one result emits one `search_results`; selecting it records its post ID and position 1.
-- Command search on `/2025`: result rows render as anchors; Enter generates one result click, with result count and position.
+- Command search on `/2025`: result rows render as anchors; Enter generates one result click, with result count and position, and reaches the article. Results use ThemedLink so an English UI does not introduce the unsupported /en route prefix.
 - Gallery: opening a photo emits one click and one `gallery_view`; next emits one click and a view for the next source; closing emits one click.
 
 Browser checks inspect the client `dataLayer`. They do not establish GA server receipt or production deployment.
