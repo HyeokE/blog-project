@@ -115,7 +115,6 @@ export default function ProjectedWindowFallback({
       }
       if (dawnRef.current) {
         dawnRef.current.style.transform = windowProjectionTransform(p, 0, width, height);
-        dawnRef.current.style.opacity = opacity;
       }
       if (settledRef.current) {
         settledRef.current.style.transform = windowProjectionTransform(p, 1, width, height);
@@ -142,13 +141,16 @@ export default function ProjectedWindowFallback({
   return (
     <div ref={rootRef} className="projected-window-fallback" data-mode={mode} data-animated={animated || undefined} aria-hidden="true">
       <div className="projected-window-fallback__day" style={{ backgroundColor: settled.wall }}>
-        {animated && <div ref={dawnWallRef} className="projected-window-fallback__surface" style={{ backgroundColor: dawn.wall }} />}
         <div ref={settledRef} className="projected-window-fallback__plane" style={{ visibility: animated ? 'hidden' : 'visible' }}>
           <WindowPanes endpoint={1} id={`${id}-settled`} />
         </div>
         {animated && (
-          <div ref={dawnRef} className="projected-window-fallback__plane">
-            <WindowPanes endpoint={0} id={`${id}-dawn`} />
+          // Fade the opaque dawn scene as one layer so settled light cannot
+          // shine through its translucent blur and create a bright outline.
+          <div ref={dawnWallRef} className="projected-window-fallback__surface" style={{ backgroundColor: dawn.wall }}>
+            <div ref={dawnRef} className="projected-window-fallback__plane">
+              <WindowPanes endpoint={0} id={`${id}-dawn`} />
+            </div>
           </div>
         )}
         <svg viewBox="0 0 1000 1000" preserveAspectRatio="none" className="projected-window-fallback__surface">
