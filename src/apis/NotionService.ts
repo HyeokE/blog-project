@@ -1,4 +1,6 @@
+import { withNotionPageRetry } from '@/utils/notion/fetchNotionPage';
 import { NotionAPI } from 'notion-client';
+import { unstable_cache } from 'next/cache';
 import { idToUuid } from 'notion-utils';
 import getPageIds from '@/utils/notion/getPageIds';
 import getPageProperties from '@/utils/notion/getPageProperties';
@@ -11,10 +13,10 @@ export const notionService = new NotionAPI({
   apiBaseUrl: 'https://app.notion.com/api/v3',
 });
 
-export async function getAllPosts({ includePages = false }) {
+async function loadAllPosts({ includePages = false }: { includePages?: boolean }) {
   let id = BLOG_CONFIG.NOTION_PAGE_ID as string;
 
-  const response = await notionService.getPage(id);
+  const response = await withNotionPageRetry(id, () => notionService.getPage(id));
   id = idToUuid(id);
   const collection = extractCollectionValue(Object.values(response.collection)[0]);
   const block = response.block;
@@ -36,7 +38,9 @@ export async function getAllPosts({ includePages = false }) {
     const properties = (await getPageProperties(id, block, schema)) || null;
     const blockValue = extractBlockValue(block[id]);
     properties.createdTime = new Date(blockValue?.created_time ?? 0).toString();
-    properties.fullWidth = Boolean((blockValue?.format as Record<string, unknown>)?.page_full_width);
+    properties.fullWidth = Boolean(
+      (blockValue?.format as Record<string, unknown>)?.page_full_width,
+    );
 
     data.push(properties);
   }
@@ -51,3 +55,9 @@ export async function getAllPosts({ includePages = false }) {
   });
   return posts as NotionPosts;
 }
+
+// Share the published index across themed static pages and background revalidation.
+export const getAllPosts = unstable_cache(loadAllPosts, ['notion-published-posts-v1'], {
+  revalidate: 3600,
+  tags: ['notion-posts'],
+});

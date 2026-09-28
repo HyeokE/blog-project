@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { defaultLocale, getTranslations } from '@/i18n';
-import GalleryPage2026 from '@/container/designs/2026/GalleryPage';
+import LightGalleryPage from '@/container/light-wall/pages/GalleryPage';
 
 // SSG를 위해 정적 메타데이터 생성
 const translations = getTranslations(defaultLocale);
@@ -16,5 +16,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <GalleryPage2026 />;
+  return <LightGalleryPage />;
 }

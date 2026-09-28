@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
-import { PointerRoot } from '@/components/Pointer/Pointer';
-import { GoogleAnalytics } from '@next/third-parties/google';
+import CurrentPointerRoot from '@/container/designs/current/PointerRoot';
+import { DesignThemeProvider } from '@/context/DesignThemeContext';
+import GoogleAnalyticsTracker from '@/components/GoogleAnalyticsTracker';
 import { Analytics } from '@vercel/analytics/react';
 import CurrentRootDock from '@/container/designs/current/RootDock';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -9,6 +10,7 @@ import { DarkModeProvider } from '@/context/DarkModeContext';
 import OverlayProvider from '@/context/OverlayProvider';
 import { LayoutGroup } from 'motion/react';
 import CurrentLayoutExtras from '@/container/designs/current/RootLayoutExtras';
+import InitialLightReveal from '@/container/light-wall/InitialLightReveal';
 
 export const revalidate = 3600;
 
@@ -44,48 +46,57 @@ interface RootLayoutProps {
 
 export default async function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="ko" suppressHydrationWarning>
+    <html data-design="sweet-home" lang="ko" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                var savedMode = localStorage.getItem('theme-mode');
+                var path = window.location.pathname;
+                if (path === '/2025/light') {
+                  document.documentElement.setAttribute('data-design', 'sweet-home');
+                } else if (path === '/2025' || path.indexOf('/2025/') === 0) {
+                  document.documentElement.setAttribute('data-design', '2025');
+                } else if (path === '/2026' || path.indexOf('/2026/') === 0) {
+                  document.documentElement.setAttribute('data-design', 'cloud');
+                }
+                var savedMode;
+                try { savedMode = localStorage.getItem('theme-mode'); } catch (_) {}
                 var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                var mode = savedMode || (prefersDark ? 'dark' : 'light');
+                var mode = savedMode === 'dark' || savedMode === 'light' ? savedMode : (prefersDark ? 'dark' : 'light');
                 document.documentElement.setAttribute('data-mode', mode);
               })();
             `,
           }}
         />
         <link
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
-          rel="stylesheet"
-        />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Gowun+Batang:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap"
-          rel="stylesheet"
+          rel="preload"
+          href="/fonts/pretendard/PretendardVariable.subset.91.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
         />
         <meta name="naver-site-verification" content="6db56d77a544952e591331d6016ed98ce862c631" />
       </head>
 
       <body suppressHydrationWarning>
-        <GoogleAnalytics gaId="G-07RYXQL1X0" />
+        <InitialLightReveal />
+        <noscript><style>{`.initial-light-reveal { display: none !important; }`}</style></noscript>
+        <GoogleAnalyticsTracker />
         <Analytics />
         <SpeedInsights />
         <div id="portal-root" />
         <OverlayProvider>
           <DarkModeProvider defaultMode="light">
-            <CurrentLayoutExtras />
-            <PointerRoot>
-              <LayoutGroup>
-                {children}
-                <CurrentRootDock />
-                
-              </LayoutGroup>
-            </PointerRoot>
+            <DesignThemeProvider>
+              <CurrentLayoutExtras />
+              <CurrentPointerRoot>
+                <LayoutGroup>
+                  {children}
+                  <CurrentRootDock />
+                </LayoutGroup>
+              </CurrentPointerRoot>
+            </DesignThemeProvider>
           </DarkModeProvider>
         </OverlayProvider>
       </body>

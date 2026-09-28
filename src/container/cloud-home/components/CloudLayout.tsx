@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '@/components/ThemedLink';
 import { ScrollContext } from '@/context/ScrollContext';
 import { useRef, type ReactNode } from 'react';
 
@@ -26,7 +26,12 @@ export const CloudLayout = ({ children, snap = true }: CloudLayoutProps) => {
 
   return (
     <ScrollContext.Provider value={scrollRef}>
-      <div ref={scrollRef} className={containerClassName} style={{ position: 'relative' }}>
+      <div
+        ref={scrollRef}
+        data-analytics-scroll="page_content"
+        className={containerClassName}
+        style={{ position: 'relative' }}
+      >
         <main className="relative z-10 w-full">{children}</main>
 
         <footer className={footerClassName}>

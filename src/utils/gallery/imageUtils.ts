@@ -17,10 +17,28 @@ export interface ImageData {
   aspectRatio?: number; // 비율 (height / width)
   isWide?: boolean; // 가로 사진 여부
   blurDataURL?: string; // 블러 플레이스홀더 URL
+  previews?: Array<{ src: string; width: number; height: number }>;
 }
 
 // 지원하는 이미지 확장자
 const SUPPORTED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+
+type GalleryPreview = {
+  width: number;
+  height: number;
+  blurDataURL: string;
+  previews: NonNullable<ImageData['previews']>;
+};
+
+/** Built by gallery:previews. Missing caches retain the original-image fallback. */
+const readGalleryPreviews = (): Record<string, GalleryPreview> => {
+  try {
+    const manifestPath = path.join(process.cwd(), 'public', '_gallery', 'manifest.json');
+    return JSON.parse(fs.readFileSync(manifestPath, 'utf8')).images ?? {};
+  } catch {
+    return {};
+  }
+};
 
 /**
  * public/images 폴더에서 이미지 목록을 가져오는 함수
@@ -45,12 +63,14 @@ export const fetchImagesList = async (): Promise<ImageData[]> => {
       return SUPPORTED_EXTENSIONS.includes(extension);
     });
 
-    // 이미지 데이터 구성
+    // Attach prebuilt assets without invoking the image optimizer at request time.
+    const previews = readGalleryPreviews();
     const images = imageFiles.map((fileName, index) => ({
       id: index + 1,
       src: `/images/${fileName}`,
       alt: `갤러리 이미지 ${index + 1}`,
       metadata: {},
+      ...previews[`/images/${fileName}`],
     }));
 
     return images;
@@ -70,21 +90,23 @@ const getImageDimensions = async (
   try {
     const sharp = (await import('sharp')).default;
     const filePath = path.join(process.cwd(), 'public', imagePath);
-    
+
     // 메타데이터 가져오기
     const metadata = await sharp(filePath).metadata();
-    
+
     // 블러 플레이스홀더 생성 (작은 크기로 리사이즈 후 base64 변환)
     const blurBuffer = await sharp(filePath)
+      .rotate()
       .resize(10) // 작은 크기로 리사이즈
       .blur()
+      .jpeg()
       .toBuffer();
-    
+
     const blurDataURL = `data:image/jpeg;base64,${blurBuffer.toString('base64')}`;
-    
+
     return {
-      width: metadata.width || 0,
-      height: metadata.height || 0,
+      width: ((metadata.orientation ?? 1) >= 5 ? metadata.height : metadata.width) || 0,
+      height: ((metadata.orientation ?? 1) >= 5 ? metadata.width : metadata.height) || 0,
       blurDataURL,
     };
   } catch (error) {
@@ -104,20 +126,21 @@ export const loadImagesMetadata = async (imageList: ImageData[]): Promise<ImageD
       return [];
     }
 
+    const previews = readGalleryPreviews();
     // 모든 이미지에 대해 메타데이터 파싱
     const updatedImages = await Promise.all(
       imageList.map(async (image) => {
         try {
           // 파일 시스템에서 직접 메타데이터 파싱 (상대 경로 사용)
           const { metadata, hasValidMetadata } = await parseImageMetadata(image.src);
-          
+
           // 이미지 크기 정보와 블러 플레이스홀더 가져오기
-          const dimensions = await getImageDimensions(image.src);
-          
+          const dimensions = previews[image.src] ?? (await getImageDimensions(image.src));
+
           if (dimensions) {
             const aspectRatio = dimensions.height / dimensions.width;
             const isWide = aspectRatio < 0.9; // 가로 사진 판단 기준
-            
+
             return {
               ...image,
               metadata,
@@ -127,9 +150,10 @@ export const loadImagesMetadata = async (imageList: ImageData[]): Promise<ImageD
               aspectRatio,
               isWide,
               blurDataURL: dimensions.blurDataURL,
+              previews: previews[image.src]?.previews,
             };
           }
-          
+
           return { ...image, metadata, hasValidMetadata };
         } catch (error) {
           console.error(`이미지 ${image.id}의 메타데이터 로딩 실패:`, error);

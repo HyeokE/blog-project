@@ -1,4 +1,6 @@
 'use client';
+import { ANALYTICS_ACTIONS } from '@/constants/analytics';
+import { trackInteraction } from '@/utils/analytics';
 import React, { useEffect, useState } from 'react';
 import { SearchIcon } from '@/assets/SearchIcon';
 import CommandMenu from '@/components/Command';
@@ -15,17 +17,21 @@ const PostSearch = ({ posts = [] }: PostSearchProps) => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setOpen((open) => !open);
+        trackInteraction(open ? ANALYTICS_ACTIONS.SEARCH_CLOSE : ANALYTICS_ACTIONS.SEARCH_OPEN, {
+          method: 'keyboard',
+        });
+        setOpen(!open);
       }
     };
 
     document.addEventListener('keydown', down);
     return () => document.removeEventListener('keydown', down);
-  }, []);
+  }, [open]);
 
   return (
     <>
       <div
+        data-analytics-label="search_open"
         className="flex cursor-pointer items-center gap-1"
         onClick={() => {
           setOpen(true);

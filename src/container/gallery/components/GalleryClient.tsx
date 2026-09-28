@@ -95,7 +95,6 @@ const GalleryClient = ({ initialImages, initialError = null }: GalleryClientProp
             transition={{ delay: 0.3, duration: 0.6 }}
           >
             <div className="text-sm text-muted-foreground">
-              <p>© {new Date().getFullYear()} Jason Jeong. All rights reserved.</p>
               <p className="mt-1">모든 사진의 저작권은 블로그 작성자에게 있습니다. 무단 배포 및 사용을 금지합니다.</p>
             </div>
           </motion.div>

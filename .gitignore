@@ -14,6 +14,7 @@
 
 # testing
 /coverage
+/.playwright-mcp/
 
 # next.js
 /.next/
@@ -40,3 +41,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Generated responsive gallery previews (created before dev/build)
+/public/_gallery/

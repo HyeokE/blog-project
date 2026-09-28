@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '@/components/ThemedLink';
 import { motion } from 'framer-motion';
 
 const legacyDesigns = [

@@ -1,7 +1,9 @@
 'use client';
+import { ANALYTICS_ACTIONS } from '@/constants/analytics';
+import { trackInteraction } from '@/utils/analytics';
 import type { MotionValue } from 'motion/react';
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'motion/react';
-import Link from 'next/link';
+import Link from '@/components/ThemedLink';
 import { useRef, useState, useEffect } from 'react';
 import type { ClassValue } from 'clsx';
 import { clsx } from 'clsx';
@@ -43,6 +45,7 @@ const FloatingDockMobile = ({ items, className }: { items: DockItem[]; className
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dockRef.current && !dockRef.current.contains(event.target as Node) && open) {
+        trackInteraction(ANALYTICS_ACTIONS.MENU_CLOSE, { method: 'outside_pointer' });
         setOpen(false);
       }
     };
@@ -69,6 +72,8 @@ const FloatingDockMobile = ({ items, className }: { items: DockItem[]; className
           <>
             {/* 블러 오버레이 */}
             <motion.div
+              data-analytics-label="menu_close_backdrop"
+              data-analytics-click-self="true"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -123,6 +128,7 @@ const FloatingDockMobile = ({ items, className }: { items: DockItem[]; className
         )}
       </AnimatePresence>
       <motion.button
+        aria-label={open ? '메뉴 닫기' : '메뉴 열기'}
         onClick={(e) => {
           e.stopPropagation();
           setOpen(!open);
@@ -242,6 +248,7 @@ function IconContainer({ mouseX, title, icon, href, onClick }: { mouseX: MotionV
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           onClick={onClick}
+          data-analytics-label={title}
           className="relative flex aspect-square items-center justify-center rounded-full bg-card dark:bg-brand-200"
         >
           <AnimatePresence>

@@ -1,4 +1,6 @@
 'use client';
+import { ANALYTICS_ACTIONS } from '@/constants/analytics';
+import { trackInteraction } from '@/utils/analytics';
 import { useCallback, useEffect, useState } from 'react';
 import { Dialog } from '@radix-ui/react-dialog';
 import { Command as CommandPrimitive } from 'cmdk';
@@ -16,11 +18,14 @@ const Command = {
       <Dialog {...props}>
         <div className="fixed inset-0 z-50">
           <div
+            data-analytics-label="search_close_backdrop"
+            data-analytics-click-self="true"
             className="fixed inset-0 bg-black/10 backdrop-blur-xs dark:bg-black/50"
             onClick={onClose}
           />
           <div className="flex justify-end p-2">
             <button
+              aria-label="검색 닫기"
               onClick={onClose}
               className="bg-background absolute top-4 right-4 flex h-6 w-6 cursor-pointer items-center justify-center rounded-md text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 dark:hover:text-neutral-300"
             >
@@ -62,6 +67,7 @@ const Command = {
           />
         </svg>
         <CommandPrimitive.Input
+          data-analytics-label="post_search"
           value={value}
           onValueChange={onValueChange}
           className="flex h-10 w-full bg-transparent py-3 text-sm outline-none placeholder:text-neutral-500"
@@ -72,7 +78,10 @@ const Command = {
   },
   List: ({ children }: { children: React.ReactNode }) => {
     return (
-      <CommandPrimitive.List className="max-h-[300px] overflow-y-auto p-2">
+      <CommandPrimitive.List
+        data-analytics-scroll="search_results"
+        className="max-h-[300px] overflow-y-auto p-2"
+      >
         {children}
       </CommandPrimitive.List>
     );
@@ -177,11 +186,29 @@ function CommandMenu({
   return (
     <CommandPrimitive.Dialog
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={(nextOpen) => {
+        if (open && !nextOpen) {
+          trackInteraction(ANALYTICS_ACTIONS.SEARCH_CLOSE, { method: 'dialog' });
+        }
+        setOpen(nextOpen);
+      }}
       className="overflow-hidden rounded-md border border-border bg-card shadow-md"
     >
       <Command.Dialog onClose={() => setOpen(false)}>
-        <CommandPrimitive className="flex h-full w-full flex-col overflow-hidden rounded-md bg-card">
+        <CommandPrimitive
+          onKeyDown={(event) => {
+            if (
+              event.key === 'Enter' &&
+              !event.defaultPrevented &&
+              !event.nativeEvent.isComposing &&
+              event.nativeEvent.keyCode !== 229 &&
+              event.currentTarget.querySelector('[cmdk-item][aria-selected="true"]')
+            ) {
+              trackInteraction(ANALYTICS_ACTIONS.SEARCH_RESULT_ACTIVATE, { method: 'keyboard' });
+            }
+          }}
+          className="flex h-full w-full flex-col overflow-hidden rounded-md bg-card"
+        >
           <Command.Input value={query} onValueChange={setQuery} />
           <Command.List>
             {posts.length > 0 ? (

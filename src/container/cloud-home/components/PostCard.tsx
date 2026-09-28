@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '@/components/ThemedLink';
 import { useEffect, useRef } from 'react';
 
 interface PostCardProps {

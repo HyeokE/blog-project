@@ -1,6 +1,9 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import ThemedLink from './ThemedLink';
+import { useDesignTheme } from '@/context/DesignThemeContext';
+import { getThemedHref } from '@/container/designs/theme';
 import PostThumbnail from './PostThumbnail';
 import ClientPortal from './PortalClient';
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -25,14 +28,16 @@ export default function ThumbnailTransition({
 }: ThumbnailTransitionProps) {
   const [showThumbnail, setShowThumbnail] = useState(false);
   const router = useRouter();
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const { theme } = useDesignTheme();
+  const targetHref = getThemedHref(href, theme);
+  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const handleClose = useCallback(() => {
-    router.push(href);
+    router.push(targetHref);
     setTimeout(() => {
       setShowThumbnail(false);
     }, 300);
-  }, [href, router]);
+  }, [targetHref, router]);
 
   useEffect(() => {
     if (showThumbnail) {
@@ -47,19 +52,25 @@ export default function ThumbnailTransition({
     };
   }, [showThumbnail, handleClose]);
 
-  const handleClick = () => {
-    if (useTransition) {
+  const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (
+      useTransition &&
+      event.button === 0 &&
+      !event.metaKey &&
+      !event.ctrlKey &&
+      !event.shiftKey &&
+      !event.altKey
+    ) {
+      event.preventDefault();
       setShowThumbnail(true);
-    } else {
-      router.push(href);
     }
   };
 
   return (
     <>
-      <div onClick={handleClick} className={className}>
+      <ThemedLink href={href} onClick={handleClick} className={className}>
         {children}
-      </div>
+      </ThemedLink>
       <ClientPortal>
         <AnimatePresence>
           {showThumbnail && <PostThumbnail date={date} title={title} onClose={handleClose} />}

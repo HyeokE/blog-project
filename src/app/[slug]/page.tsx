@@ -3,7 +3,8 @@ import { parseISO, format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
 import { getPageDetail } from '@/utils/notion/getPageDetail';
-import PostDetailPage from '@/container/PostDetail/PostDetailPage';
+import { isNotionNotFound } from '@/utils/notion/fetchNotionPage';
+import LightPostPage from '@/container/light-wall/pages/PostPage';
 import { notFound } from 'next/navigation';
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
@@ -13,9 +14,12 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     if (!post) {
       notFound();
     }
-    return <PostDetailPage post={post} />;
-  } catch (_error: unknown) {
-    notFound();
+    return <LightPostPage post={post} />;
+  } catch (error: unknown) {
+    if (isNotionNotFound(error)) {
+      notFound();
+    }
+    throw error;
   }
 }
 
@@ -27,29 +31,28 @@ export async function generateMetadata({
   try {
     const { slug: id } = await params;
     const properties = await getPageDetail(id);
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://hyeok.dev';
     const title = properties.title || 'Default Title';
     const description = properties.summary || 'Default Description';
 
     // Build /api/og URL with params (Festy-style)
     const apiOg = new URL('/api/og', siteUrl).toString();
-    
+
     const startDate = properties.date?.start_date;
-    const dateStr = startDate
-      ? format(parseISO(startDate), 'yyyy.MM.dd(eee)', { locale: ko })
-      : '';
+    const dateStr = startDate ? format(parseISO(startDate), 'yyyy.MM.dd(eee)', { locale: ko }) : '';
     const searchparams = {
       header: 'HYEOK.DEV',
       title,
-    
+
       date: dateStr,
     } as const;
     const ogImageUrl = `${apiOg}?${new URLSearchParams(searchparams).toString()}`;
-    
+
     return {
       title,
       description,
       metadataBase: new URL(siteUrl),
+      alternates: { canonical: `/${id}` },
       openGraph: {
         title,
         description,
@@ -71,13 +74,18 @@ export async function generateMetadata({
         images: [ogImageUrl],
       },
     };
-  } catch {
+  } catch (error) {
+    if (!isNotionNotFound(error)) {
+      throw error;
+    }
     return {
       title: 'Not Found',
       description: 'The requested post could not be found.',
-      metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+      metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://hyeok.dev'),
     };
   }
 }
 
-export const revalidate = 60000;
+export const revalidate = 3600;
+
+export { getStaticPostParams as generateStaticParams } from '@/utils/notion/getStaticPostParams';

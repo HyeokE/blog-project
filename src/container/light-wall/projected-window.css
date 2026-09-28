@@ -1,0 +1,16 @@
+/* One scene for initial loading and the settled blog; bootstrap mode applies before hydration. */
+.projected-window-fallback {
+  pointer-events: none;
+}
+.projected-window-fallback__day {
+  visibility: visible;
+}
+.projected-window-fallback__night {
+  visibility: hidden;
+}
+html[data-mode='dark'] .projected-window-fallback__day {
+  visibility: hidden;
+}
+html[data-mode='dark'] .projected-window-fallback__night {
+  visibility: visible;
+}

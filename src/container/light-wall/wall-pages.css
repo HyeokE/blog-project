@@ -1,0 +1,440 @@
+/* Long-form pages share the wall palette while leaving document scrolling native. */
+.light-wall.light-page.wall-about-page {
+  --wall-page-paper: #f5eedf;
+  --wall-ink: #484438;
+  --wall-muted: #7a7467;
+}
+:root[data-mode='dark'] .light-wall.light-page.wall-about-page {
+  --wall-page-paper: #22251f;
+  --wall-ink: #e5e4d9;
+  --wall-muted: #aaae9f;
+}
+/* Preserve the About page's original SUIT typography and utility font weights. */
+.light-page .wall-about-content > div {
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+  background: transparent;
+}
+.light-page .wall-about-content > div > div {
+  max-width: none;
+  padding: 0;
+}
+.light-page .wall-about-content :is([class*='text-brand'], .text-black) {
+  color: var(--wall-ink);
+}
+.light-page .wall-about-content :is(.text-gray-400, .text-sm, nav a) {
+  color: var(--wall-muted);
+}
+.light-page .wall-about-content .items-baseline {
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+.light-page .wall-about-content p {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.light-wall.light-page {
+  --wall-ink: #454739;
+  --wall-muted: #6b6b5e;
+  --wall-page-paper: #eae8de;
+  height: auto;
+  min-height: 100dvh;
+  overflow: visible;
+  background: var(--wall-page-paper);
+}
+:root[data-mode='dark'] .light-wall.light-page {
+  --wall-ink: #e0dbca;
+  --wall-muted: #b8b3a3;
+  --wall-page-paper: #24251f;
+  background: var(--wall-page-paper);
+}
+.light-page .wall-page-background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  height: 100dvh;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.36;
+  background: radial-gradient(ellipse at 100% 0%, #fffbe4, #d2d0c2 70%);
+}
+:root[data-mode='dark'] .light-page .wall-page-background {
+  opacity: 0.44;
+  background: radial-gradient(ellipse at 100% 0%, #77694b, #20211b 65%);
+}
+.light-page .wall-page-header {
+  position: fixed;
+  top: max(26px, env(safe-area-inset-top));
+}
+.light-page .wall-page-content {
+  min-width: 0;
+  padding: 140px 6vw 150px;
+}
+.light-page.wall-post-page .wall-page-content {
+  padding-top: 88px;
+}
+.light-page .wall-page-footer {
+  position: fixed;
+  bottom: max(22px, env(safe-area-inset-bottom));
+  pointer-events: none;
+}
+.light-page .wall-page-footer > * {
+  pointer-events: auto;
+}
+.light-page .wall-page-footer .wall-index-trigger {
+  padding: 0 14px;
+  margin-left: -14px;
+  background: transparent;
+}
+.light-page .wall-page-colophon {
+  padding: 10px 0 10px 12px;
+  color: var(--wall-muted);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+.light-page .wall-reading {
+  width: 100%;
+  max-width: 740px;
+  min-width: 0;
+  margin: 0 auto;
+}
+.light-page .wall-page-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  color: var(--wall-muted);
+  font-size: 12px;
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+.light-page .wall-page-back:hover {
+  color: var(--wall-ink);
+}
+.light-page .wall-page-eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 22px;
+  margin: 0 0 18px;
+  color: var(--wall-muted);
+  font-size: 11px;
+  line-height: 1.6;
+  letter-spacing: 0.08em;
+}
+.light-page .wall-article-header {
+  margin: 20px 0 64px;
+  padding-bottom: 36px;
+  border-bottom: 1px solid var(--wall-line);
+}
+.light-page .wall-article-header h1,
+.light-page .wall-page-intro h1 {
+  margin: 0;
+  color: var(--wall-ink);
+  font-size: clamp(30px, 4vw, 48px);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.055em;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.light-page .wall-article-summary,
+.light-page .wall-page-intro > p:last-child:not(:first-child) {
+  margin: 24px 0 0;
+  max-width: 580px;
+  color: var(--wall-muted);
+  font-size: 16px;
+  line-height: 1.85;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.light-page .wall-article-end {
+  margin-top: 72px;
+}
+.light-page .wall-notion {
+  min-width: 0;
+}
+.light-page .wall-notion .notion {
+  --notion-font: 'SUIT', 'Pretendard', sans-serif;
+  --fg-color: var(--wall-ink);
+  --fg-color-5: var(--wall-muted);
+  --fg-color-6: var(--wall-ink);
+  --fg-color-icon: var(--wall-muted);
+  --bg-color: transparent;
+  --bg-color-0: color-mix(in srgb, var(--wall-ink) 7%, transparent);
+  --bg-color-1: color-mix(in srgb, var(--wall-page-paper) 85%, white);
+  font-size: 17px;
+  line-height: 1.9;
+  color: var(--wall-ink);
+  background: transparent;
+}
+.light-page .wall-notion .notion-page,
+.light-page .wall-notion .notion-page-content {
+  min-width: 0;
+  max-width: 100%;
+}
+.light-page .wall-notion .notion-text {
+  padding: 6px 0;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+.light-page .wall-notion :is(.notion-h1, .notion-h2, .notion-h3) {
+  margin-top: 1.7em;
+  margin-bottom: 0.5em;
+  letter-spacing: -0.035em;
+}
+.light-page .wall-notion :is(.notion-code, .notion-table, .notion-simple-table-wrapper) {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.light-page .wall-notion .notion-code {
+  font-size: 14px;
+  line-height: 1.65;
+}
+/* Retain the existing biographical content without its full-viewport Cloud frame. */
+.light-page .wall-existing-content > div {
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+  color: var(--wall-ink);
+  background: transparent;
+  font-family: inherit;
+}
+.light-page .wall-existing-content > div > div {
+  max-width: none;
+  padding: 0;
+}
+.light-page .wall-existing-content :is([class*='text-brand'], .text-black) {
+  color: var(--wall-ink);
+}
+.light-page .wall-existing-content :is(.text-gray-400, .text-sm, nav a) {
+  color: var(--wall-muted);
+}
+.light-page .wall-existing-content p,
+.light-page .wall-existing-content li {
+  font-size: 16px;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+.light-page .wall-existing-content h1 {
+  color: var(--wall-ink);
+  font-size: clamp(34px, 5vw, 54px);
+  font-weight: 650;
+  letter-spacing: -0.06em;
+}
+.light-page .wall-existing-content h2 {
+  font-size: 13px;
+  font-weight: 550;
+  letter-spacing: 0.1em;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--wall-line);
+}
+.light-page .wall-existing-content :is(h3, h4, h5) {
+  letter-spacing: -0.025em;
+}
+.light-page .wall-existing-content .items-baseline {
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+.light-page .wall-existing-content nav {
+  margin-bottom: 48px;
+}
+.light-page .wall-existing-content nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+}
+.light-page .wall-gallery-content {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.light-page .wall-page-intro {
+  margin-bottom: 64px;
+}
+.light-page .wall-gallery > div > div:first-child {
+  transform: none !important;
+  opacity: 1 !important;
+}
+.light-page .wall-gallery .grid {
+  padding: 0;
+  gap: 20px;
+}
+.light-page .wall-gallery .grid > div {
+  border-radius: 6px;
+}
+.light-page .wall-gallery .text-muted-foreground {
+  color: var(--wall-muted);
+}
+/* A viewer must cover the fixed menu as well as the page. */
+.light-page .wall-gallery .fixed {
+  z-index: 80;
+}
+.light-page .wall-designs-content {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+.light-page .wall-design-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px;
+  margin: 48px 0;
+}
+.light-page .wall-design-option {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+  color: var(--wall-ink);
+}
+.light-page .wall-design-swatch {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 210px;
+  aspect-ratio: 1.35;
+  overflow: hidden;
+  background: #ebe9dc;
+  color: #51533f;
+}
+.light-page .wall-design-swatch > span {
+  font-size: 72px;
+  font-weight: 650;
+  letter-spacing: -0.08em;
+  transition: transform 350ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.light-page .wall-design-option:hover .wall-design-swatch > span {
+  transform: scale(1.05);
+}
+.light-page .wall-design-option[data-design='sweet-home'] .wall-design-swatch {
+  background: linear-gradient(
+    112deg,
+    #c5c5b7 25%,
+    #f4efd6 27%,
+    #f4efd6 61%,
+    #cccbba 64%,
+    #efead5 69%
+  );
+  text-shadow: -1px 1px 2px #45473135;
+}
+.light-page .wall-design-option[data-design='cloud'] .wall-design-swatch {
+  background: radial-gradient(ellipse at 30% 45%, #fff 0%, #f1eee7 52%, #e2ded6);
+  color: #66635d;
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-style: italic;
+}
+.light-page .wall-design-option[data-design='2025'] .wall-design-swatch {
+  background: #f1f1dc;
+  color: #7c7f5b;
+}
+.light-page .wall-design-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0 12px;
+}
+.light-page .wall-design-label small {
+  font-size: 10px;
+  color: var(--wall-muted);
+}
+.light-page .wall-design-label strong {
+  flex: 1;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+.light-page .wall-design-description {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--wall-muted);
+}
+.light-page .wall-design-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 22px;
+  padding-top: 14px;
+  border-top: 1px solid var(--wall-line);
+  font-size: 11px;
+}
+.light-page .wall-design-option[aria-pressed='true'] .wall-design-action {
+  border-color: var(--wall-ink);
+}
+.light-page .wall-design-story section {
+  margin: 48px 0;
+}
+.light-page .wall-design-story section h2 {
+  margin-bottom: 18px;
+  font-size: 22px;
+  letter-spacing: -0.04em;
+  font-weight: 600;
+}
+.light-page .wall-design-story section p {
+  font-size: 17px;
+  line-height: 1.95;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 700px) {
+  .light-page .wall-page-content {
+    padding: 112px 24px 120px;
+  }
+  .light-page.wall-post-page .wall-page-content {
+    padding-top: 80px;
+  }
+  .light-page .wall-page-header {
+    left: 24px;
+    right: 24px;
+    top: max(22px, env(safe-area-inset-top));
+  }
+  .light-page .wall-page-footer {
+    left: 24px;
+    right: 24px;
+    bottom: max(18px, env(safe-area-inset-bottom));
+  }
+  .light-page .wall-page-colophon {
+    display: none;
+  }
+  .light-page .wall-article-header {
+    margin: 16px 0 42px;
+    padding-bottom: 26px;
+  }
+  .light-page .wall-article-summary,
+  .light-page .wall-page-intro > p:last-child:not(:first-child) {
+    font-size: 14px;
+    margin-top: 18px;
+  }
+  .light-page .wall-notion .notion,
+  .light-page .wall-design-story section p {
+    font-size: 16px;
+    line-height: 1.85;
+  }
+  .light-page .wall-page-intro {
+    margin-bottom: 40px;
+  }
+  .light-page .wall-existing-content p,
+  .light-page .wall-existing-content li {
+    font-size: 15px;
+  }
+  .light-page .wall-existing-content .items-baseline > span {
+    font-size: 12px;
+  }
+  .light-page .wall-gallery .grid {
+    gap: 10px;
+  }
+  .light-page .wall-design-options {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .light-page .wall-design-swatch {
+    min-height: 180px;
+    aspect-ratio: 1.8;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .light-page .wall-design-swatch > span {
+    transition: none;
+    transform: none !important;
+  }
+}

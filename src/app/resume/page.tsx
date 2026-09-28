@@ -1,5 +1,5 @@
-import ResumePage from '@/container/resume/ResumePage';
+import { redirect } from 'next/navigation';
 
-export default async function Resume() {
-  return <ResumePage />;
+export default function Page() {
+  redirect('/about');
 }

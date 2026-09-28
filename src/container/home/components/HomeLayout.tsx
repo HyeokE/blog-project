@@ -6,7 +6,7 @@ import PostSection from '@/container/home/components/PostSection';
 import PostYearDigit from '@/container/home/components/PostYearDigit';
 import type { NotionPosts } from '@/models/NotionPosts';
 import * as motion from 'motion/react-client';
-import Link from 'next/link';
+import Link from '@/components/ThemedLink';
 import { usePathname } from 'next/navigation';
 
 interface HomeLayoutProps {
@@ -42,7 +42,10 @@ const HomeLayout = ({ posts }: HomeLayoutProps) => {
             <div className="pointer-events-none absolute top-0 right-0 bottom-0 left-0 z-10 flex items-center justify-center select-none">
               <div className="border-brand-300 flex h-[120px] w-full border-y-[1px] border-solid select-none" />
             </div>
-            <motion.div className="scrollbar-hide snap-y overflow-y-scroll">
+            <motion.div
+              data-analytics-scroll="post_list"
+              className="scrollbar-hide snap-y overflow-y-scroll"
+            >
               <PostSection posts={posts} />
             </motion.div>
           </div>

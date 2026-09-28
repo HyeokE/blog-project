@@ -13,6 +13,8 @@ interface ImageThumbnailProps {
 const ImageThumbnail = ({ image, index, onImageClick }: ImageThumbnailProps) => {
   return (
     <motion.div
+      data-analytics-label="gallery_open"
+      data-analytics-id={image.id}
       key={image.id}
       className="group relative aspect-square cursor-pointer overflow-hidden"
       onClick={() => onImageClick(image.id)}

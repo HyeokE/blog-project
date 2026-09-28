@@ -1,12 +1,10 @@
-import LegacyDesignListPage from '@/container/designs/LegacyDesignListPage';
+import DesignsPage from '@/container/light-wall/pages/DesignsPage';
 
 export const metadata = {
-  title: 'Legacy Designs',
-  description: '이전 디자인 목록',
+  title: 'Designs / HYEOK.DEV',
+  description: 'sweet-home, Cloud, 2025 블로그 디자인을 선택해 보세요.',
 };
 
-export default async function Designs() {
-  return <LegacyDesignListPage />;
+export default function Designs() {
+  return <DesignsPage />;
 }
-
-

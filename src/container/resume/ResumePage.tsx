@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import Link from '@/components/ThemedLink';
 import { Github, Mail, Coffee } from 'lucide-react';
 
 const ResumePage = () => {

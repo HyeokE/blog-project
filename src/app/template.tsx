@@ -1,8 +1,13 @@
 'use client';
 
 import { LayoutGroup, motion } from 'motion/react';
+import { useDesignTheme } from '@/context/DesignThemeContext';
 
 export default function Template({ children }: { children: React.ReactNode }) {
+  const { theme } = useDesignTheme();
+  if (theme === 'sweet-home') {
+    return <LayoutGroup>{children}</LayoutGroup>;
+  }
   return (
     <LayoutGroup>
       <motion.div

@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useSpring, useTransform } from 'motion/react';
-import Link from 'next/link';
+import Link from '@/components/ThemedLink';
 import { useEffect } from 'react';
 
 const DESCRIPTION = 'A collection of writings on code, life.';
