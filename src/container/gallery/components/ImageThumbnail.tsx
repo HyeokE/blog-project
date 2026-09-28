@@ -1,3 +1,4 @@
+import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import Image from 'next/image';
 import * as motion from 'motion/react-client';
 import type { ImageData } from '@/utils/gallery/imageUtils';
@@ -38,8 +39,9 @@ const ImageThumbnail = ({ image, index, onImageClick }: ImageThumbnailProps) => 
 
   return (
     <motion.div
-      data-analytics-label="gallery_open"
-      data-analytics-id={image.id}
+      data-analytics-label={ANALYTICS_ELEMENTS.GALLERY_OPEN}
+      data-analytics-section={ANALYTICS_SECTIONS.GALLERY}
+      data-analytics-id={image.src}
       key={image.id}
       className="group relative cursor-pointer overflow-hidden rounded-lg"
       style={{

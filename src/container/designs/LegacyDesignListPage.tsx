@@ -1,5 +1,7 @@
 'use client';
 
+import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
+
 import Link from '@/components/ThemedLink';
 import { motion } from 'framer-motion';
 
@@ -13,7 +15,10 @@ const legacyDesigns = [
 
 export default function LegacyDesignListPage() {
   return (
-    <div className="relative flex min-h-screen items-center justify-center px-6 py-20">
+    <div
+      data-analytics-section={ANALYTICS_SECTIONS.DESIGN_PICKER}
+      className="relative flex min-h-screen items-center justify-center px-6 py-20"
+    >
       <div className="mx-auto max-w-3xl">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -23,12 +28,8 @@ export default function LegacyDesignListPage() {
           {/* Header */}
           <div className="mb-16 text-center">
             <div className="mb-4 h-px w-12 mx-auto bg-border" />
-            <h1 className="font-serif-home mb-2 text-4xl text-foreground italic">
-              Legacy Designs
-            </h1>
-            <p className="text-sm text-muted-foreground tracking-wide">
-              과거 디자인 아카이브
-            </p>
+            <h1 className="font-serif-home mb-2 text-4xl text-foreground italic">Legacy Designs</h1>
+            <p className="text-sm text-muted-foreground tracking-wide">과거 디자인 아카이브</p>
           </div>
 
           {/* Design Cards */}
@@ -36,6 +37,8 @@ export default function LegacyDesignListPage() {
             {legacyDesigns.map((design) => (
               <Link
                 key={design.year}
+                data-analytics-label={ANALYTICS_ELEMENTS.DESIGN_PREVIEW}
+                data-analytics-id={String(design.year)}
                 href={`/${design.year}`}
                 className="group block border-b border-border pb-6 pt-6 first:pt-0 transition-colors hover:border-foreground/40"
               >
@@ -63,6 +66,8 @@ export default function LegacyDesignListPage() {
           {/* Navigation */}
           <div className="flex items-center justify-center gap-6 border-t border-border pt-8">
             <Link
+              data-analytics-label={ANALYTICS_ELEMENTS.HOME_LINK}
+              data-analytics-id="home"
               href="/"
               className="group flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
@@ -71,6 +76,8 @@ export default function LegacyDesignListPage() {
             </Link>
             <div className="h-4 w-px bg-border" />
             <Link
+              data-analytics-label={ANALYTICS_ELEMENTS.DESIGN_ABOUT}
+              data-analytics-id="about-design"
               href="/about-design"
               className="group flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
@@ -83,5 +90,3 @@ export default function LegacyDesignListPage() {
     </div>
   );
 }
-
-

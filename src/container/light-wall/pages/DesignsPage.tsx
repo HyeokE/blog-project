@@ -1,5 +1,7 @@
 'use client';
 
+import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
+
 import { Check, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import { useDesignTheme } from '@/context/DesignThemeContext';
@@ -10,7 +12,10 @@ export default function DesignsPage() {
   const { theme, setTheme } = useDesignTheme();
   return (
     <WallPageShell>
-      <section className="wall-designs-content">
+      <section
+        data-analytics-section={ANALYTICS_SECTIONS.DESIGN_PICKER}
+        className="wall-designs-content"
+      >
         <header className="wall-page-intro">
           <h1>DESIGN ARCHIVE</h1>
         </header>
@@ -18,6 +23,8 @@ export default function DesignsPage() {
           {DESIGN_THEMES.map((design, index) => (
             <button
               key={design.id}
+              data-analytics-label={ANALYTICS_ELEMENTS.DESIGN_SELECT}
+              data-analytics-id={design.id}
               type="button"
               className="wall-design-option"
               data-design={design.id}
@@ -40,7 +47,12 @@ export default function DesignsPage() {
             </button>
           ))}
         </div>
-        <Link href="/about-design" className="wall-page-back">
+        <Link
+          data-analytics-label={ANALYTICS_ELEMENTS.DESIGN_ABOUT}
+          data-analytics-id="about-design"
+          href="/about-design"
+          className="wall-page-back"
+        >
           디자인 이야기 <ArrowUpRight size={14} />
         </Link>
       </section>

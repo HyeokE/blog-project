@@ -1,5 +1,7 @@
 'use client';
 
+import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
+
 import Link from 'next/link';
 import { BlurFade } from '@/components/BlurFade';
 import type { PortfolioCompanyGroup, PortfolioLink, PortfolioProject } from '../data';
@@ -8,20 +10,33 @@ interface SelectedWorkSectionProps {
   companyGroups: PortfolioCompanyGroup[];
 }
 
-function ProjectLink({ link }: { link: PortfolioLink }) {
+function ProjectLink({ link, projectId }: { link: PortfolioLink; projectId: string }) {
+  const analyticsId = `${projectId}-${link.label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
   const className =
     'text-sm text-foreground underline underline-offset-4 decoration-border transition-colors duration-200 hover:decoration-foreground';
 
   if (link.external === false) {
     return (
-      <Link href={link.href} className={className}>
+      <Link
+        data-analytics-label={ANALYTICS_ELEMENTS.PROJECT_LINK}
+        data-analytics-id={analyticsId}
+        href={link.href}
+        className={className}
+      >
         {link.label}
       </Link>
     );
   }
 
   return (
-    <a href={link.href} target="_blank" rel="noopener noreferrer" className={className}>
+    <a
+      data-analytics-label={ANALYTICS_ELEMENTS.PROJECT_LINK}
+      data-analytics-id={analyticsId}
+      href={link.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={className}
+    >
       {link.label} ↗
     </a>
   );
@@ -32,17 +47,13 @@ function ProjectBlock({ project, index }: { project: PortfolioProject; index: nu
     <BlurFade delay={index * 0.08} inView inViewMargin="-60px" duration={0.5}>
       <div className="border-t border-border/30 py-8">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-4">
-          <h4 className="text-lg font-semibold text-foreground md:text-xl">
-            {project.title}
-          </h4>
+          <h4 className="text-lg font-semibold text-foreground md:text-xl">{project.title}</h4>
           <span className="text-xs tracking-[0.12em] text-muted-foreground/50 uppercase">
             {project.role} · {project.period}
           </span>
         </div>
 
-        <p className="mt-3 text-[15px] leading-[1.75] text-foreground/80">
-          {project.summary}
-        </p>
+        <p className="mt-3 text-[15px] leading-[1.75] text-foreground/80">{project.summary}</p>
 
         {/* P / D / I — compact 2-column grid */}
         <div className="mt-5 grid gap-x-8 gap-y-3 sm:grid-cols-3">
@@ -55,9 +66,7 @@ function ProjectBlock({ project, index }: { project: PortfolioProject; index: nu
               <p className="text-[10px] font-medium tracking-[0.2em] text-muted-foreground/40 uppercase">
                 {label}
               </p>
-              <p className="mt-1 text-[13px] leading-[1.7] text-foreground/60">
-                {text}
-              </p>
+              <p className="mt-1 text-[13px] leading-[1.7] text-foreground/60">{text}</p>
             </div>
           ))}
         </div>
@@ -76,7 +85,11 @@ function ProjectBlock({ project, index }: { project: PortfolioProject; index: nu
             <>
               <span className="text-border">·</span>
               {project.links.map((link) => (
-                <ProjectLink key={`${project.title}-${link.label}`} link={link} />
+                <ProjectLink
+                  key={`${project.title}-${link.label}`}
+                  link={link}
+                  projectId={project.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}
+                />
               ))}
             </>
           )}
@@ -101,9 +114,7 @@ function CompanyBlock({ group, index }: { group: PortfolioCompanyGroup; index: n
             </p>
           </div>
           {group.intro && (
-            <p className="text-[15px] leading-[1.75] text-foreground/70 lg:pt-2">
-              {group.intro}
-            </p>
+            <p className="text-[15px] leading-[1.75] text-foreground/70 lg:pt-2">{group.intro}</p>
           )}
         </div>
 
@@ -124,7 +135,10 @@ function CompanyBlock({ group, index }: { group: PortfolioCompanyGroup; index: n
 
 export function SelectedWorkSection({ companyGroups }: SelectedWorkSectionProps) {
   return (
-    <section className="px-6 py-24 md:py-32">
+    <section
+      data-analytics-section={ANALYTICS_SECTIONS.ABOUT_PROJECTS}
+      className="px-6 py-24 md:py-32"
+    >
       <div className="mx-auto max-w-4xl">
         {/* Section header */}
         <BlurFade delay={0} inView inViewMargin="-80px" duration={0.5}>

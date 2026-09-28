@@ -1,5 +1,5 @@
 'use client';
-import { ANALYTICS_ACTIONS } from '@/constants/analytics';
+import { ANALYTICS_ACTIONS, ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import { trackInteraction } from '@/utils/analytics';
 import React, { useEffect, useState } from 'react';
 import { SearchIcon } from '@/assets/SearchIcon';
@@ -18,6 +18,7 @@ const PostSearch = ({ posts = [] }: PostSearchProps) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         trackInteraction(open ? ANALYTICS_ACTIONS.SEARCH_CLOSE : ANALYTICS_ACTIONS.SEARCH_OPEN, {
+          section: ANALYTICS_SECTIONS.HEADER,
           method: 'keyboard',
         });
         setOpen(!open);
@@ -31,7 +32,8 @@ const PostSearch = ({ posts = [] }: PostSearchProps) => {
   return (
     <>
       <div
-        data-analytics-label="search_open"
+        data-analytics-label={ANALYTICS_ELEMENTS.SEARCH_OPEN}
+        data-analytics-section={ANALYTICS_SECTIONS.HEADER}
         className="flex cursor-pointer items-center gap-1"
         onClick={() => {
           setOpen(true);

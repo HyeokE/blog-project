@@ -1,6 +1,6 @@
 'use client';
 
-import { ANALYTICS_ACTIONS } from '@/constants/analytics';
+import { ANALYTICS_ACTIONS, ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import { trackInteraction } from '@/utils/analytics';
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
@@ -54,7 +54,10 @@ export default function FullscreenMenu({ onClose }: { onClose: () => void }) {
       aria-label="메인 메뉴"
       onCancel={(event) => {
         event.preventDefault();
-        trackInteraction(ANALYTICS_ACTIONS.MENU_CLOSE, { method: 'keyboard' });
+        trackInteraction(ANALYTICS_ACTIONS.MENU_CLOSE, {
+          section: ANALYTICS_SECTIONS.MENU,
+          method: 'keyboard',
+        });
         onClose();
       }}
     >
@@ -75,6 +78,8 @@ export default function FullscreenMenu({ onClose }: { onClose: () => void }) {
             HYEOK<span>.</span>
           </span>
           <motion.button
+            data-analytics-label={ANALYTICS_ELEMENTS.MENU_CLOSE}
+            data-analytics-section={ANALYTICS_SECTIONS.MENU}
             ref={closeRef}
             type="button"
             className="wall-menu-close"
@@ -96,6 +101,9 @@ export default function FullscreenMenu({ onClose }: { onClose: () => void }) {
             {destinations.map(({ label, href }, index) => (
               <motion.li key={href} variants={item}>
                 <Link
+                  data-analytics-label={ANALYTICS_ELEMENTS.NAV_LINK}
+                  data-analytics-section={ANALYTICS_SECTIONS.MENU}
+                  data-analytics-id={href}
                   href={href}
                   aria-current={
                     pathname === href || (href === '/' && pathname === '/2025/light')
@@ -115,10 +123,24 @@ export default function FullscreenMenu({ onClose }: { onClose: () => void }) {
             ))}
           </motion.ol>
           <motion.div className="wall-menu-bottom" variants={item}>
-            <Link href="/personal" onClick={onClose} tabIndex={present ? 0 : -1}>
+            <Link
+              data-analytics-label={ANALYTICS_ELEMENTS.NAV_LINK}
+              data-analytics-section={ANALYTICS_SECTIONS.MENU}
+              data-analytics-id={'personal'}
+              href="/personal"
+              onClick={onClose}
+              tabIndex={present ? 0 : -1}
+            >
               개인 기록
             </Link>
-            <Link href="/designs" onClick={onClose} tabIndex={present ? 0 : -1}>
+            <Link
+              data-analytics-label={ANALYTICS_ELEMENTS.NAV_LINK}
+              data-analytics-section={ANALYTICS_SECTIONS.MENU}
+              data-analytics-id={'designs'}
+              href="/designs"
+              onClick={onClose}
+              tabIndex={present ? 0 : -1}
+            >
               테마 변경 <ArrowUpRight size={16} aria-hidden="true" />
             </Link>
           </motion.div>

@@ -1,3 +1,4 @@
+import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import React from 'react';
 import Image from 'next/image';
 import * as motion from 'motion/react-client';
@@ -13,8 +14,9 @@ interface ImageThumbnailProps {
 const ImageThumbnail = ({ image, index, onImageClick }: ImageThumbnailProps) => {
   return (
     <motion.div
-      data-analytics-label="gallery_open"
-      data-analytics-id={image.id}
+      data-analytics-label={ANALYTICS_ELEMENTS.GALLERY_OPEN}
+      data-analytics-section={ANALYTICS_SECTIONS.GALLERY}
+      data-analytics-id={image.src}
       key={image.id}
       className="group relative aspect-square cursor-pointer overflow-hidden"
       onClick={() => onImageClick(image.id)}

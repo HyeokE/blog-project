@@ -1,5 +1,5 @@
 'use client';
-import { ANALYTICS_ACTIONS } from '@/constants/analytics';
+import { ANALYTICS_ACTIONS, ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import { trackInteraction } from '@/utils/analytics';
 import type { MotionValue } from 'motion/react';
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'motion/react';
@@ -45,7 +45,10 @@ const FloatingDockMobile = ({ items, className }: { items: DockItem[]; className
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dockRef.current && !dockRef.current.contains(event.target as Node) && open) {
-        trackInteraction(ANALYTICS_ACTIONS.MENU_CLOSE, { method: 'outside_pointer' });
+        trackInteraction(ANALYTICS_ACTIONS.MENU_CLOSE, {
+          section: ANALYTICS_SECTIONS.NAV_DOCK,
+          method: 'outside_pointer',
+        });
         setOpen(false);
       }
     };
@@ -72,7 +75,8 @@ const FloatingDockMobile = ({ items, className }: { items: DockItem[]; className
           <>
             {/* 블러 오버레이 */}
             <motion.div
-              data-analytics-label="menu_close_backdrop"
+              data-analytics-label={ANALYTICS_ELEMENTS.MENU_CLOSE}
+              data-analytics-section={ANALYTICS_SECTIONS.NAV_DOCK}
               data-analytics-click-self="true"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -103,6 +107,10 @@ const FloatingDockMobile = ({ items, className }: { items: DockItem[]; className
                 >
                   {item.href ? (
                     <Link
+                      data-analytics-label={ANALYTICS_ELEMENTS.NAV_LINK}
+                      data-analytics-section={ANALYTICS_SECTIONS.NAV_DOCK}
+                      data-analytics-id={item.href.split(/[?#]/)[0]}
+                      aria-label={item.title}
                       href={item.href}
                       key={item.title}
                       className="flex items-center gap-2 w-fit"
@@ -113,6 +121,10 @@ const FloatingDockMobile = ({ items, className }: { items: DockItem[]; className
                     </Link>
                   ) : (
                     <button
+                      data-analytics-label={ANALYTICS_ELEMENTS.COLOR_MODE_TOGGLE}
+                      data-analytics-section={ANALYTICS_SECTIONS.NAV_DOCK}
+                      data-analytics-id={'color-mode'}
+                      aria-label={item.title}
                       key={item.title}
                       className="flex items-center gap-2 w-fit"
                       onClick={() => handleItemClick(item)}
@@ -128,6 +140,8 @@ const FloatingDockMobile = ({ items, className }: { items: DockItem[]; className
         )}
       </AnimatePresence>
       <motion.button
+        data-analytics-label={open ? ANALYTICS_ELEMENTS.MENU_CLOSE : ANALYTICS_ELEMENTS.MENU_OPEN}
+        data-analytics-section={ANALYTICS_SECTIONS.NAV_DOCK}
         aria-label={open ? '메뉴 닫기' : '메뉴 열기'}
         onClick={(e) => {
           e.stopPropagation();
@@ -213,7 +227,13 @@ function IconContainer({ mouseX, title, icon, href, onClick }: { mouseX: MotionV
   return (
     <>
       {href ? (
-        <Link href={href}>
+        <Link
+          data-analytics-label={ANALYTICS_ELEMENTS.NAV_LINK}
+          data-analytics-section={ANALYTICS_SECTIONS.NAV_DOCK}
+          data-analytics-id={href.split(/[?#]/)[0]}
+          aria-label={title}
+          href={href}
+        >
           <motion.div
             ref={ref}
             style={{ width, height }}
@@ -248,7 +268,10 @@ function IconContainer({ mouseX, title, icon, href, onClick }: { mouseX: MotionV
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           onClick={onClick}
-          data-analytics-label={title}
+          data-analytics-label={ANALYTICS_ELEMENTS.COLOR_MODE_TOGGLE}
+          data-analytics-section={ANALYTICS_SECTIONS.NAV_DOCK}
+          data-analytics-id={'color-mode'}
+          aria-label={title}
           className="relative flex aspect-square items-center justify-center rounded-full bg-card dark:bg-brand-200"
         >
           <AnimatePresence>

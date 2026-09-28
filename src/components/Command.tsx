@@ -1,5 +1,6 @@
 'use client';
-import { ANALYTICS_ACTIONS } from '@/constants/analytics';
+import { useSearchAnalytics } from '@/hooks/useSearchAnalytics';
+import { ANALYTICS_ACTIONS, ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import { trackInteraction } from '@/utils/analytics';
 import { useCallback, useEffect, useState } from 'react';
 import { Dialog } from '@radix-ui/react-dialog';
@@ -18,13 +19,16 @@ const Command = {
       <Dialog {...props}>
         <div className="fixed inset-0 z-50">
           <div
-            data-analytics-label="search_close_backdrop"
+            data-analytics-label={ANALYTICS_ELEMENTS.SEARCH_CLOSE}
+            data-analytics-section={ANALYTICS_SECTIONS.SEARCH}
             data-analytics-click-self="true"
             className="fixed inset-0 bg-black/10 backdrop-blur-xs dark:bg-black/50"
             onClick={onClose}
           />
           <div className="flex justify-end p-2">
             <button
+              data-analytics-label={ANALYTICS_ELEMENTS.SEARCH_CLOSE}
+              data-analytics-section={ANALYTICS_SECTIONS.SEARCH}
               aria-label="검색 닫기"
               onClick={onClose}
               className="bg-background absolute top-4 right-4 flex h-6 w-6 cursor-pointer items-center justify-center rounded-md text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 dark:hover:text-neutral-300"
@@ -51,7 +55,7 @@ const Command = {
   }) => {
     const { t } = useTranslation();
     return (
-      <div className="flex items-center border-b border-border px-3">
+      <div className="border-border flex items-center border-b px-3">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="mr-2 h-4 w-4 shrink-0 text-neutral-500"
@@ -67,7 +71,8 @@ const Command = {
           />
         </svg>
         <CommandPrimitive.Input
-          data-analytics-label="post_search"
+          data-analytics-label={ANALYTICS_ELEMENTS.SEARCH_INPUT}
+          data-analytics-section={ANALYTICS_SECTIONS.SEARCH}
           value={value}
           onValueChange={onValueChange}
           className="flex h-10 w-full bg-transparent py-3 text-sm outline-none placeholder:text-neutral-500"
@@ -79,7 +84,7 @@ const Command = {
   List: ({ children }: { children: React.ReactNode }) => {
     return (
       <CommandPrimitive.List
-        data-analytics-scroll="search_results"
+        data-analytics-scroll={ANALYTICS_SECTIONS.SEARCH}
         className="max-h-[300px] overflow-y-auto p-2"
       >
         {children}
@@ -109,11 +114,15 @@ const Command = {
     value,
     onSelect,
     href,
+    postId,
+    position,
   }: {
     children: React.ReactNode;
     value?: string;
     onSelect?: (value: string) => void;
     href?: string;
+    postId?: string;
+    position?: number;
   }) => {
     const { locale } = useTranslation();
 
@@ -127,11 +136,24 @@ const Command = {
 
       return (
         <CommandPrimitive.Item
+          asChild
+          data-analytics-label={ANALYTICS_ELEMENTS.SEARCH_RESULT}
+          data-analytics-section={ANALYTICS_SECTIONS.SEARCH}
+          data-analytics-id={postId}
+          data-analytics-position={position}
           value={value}
           onSelect={onSelect}
-          className="relative flex cursor-pointer items-center rounded-md px-2 py-1 text-sm text-foreground select-none hover:bg-muted"
+          className="text-foreground hover:bg-muted relative flex cursor-pointer items-center rounded-md px-2 py-1 text-sm select-none"
         >
-          <Link href={path}>{children}</Link>
+          <Link
+            data-analytics-label={ANALYTICS_ELEMENTS.SEARCH_RESULT}
+            data-analytics-section={ANALYTICS_SECTIONS.SEARCH}
+            data-analytics-id={postId}
+            data-analytics-position={position}
+            href={path}
+          >
+            {children}
+          </Link>
         </CommandPrimitive.Item>
       );
     }
@@ -139,9 +161,13 @@ const Command = {
     // href가 없는 경우
     return (
       <CommandPrimitive.Item
+        data-analytics-label={ANALYTICS_ELEMENTS.SEARCH_RESULT}
+        data-analytics-section={ANALYTICS_SECTIONS.SEARCH}
+        data-analytics-id={postId}
+        data-analytics-position={position}
         value={value}
         onSelect={onSelect}
-        className="relative flex cursor-pointer items-center rounded-md px-2 py-1 text-sm text-foreground select-none hover:bg-muted"
+        className="text-foreground hover:bg-muted relative flex cursor-pointer items-center rounded-md px-2 py-1 text-sm select-none"
       >
         <div>{children}</div>
       </CommandPrimitive.Item>
@@ -161,6 +187,7 @@ function CommandMenu({
 }) {
   const [query, setQuery] = useState('');
   const [posts, setPosts] = useState<NotionPost[]>(initialPosts);
+  const reportSearchResults = useSearchAnalytics(open, query, posts.length);
 
   // 검색어에 따라 포스트 필터링
   const searchPosts = useCallback(
@@ -188,33 +215,59 @@ function CommandMenu({
       open={open}
       onOpenChange={(nextOpen) => {
         if (open && !nextOpen) {
-          trackInteraction(ANALYTICS_ACTIONS.SEARCH_CLOSE, { method: 'dialog' });
+          trackInteraction(ANALYTICS_ACTIONS.SEARCH_CLOSE, {
+            section: ANALYTICS_SECTIONS.SEARCH,
+            method: 'dialog',
+          });
         }
         setOpen(nextOpen);
       }}
-      className="overflow-hidden rounded-md border border-border bg-card shadow-md"
+      className="border-border bg-card overflow-hidden rounded-md border shadow-md"
     >
       <Command.Dialog onClose={() => setOpen(false)}>
         <CommandPrimitive
+          onClickCapture={(event) => {
+            if (
+              (event.target as Element).closest(
+                `[data-analytics-label="${ANALYTICS_ELEMENTS.SEARCH_RESULT}"]`,
+              )
+            ) {
+              reportSearchResults();
+            }
+          }}
           onKeyDown={(event) => {
             if (
               event.key === 'Enter' &&
               !event.defaultPrevented &&
               !event.nativeEvent.isComposing &&
-              event.nativeEvent.keyCode !== 229 &&
-              event.currentTarget.querySelector('[cmdk-item][aria-selected="true"]')
+              event.nativeEvent.keyCode !== 229
             ) {
-              trackInteraction(ANALYTICS_ACTIONS.SEARCH_RESULT_ACTIVATE, { method: 'keyboard' });
+              const selected = event.currentTarget.querySelector<HTMLElement>(
+                '[cmdk-item][aria-selected="true"]:not([aria-disabled="true"])',
+              );
+              const result = selected?.matches('a[href]')
+                ? (selected as HTMLAnchorElement)
+                : selected?.querySelector<HTMLAnchorElement>('a[href]');
+              if (result) {
+                event.preventDefault();
+                result.click();
+              }
             }
           }}
-          className="flex h-full w-full flex-col overflow-hidden rounded-md bg-card"
+          className="bg-card flex h-full w-full flex-col overflow-hidden rounded-md"
         >
           <Command.Input value={query} onValueChange={setQuery} />
           <Command.List>
             {posts.length > 0 ? (
               <>
-                {posts.map((post: NotionPost) => (
-                  <Command.Item key={post.id} value={post.title} href={`/${post.id}`}>
+                {posts.map((post: NotionPost, index: number) => (
+                  <Command.Item
+                    postId={post.id}
+                    position={index + 1}
+                    key={post.id}
+                    value={post.title}
+                    href={`/${post.id}`}
+                  >
                     <div className="flex flex-col gap-1">
                       <span className="text-base font-bold">{post.title}</span>
                       <span className="text-xs font-light opacity-80">

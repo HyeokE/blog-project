@@ -1,4 +1,5 @@
 'use client';
+import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import PostFadeBlur from '@/container/home/components/PostFadeBlur';
 import PostMonthDigit from '@/container/home/components/PostMonthDigit';
 import PostSearch from '@/container/home/components/PostSearch';
@@ -18,8 +19,14 @@ const HomeLayout = ({ posts }: HomeLayoutProps) => {
   return (
     <div className="font-suit flex h-dvh w-[100vw] flex-col items-center justify-center gap-8">
       <div className="fixed top-0 right-0 z-20 flex h-[70px] items-center justify-center gap-4 px-5">
-        {pathname === '/personal' &&(
-          <Link href="/" className="flex items-center gap-1">
+        {pathname === '/personal' && (
+          <Link
+            data-analytics-label={ANALYTICS_ELEMENTS.HOME_LINK}
+            data-analytics-section={ANALYTICS_SECTIONS.HEADER}
+            data-analytics-id={'home'}
+            href="/"
+            className="flex items-center gap-1"
+          >
             <span className="text-foreground bg-foreground/20 rounded-md px-2 py-1 text-xs">
               Dev Blog
             </span>

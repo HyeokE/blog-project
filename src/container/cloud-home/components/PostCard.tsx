@@ -1,5 +1,6 @@
 'use client';
 
+import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import Link from '@/components/ThemedLink';
 import { useEffect, useRef } from 'react';
 
@@ -32,7 +33,13 @@ export const PostCard = ({ id, title, excerpt, date, category }: PostCardProps) 
   }, []);
 
   return (
-    <Link href={`/${id}`} className="m-0 w-full">
+    <Link
+      data-analytics-label={ANALYTICS_ELEMENTS.POST_OPEN}
+      data-analytics-section={ANALYTICS_SECTIONS.POST_LIST}
+      data-analytics-id={id}
+      href={`/${id}`}
+      className="m-0 w-full"
+    >
       <article
         ref={ref}
         className="post-card relative flex w-full cursor-pointer snap-center flex-col rounded-xl backdrop-blur-[2px] py-8 md:py-8"

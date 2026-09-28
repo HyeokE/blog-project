@@ -1,6 +1,11 @@
-import { ANALYTICS_ACTIONS } from '@/constants/analytics';
-import { trackInteraction } from '@/utils/analytics';
-import React, { useState } from 'react';
+import {
+  ANALYTICS_ACTIONS,
+  ANALYTICS_EVENTS,
+  ANALYTICS_ELEMENTS,
+  ANALYTICS_SECTIONS,
+} from '@/constants/analytics';
+import { trackEvent, trackInteraction } from '@/utils/analytics';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import * as motion from 'motion/react-client';
 import type { ImageData } from '@/utils/gallery/imageUtils';
@@ -28,6 +33,22 @@ const FullscreenViewer = ({
   const [exitY, setExitY] = useState<number>(0);
   // 페이드 아웃 애니메이션을 위한 상태
   const [isClosing, setIsClosing] = useState(false);
+
+  const imageSource = selectedImageData?.src;
+  const lastViewedImage = useRef<string | null>(null);
+  useEffect(() => {
+    if (!imageSource) {
+      lastViewedImage.current = null;
+      return;
+    }
+    if (lastViewedImage.current !== imageSource) {
+      lastViewedImage.current = imageSource;
+      trackEvent(ANALYTICS_EVENTS.GALLERY_VIEW, {
+        section: ANALYTICS_SECTIONS.GALLERY_VIEWER,
+        content_id: imageSource,
+      });
+    }
+  }, [imageSource]);
 
   if (!selectedImageData) {
     return null;
@@ -57,8 +78,9 @@ const FullscreenViewer = ({
       if (offset.x > 0 && velocity.x >= velocityThreshold) {
         trackInteraction(ANALYTICS_ACTIONS.GALLERY_NAVIGATE, {
           method: 'swipe',
+          section: ANALYTICS_SECTIONS.GALLERY_VIEWER,
           direction: 'previous',
-          image_id: selectedImageData.id,
+          content_id: selectedImageData.src,
         });
         // 오른쪽으로 스와이프 (이전 이미지)
         setDragDirection('right');
@@ -71,8 +93,9 @@ const FullscreenViewer = ({
       } else if (offset.x < 0 && velocity.x <= -velocityThreshold) {
         trackInteraction(ANALYTICS_ACTIONS.GALLERY_NAVIGATE, {
           method: 'swipe',
+          section: ANALYTICS_SECTIONS.GALLERY_VIEWER,
           direction: 'next',
-          image_id: selectedImageData.id,
+          content_id: selectedImageData.src,
         });
         // 왼쪽으로 스와이프 (다음 이미지)
         setDragDirection('left');
@@ -86,7 +109,11 @@ const FullscreenViewer = ({
     }
     // 수직 스와이프 감지 (아래로)
     else if (offset.y > swipeThreshold && velocity.y >= velocityThreshold) {
-      trackInteraction(ANALYTICS_ACTIONS.GALLERY_CLOSE, { method: 'swipe', image_id: selectedImageData.id });
+      trackInteraction(ANALYTICS_ACTIONS.GALLERY_CLOSE, {
+        method: 'swipe',
+        section: ANALYTICS_SECTIONS.GALLERY_VIEWER,
+        content_id: selectedImageData.src,
+      });
       // 아래로 스와이프 (뷰어 닫기)
       setDragDirection('down');
       setExitY(250);
@@ -100,7 +127,9 @@ const FullscreenViewer = ({
 
   return (
     <motion.div
-      data-analytics-label="gallery_close_backdrop"
+      data-analytics-label={ANALYTICS_ELEMENTS.GALLERY_CLOSE}
+      data-analytics-section={ANALYTICS_SECTIONS.GALLERY_VIEWER}
+      data-analytics-id={selectedImageData.src}
       data-analytics-click-self="true"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black"
       onClick={handleClose} // 페이드 아웃 애니메이션과 함께 닫기
@@ -111,7 +140,9 @@ const FullscreenViewer = ({
       {/* 닫기 버튼 */}
       <motion.button
         aria-label="사진 닫기"
-        data-analytics-label="gallery_close"
+        data-analytics-label={ANALYTICS_ELEMENTS.GALLERY_CLOSE}
+        data-analytics-section={ANALYTICS_SECTIONS.GALLERY_VIEWER}
+        data-analytics-id={selectedImageData.src}
         className="absolute top-4 left-4 z-50 rounded-full bg-black/50 p-2 text-white"
         onClick={(e) => {
           e.stopPropagation();
@@ -142,7 +173,9 @@ const FullscreenViewer = ({
       {/* 이전 이미지 버튼 */}
       <motion.button
         aria-label="이전 사진"
-        data-analytics-label="gallery_previous"
+        data-analytics-label={ANALYTICS_ELEMENTS.GALLERY_PREVIOUS}
+        data-analytics-section={ANALYTICS_SECTIONS.GALLERY_VIEWER}
+        data-analytics-id={selectedImageData.src}
         className="absolute top-1/2 left-4 z-50 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white"
         onClick={(e) => {
           e.stopPropagation();
@@ -168,7 +201,9 @@ const FullscreenViewer = ({
       {/* 다음 이미지 버튼 */}
       <motion.button
         aria-label="다음 사진"
-        data-analytics-label="gallery_next"
+        data-analytics-label={ANALYTICS_ELEMENTS.GALLERY_NEXT}
+        data-analytics-section={ANALYTICS_SECTIONS.GALLERY_VIEWER}
+        data-analytics-id={selectedImageData.src}
         className="absolute top-1/2 right-4 z-50 -translate-y-1/2 rounded-full bg-black/50 p-2 text-white"
         onClick={(e) => {
           e.stopPropagation();
@@ -226,7 +261,11 @@ const FullscreenViewer = ({
             animate={{ opacity: isClosing ? 0 : 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.3 }}
           >
-            <ImageMetadataDisplay metadata={selectedImageData.metadata} isFullscreen={true} />
+            <ImageMetadataDisplay
+              imageId={selectedImageData.src}
+              metadata={selectedImageData.metadata}
+              isFullscreen={true}
+            />
           </motion.div>
         )}
       </motion.div>

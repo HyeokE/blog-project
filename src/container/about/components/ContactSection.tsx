@@ -1,5 +1,7 @@
 'use client';
 
+import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
+
 import Link from 'next/link';
 import { BlurFade } from '@/components/BlurFade';
 
@@ -8,7 +10,10 @@ const ctaBase =
 
 export function ContactSection() {
   return (
-    <section className="px-6 py-24 md:py-32">
+    <section
+      data-analytics-section={ANALYTICS_SECTIONS.ABOUT_CONTACT}
+      className="px-6 py-24 md:py-32"
+    >
       <div className="mx-auto max-w-4xl">
         <div className="h-px w-full bg-border/30" />
 
@@ -25,6 +30,8 @@ export function ContactSection() {
           <BlurFade delay={0.1} inView inViewMargin="-60px" duration={0.5}>
             <div className="mt-8 flex flex-wrap gap-2.5">
               <a
+                data-analytics-label={ANALYTICS_ELEMENTS.CONTACT_LINK}
+                data-analytics-id="coffee-chat"
                 href="https://calendar.notion.so/meet/jason-jeong/coffee-chat"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -33,12 +40,16 @@ export function ContactSection() {
                 Coffee Chat
               </a>
               <a
+                data-analytics-label={ANALYTICS_ELEMENTS.CONTACT_LINK}
+                data-analytics-id="email"
                 href="mailto:jhjeong00@gmail.com"
                 className={`${ctaBase} border border-border text-foreground hover:border-foreground/25`}
               >
                 Email
               </a>
               <Link
+                data-analytics-label={ANALYTICS_ELEMENTS.RESUME_LINK}
+                data-analytics-id="resume"
                 href="/resume"
                 className={`${ctaBase} border border-border text-foreground hover:border-foreground/25`}
               >

@@ -1,5 +1,6 @@
 'use client';
 
+import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import { motion, useSpring, useTransform } from 'motion/react';
 import Link from '@/components/ThemedLink';
 import { useEffect } from 'react';
@@ -105,6 +106,9 @@ export const HeroSection = () => {
         </div>
 
         <Link
+          data-analytics-label={ANALYTICS_ELEMENTS.DESIGN_ABOUT}
+          data-analytics-section={ANALYTICS_SECTIONS.HEADER}
+          data-analytics-id={'about-design'}
           href="/about-design"
           className="border-foreground/15 text-foreground hover:border-foreground/25 mt-6 inline-flex rounded-full border px-5 py-3 text-[11px] tracking-[0.14em] uppercase backdrop-blur-md transition-colors sm:mt-8 sm:px-6 sm:text-xs sm:tracking-[0.16em]"
         >

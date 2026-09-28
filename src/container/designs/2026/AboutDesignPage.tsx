@@ -1,12 +1,17 @@
 'use client';
 
+import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
+
 import { motion } from 'motion/react';
 import Link from '@/components/ThemedLink';
 import { AirplaneWindow } from '@/components/airplane-window';
 
 export default function AboutDesignPage() {
   return (
-    <div className="relative flex min-h-screen items-center justify-center px-6 py-20">
+    <div
+      data-analytics-section={ANALYTICS_SECTIONS.DESIGN_STORY}
+      className="relative flex min-h-screen items-center justify-center px-6 py-20"
+    >
       <div className="mx-auto max-w-4xl">
         <div className="flex flex-col gap-16 md:flex-row md:items-center md:gap-20">
           <div className="flex flex-col items-center">
@@ -35,14 +40,14 @@ export default function AboutDesignPage() {
                 Inspired by Pantone 2026 Color of the Year.
               </p>
               <div className="font-serif-home my-6 h-px w-12 bg-border" />
-              <p>
-                올해의 블로그 디자인은 Pantone 2026 Color of the Year에서 영감을 받았습니다.
-              </p>
+              <p>올해의 블로그 디자인은 Pantone 2026 Color of the Year에서 영감을 받았습니다.</p>
             </div>
 
             {/* Navigation Links */}
             <div className="mt-12 flex items-center gap-8 border-t border-border pt-8">
               <Link
+                data-analytics-label={ANALYTICS_ELEMENTS.HOME_LINK}
+                data-analytics-id="home"
                 href="/"
                 className="group flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
@@ -51,6 +56,8 @@ export default function AboutDesignPage() {
               </Link>
               <div className="h-4 w-px bg-border" />
               <Link
+                data-analytics-label={ANALYTICS_ELEMENTS.NAV_LINK}
+                data-analytics-id="designs"
                 href="/designs"
                 className="group flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
               >

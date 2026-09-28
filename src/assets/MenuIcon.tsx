@@ -1,5 +1,7 @@
 'use client';
 
+import { ANALYTICS_ELEMENTS } from '@/constants/analytics';
+
 import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 
@@ -18,7 +20,17 @@ const MenuIcon = ({ isOpen, onClick }: { isOpen?: boolean; onClick?: () => void 
 
   return (
     <div className="flex h-6 w-6 items-center justify-center">
-      <div className="relative h-4 w-6 cursor-pointer" onClick={handleClick}>
+      <div
+        data-analytics-label={
+          onClick
+            ? isOpen
+              ? ANALYTICS_ELEMENTS.MENU_CLOSE
+              : ANALYTICS_ELEMENTS.MENU_OPEN
+            : undefined
+        }
+        className="relative h-4 w-6 cursor-pointer"
+        onClick={handleClick}
+      >
         {/* 상단 막대 */}
         <motion.span
           className="absolute top-0 right-0 left-0 h-0.5 rounded-full bg-current"

@@ -1,5 +1,6 @@
 'use client';
 
+import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import { useTranslation } from '@/hooks/useTranslation';
 import { locales } from '@/i18n';
 import { cn } from '@/components/Dock';
@@ -15,6 +16,9 @@ export function LanguageSwitcher() {
     <div className="flex space-x-2">
       {locales.map((l) => (
         <button
+          data-analytics-label={ANALYTICS_ELEMENTS.LANGUAGE_SELECT}
+          data-analytics-section={ANALYTICS_SECTIONS.HEADER}
+          data-analytics-id={l}
           key={l}
           onClick={() => handleLanguageChange(l)}
           className={cn(

@@ -1,5 +1,6 @@
 'use client';
 
+import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import Link from '@/components/ThemedLink';
 import { ScrollContext } from '@/context/ScrollContext';
 import { useRef, type ReactNode } from 'react';
@@ -39,6 +40,9 @@ export const CloudLayout = ({ children, snap = true }: CloudLayoutProps) => {
             <h3 className="font-serif-home text-xl text-foreground/60 italic">HYEOK.DEV</h3>
             <div className="flex space-x-6 text-sm text-muted-foreground">
               <a
+                data-analytics-label={ANALYTICS_ELEMENTS.FOOTER_LINK}
+                data-analytics-section={ANALYTICS_SECTIONS.FOOTER}
+                data-analytics-id={'github'}
                 href="https://github.com/HyeokE"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -47,6 +51,9 @@ export const CloudLayout = ({ children, snap = true }: CloudLayoutProps) => {
                 GitHub
               </a>
               <Link
+                data-analytics-label={ANALYTICS_ELEMENTS.FOOTER_LINK}
+                data-analytics-section={ANALYTICS_SECTIONS.FOOTER}
+                data-analytics-id={'designs'}
                 href="/designs"
                 className="transition-colors hover:text-foreground"
               >

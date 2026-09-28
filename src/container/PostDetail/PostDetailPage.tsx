@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { ANALYTICS_SECTIONS } from '@/constants/analytics';
 
 import NotionView from '@/components/NotionView';
 import { motion } from 'framer-motion';
@@ -8,7 +9,10 @@ import { format } from 'date-fns';
 
 const PostDetailPage = ({ post }: { post: PostDetailResponse }) => {
   return (
-    <article className="mw-[512px] mx-auto flex w-full flex-col gap-6 px-5 py-16">
+    <article
+      data-analytics-section={ANALYTICS_SECTIONS.ARTICLE}
+      className="mw-[512px] mx-auto flex w-full flex-col gap-6 px-5 py-16"
+    >
       <div className="mx-auto flex w-full max-w-[712px] flex-col gap-3">
         <motion.h1
           layoutId={post.title}

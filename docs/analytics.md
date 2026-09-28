@@ -9,6 +9,8 @@ SDK 다운로드 전 이벤트도 설정 뒤에 큐에 보관합니다.
 | `page_load` | 최초 렌더링 및 pathname이 바뀐 클라이언트 이동·뒤로/앞으로 가기 |
 | `ui_click` | 링크, 버튼, 입력 요소, ARIA 컨트롤, 명시적으로 표시한 클릭 영역 |
 | `ui_input` | 텍스트 필드에 포커스한 뒤 처음 편집할 때 한 번 |
+| `search_results` | 검색어 편집이 400ms 멈췄거나 결과 선택 직전: 검색어 길이·결과 수·결과 유무 |
+| `gallery_view` | 전체화면 뷰어에서 실제 표시된 사진 변경 (공개 이미지 경로로 식별) |
 | `ui_change` | select, checkbox, radio 등 값 변경 |
 | `form_submit` | 제출 이벤트 발생 시점 (서버 처리 성공을 뜻하지 않음) |
 | `ui_expand` | details 펼치기/접기 |
@@ -19,7 +21,7 @@ SDK 다운로드 전 이벤트도 설정 뒤에 큐에 보관합니다.
 `trackEvent`와 `trackInteraction`은 상수에 등록한 이름만 받습니다.
 
 공통 파라미터: `page_path`, `page_location`, `design_theme`, `color_mode`,
-`app_device_type`, `device_platform`, `browser_language`, `viewport_width`,
+`page_name`, `app_device_type`, `device_platform`, `browser_language`, `viewport_width`,
 `viewport_height`, `network_type`, `online`.
 요소 이벤트에는 `element_name`, `element_type`, 링크에는 `link_url`, `link_type`가 포함됩니다.
 제스처·단축키는 `action`, `method`, 필요 시 `content_id`로 구분합니다.
@@ -73,7 +75,7 @@ GA의 기본 `page_view` 자동 수집을 유지합니다. 앱에서 `page_view`
 - `data-analytics-scroll="article"`: 내부 스크롤 영역의 진행률 수집
 - 클릭이 없는 동작은 `trackInteraction(ANALYTICS_ACTIONS.GALLERY_NAVIGATE, { method: 'swipe', direction: 'next' })` 사용
 
-검색어·입력값·파일명은 수집하지 않습니다. 커스텀 URL 파라미터는 쿼리/해시/인증 정보를 제거하고,
+검색어·입력값·파일 업로드 입력의 파일명은 수집하지 않습니다. 갤러리의 공개 이미지 경로는 안정적인 콘텐츠 ID로 사용합니다. 커스텀 URL 파라미터는 쿼리/해시/인증 정보를 제거하고,
 mailto/tel 링크는 프로토콜만 수집합니다. 사용자 입력을 `trackEvent`나 `trackInteraction`에 전달하지 마세요.
 이는 커스텀 이벤트 규칙이며, GA 자체 향상된 측정 설정은 별도로 관리합니다.
 무한 순환 글 목록은 물리적 스크롤 비율 대신 사용자가 탐색한 글을 기록합니다.
@@ -86,3 +88,5 @@ mailto/tel 링크는 프로토콜만 수집합니다. 사용자 입력을 `track
 `page_load`는 새로고침과 경로 이동마다 한 번이어야 하며, 중첩 SVG·stopPropagation이 있는 버튼도
 `ui_click` 한 번이어야 합니다. GA 보고서에서 파라미터별 분석을 하려면 해당 파라미터를 이벤트 범위
 맞춤 측정기준으로 등록하세요. 실제 GA 보고서 반영은 배포 후 별도 확인이 필요합니다.
+
+페이지별 클릭 대상과 커버리지 검사는 [analytics-coverage.md](./analytics-coverage.md)에 정리했습니다.

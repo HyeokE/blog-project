@@ -1,3 +1,4 @@
+import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import WallPageShell from '../WallPageShell';
@@ -5,7 +6,10 @@ import WallPageShell from '../WallPageShell';
 export default function AboutDesignPage() {
   return (
     <WallPageShell>
-      <article className="wall-reading wall-design-story">
+      <article
+        data-analytics-section={ANALYTICS_SECTIONS.DESIGN_STORY}
+        className="wall-reading wall-design-story"
+      >
         <header className="wall-page-intro">
           <p className="wall-page-eyebrow">ABOUT THIS DESIGN / SWEET HOME</p>
           <h1>기록에 빛을 더하다.</h1>
@@ -39,7 +43,12 @@ export default function AboutDesignPage() {
             블로그가 지나온 디자인을 남겨두었습니다. sweet-home, Cloud, 2025 중 원하는 모습으로
             기록을 만나보세요.
           </p>
-          <Link href="/designs" className="wall-page-back">
+          <Link
+            data-analytics-label={ANALYTICS_ELEMENTS.NAV_LINK}
+            data-analytics-id="designs"
+            href="/designs"
+            className="wall-page-back"
+          >
             디자인 선택하기 <ArrowUpRight size={14} />
           </Link>
         </section>

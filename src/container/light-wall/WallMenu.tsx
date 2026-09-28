@@ -1,5 +1,6 @@
 'use client';
 
+import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import { useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Plus } from 'lucide-react';
@@ -17,6 +18,8 @@ export default function WallMenu() {
   return (
     <div className="wall-index" data-open={open}>
       <motion.button
+        data-analytics-label={ANALYTICS_ELEMENTS.MENU_OPEN}
+        data-analytics-section={ANALYTICS_SECTIONS.MENU}
         ref={buttonRef}
         type="button"
         className="wall-index-trigger"

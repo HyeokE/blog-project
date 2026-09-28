@@ -1,3 +1,4 @@
+import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import React from 'react';
 import type { ImageMetadata } from '@/utils/gallery/metadataClient';
 import { getMapLink } from '@/utils/gallery/metadataClient';
@@ -5,12 +6,17 @@ import { getMapLink } from '@/utils/gallery/metadataClient';
 interface ImageMetadataDisplayProps {
   metadata: ImageMetadata;
   isFullscreen?: boolean;
+  imageId?: string;
 }
 
 /**
  * 이미지 메타데이터를 표시하는 컴포넌트
  */
-const ImageMetadataDisplay = ({ metadata, isFullscreen = false }: ImageMetadataDisplayProps) => {
+const ImageMetadataDisplay = ({
+  metadata,
+  isFullscreen = false,
+  imageId,
+}: ImageMetadataDisplayProps) => {
   const textSize = isFullscreen ? 'text-sm' : 'text-xs';
   const marginBottom = isFullscreen ? 'mb-1' : '';
 
@@ -22,6 +28,9 @@ const ImageMetadataDisplay = ({ metadata, isFullscreen = false }: ImageMetadataD
           <span className="font-medium">{metadata.location}</span>
           {isFullscreen && metadata.coordinates && (
             <a
+              data-analytics-id={imageId}
+              data-analytics-label={ANALYTICS_ELEMENTS.GALLERY_LOCATION}
+              data-analytics-section={ANALYTICS_SECTIONS.GALLERY_VIEWER}
               href={getMapLink(metadata.coordinates)}
               target="_blank"
               rel="noopener noreferrer"

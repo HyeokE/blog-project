@@ -1,6 +1,6 @@
 'use client';
 
-import { ANALYTICS_EVENTS, GA_MEASUREMENT_ID } from '@/constants/analytics';
+import { ANALYTICS_ACTIONS, ANALYTICS_EVENTS, GA_MEASUREMENT_ID } from '@/constants/analytics';
 import { useEffect, useRef } from 'react';
 import {
   getCommonEnvironment,
@@ -15,6 +15,7 @@ import {
   initializeAnalytics,
   interactiveTarget,
   trackEvent,
+  trackInteraction,
 } from '@/utils/analytics';
 
 /** One root-level listener also covers portals, Notion content and future links. */
@@ -160,6 +161,43 @@ export default function GoogleAnalyticsTracker() {
       }
     };
 
+    const mediaActions = {
+      play: ANALYTICS_ACTIONS.MEDIA_PLAY,
+      pause: ANALYTICS_ACTIONS.MEDIA_PAUSE,
+      ended: ANALYTICS_ACTIONS.MEDIA_COMPLETE,
+      seeked: ANALYTICS_ACTIONS.MEDIA_SEEK,
+      volumechange: ANALYTICS_ACTIONS.MEDIA_VOLUME,
+    } as const;
+    const onMedia = (event: Event) => {
+      const media = event.target;
+      if (!(media instanceof HTMLMediaElement) || media.closest('[data-analytics-ignore="true"]')) {
+        return;
+      }
+      const action = mediaActions[event.type as keyof typeof mediaActions];
+      if (action) {
+        trackInteraction(action, {
+          ...elementParameters(media),
+          playback_seconds: Math.round(media.currentTime),
+          muted: media.muted,
+          volume: Math.round(media.volume * 100),
+        });
+      }
+    };
+    const onImageZoom = (event: Event) => {
+      if (
+        !(event.target instanceof Element) ||
+        event.target.closest('[data-analytics-ignore="true"]')
+      ) {
+        return;
+      }
+      trackInteraction(
+        event.type === 'medium-zoom:opened'
+          ? ANALYTICS_ACTIONS.ARTICLE_IMAGE_OPEN
+          : ANALYTICS_ACTIONS.ARTICLE_IMAGE_CLOSE,
+        elementParameters(event.target),
+      );
+    };
+
     const onScroll = (event: Event) => {
       const element = event.target === document ? document.scrollingElement : event.target;
       if (!(element instanceof Element)) {
@@ -193,6 +231,9 @@ export default function GoogleAnalyticsTracker() {
       }
     };
 
+    Object.keys(mediaActions).forEach((event) => document.addEventListener(event, onMedia, true));
+    document.addEventListener('medium-zoom:opened', onImageZoom, true);
+    document.addEventListener('medium-zoom:closed', onImageZoom, true);
     document.addEventListener('click', onClick, true);
     document.addEventListener('auxclick', onClick, true);
     document.addEventListener('input', onInput, true);
@@ -202,6 +243,11 @@ export default function GoogleAnalyticsTracker() {
     document.addEventListener('toggle', onToggle, true);
     document.addEventListener('scroll', onScroll, { capture: true, passive: true });
     return () => {
+      Object.keys(mediaActions).forEach((event) =>
+        document.removeEventListener(event, onMedia, true),
+      );
+      document.removeEventListener('medium-zoom:opened', onImageZoom, true);
+      document.removeEventListener('medium-zoom:closed', onImageZoom, true);
       document.removeEventListener('click', onClick, true);
       document.removeEventListener('auxclick', onClick, true);
       document.removeEventListener('input', onInput, true);

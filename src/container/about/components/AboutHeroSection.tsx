@@ -1,5 +1,7 @@
 'use client';
 
+import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
+
 import Link from 'next/link';
 import { motion, useTransform } from 'motion/react';
 import { useReducedMotion } from 'framer-motion';
@@ -184,7 +186,11 @@ export function AboutHeroSection({ profile }: AboutHeroSectionProps) {
   const infoY = useTransform(scrollYProgress, [0.33, 0.68], [0, no ? 0 : -50]);
 
   return (
-    <section ref={ref} className="relative min-h-[200vh]">
+    <section
+      data-analytics-section={ANALYTICS_SECTIONS.ABOUT_HERO}
+      ref={ref}
+      className="relative min-h-[200vh]"
+    >
       <div className="sticky top-0 h-dvh overflow-hidden">
         {/* Open sky gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#bcc4d1] via-[#d0c8cb] via-[45%] to-[#e8ddd0] dark:from-[#2a2826] dark:via-[#252321] dark:to-[#1e1c1a]" />
@@ -229,12 +235,16 @@ export function AboutHeroSection({ profile }: AboutHeroSectionProps) {
           </p>
           <div className="mt-5 flex flex-wrap items-center gap-2">
             <Link
+              data-analytics-label={ANALYTICS_ELEMENTS.RESUME_LINK}
+              data-analytics-id="resume"
               href="/resume"
               className={`${ctaBase} bg-foreground/80 text-background hover:bg-foreground`}
             >
               Resume
             </Link>
             <a
+              data-analytics-label={ANALYTICS_ELEMENTS.CONTACT_LINK}
+              data-analytics-id="github"
               href="https://github.com/HyeokE"
               target="_blank"
               rel="noopener noreferrer"
@@ -243,6 +253,8 @@ export function AboutHeroSection({ profile }: AboutHeroSectionProps) {
               GitHub
             </a>
             <a
+              data-analytics-label={ANALYTICS_ELEMENTS.CONTACT_LINK}
+              data-analytics-id="email"
               href="mailto:jhjeong00@gmail.com"
               className={`${ctaBase} border border-foreground/15 text-foreground/60 hover:border-foreground/30 hover:text-foreground`}
             >

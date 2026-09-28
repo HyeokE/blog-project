@@ -1,6 +1,8 @@
 'use client';
 
-import { ANALYTICS_ACTIONS } from '@/constants/analytics';
+import { useSearchAnalytics } from '@/hooks/useSearchAnalytics';
+
+import { ANALYTICS_ACTIONS, ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import { trackInteraction } from '@/utils/analytics';
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
@@ -27,6 +29,7 @@ export default function WallSearch({
   onClose,
   onAfterClose,
 }: WallSearchProps) {
+  const reportSearchResults = useSearchAnalytics(open, query, posts.length);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLOListElement>(null);
@@ -83,7 +86,8 @@ export default function WallSearch({
 
   return (
     <dialog
-      data-analytics-label="search_close_backdrop"
+      data-analytics-label={ANALYTICS_ELEMENTS.SEARCH_CLOSE}
+      data-analytics-section={ANALYTICS_SECTIONS.SEARCH}
       data-analytics-click-self="true"
       ref={dialogRef}
       className="wall-search-dialog"
@@ -91,7 +95,10 @@ export default function WallSearch({
       aria-labelledby="wall-search-heading"
       onCancel={(event) => {
         event.preventDefault();
-        trackInteraction(ANALYTICS_ACTIONS.SEARCH_CLOSE, { method: 'keyboard' });
+        trackInteraction(ANALYTICS_ACTIONS.SEARCH_CLOSE, {
+          section: ANALYTICS_SECTIONS.SEARCH,
+          method: 'keyboard',
+        });
         onClose();
       }}
       onClick={(event) => {
@@ -120,6 +127,8 @@ export default function WallSearch({
                 <h2 id="wall-search-heading">SEARCH</h2>
               </div>
               <motion.button
+                data-analytics-label={ANALYTICS_ELEMENTS.SEARCH_CLOSE}
+                data-analytics-section={ANALYTICS_SECTIONS.SEARCH}
                 type="button"
                 className="wall-search-dismiss"
                 aria-label="검색 닫기"
@@ -133,6 +142,8 @@ export default function WallSearch({
             </div>
 
             <form
+              data-analytics-label={ANALYTICS_ELEMENTS.SEARCH_FORM}
+              data-analytics-section={ANALYTICS_SECTIONS.SEARCH}
               className="wall-search-form"
               role="search"
               onSubmit={(event) => event.preventDefault()}
@@ -140,7 +151,8 @@ export default function WallSearch({
               <div className="wall-search-field">
                 <Search size={21} strokeWidth={1.3} aria-hidden="true" />
                 <input
-                  data-analytics-label="post_search"
+                  data-analytics-label={ANALYTICS_ELEMENTS.SEARCH_INPUT}
+                  data-analytics-section={ANALYTICS_SECTIONS.SEARCH}
                   ref={inputRef}
                   type="search"
                   aria-label="제목, 내용, 태그 검색"
@@ -155,7 +167,10 @@ export default function WallSearch({
                     if (event.key === 'ArrowDown') {
                       event.preventDefault();
                       if (posts.length) {
-                        trackInteraction(ANALYTICS_ACTIONS.SEARCH_RESULTS_FOCUS, { method: 'keyboard' });
+                        trackInteraction(ANALYTICS_ACTIONS.SEARCH_RESULTS_FOCUS, {
+                          section: ANALYTICS_SECTIONS.SEARCH,
+                          method: 'keyboard',
+                        });
                       }
                       resultsRef.current?.querySelector<HTMLAnchorElement>('a')?.focus();
                     }
@@ -164,6 +179,8 @@ export default function WallSearch({
                 <AnimatePresence initial={false}>
                   {query && (
                     <motion.button
+                      data-analytics-label={ANALYTICS_ELEMENTS.SEARCH_CLEAR}
+                      data-analytics-section={ANALYTICS_SECTIONS.SEARCH}
                       type="button"
                       className="wall-search-clear"
                       aria-label="검색어 지우기"
@@ -194,7 +211,7 @@ export default function WallSearch({
 
             <div
               ref={resultsScrollRef}
-              data-analytics-scroll="search_results"
+              data-analytics-scroll={ANALYTICS_SECTIONS.SEARCH}
               className="wall-search-results-scroll"
             >
               {posts.length ? (
@@ -209,7 +226,17 @@ export default function WallSearch({
                         delay: reduceMotion ? 0 : Math.min(index * 0.025, 0.125),
                       }}
                     >
-                      <Link href={`/${post.id}`} onClick={onClose}>
+                      <Link
+                        data-analytics-label={ANALYTICS_ELEMENTS.SEARCH_RESULT}
+                        data-analytics-section={ANALYTICS_SECTIONS.SEARCH}
+                        data-analytics-id={post.id}
+                        data-analytics-position={index + 1}
+                        href={`/${post.id}`}
+                        onClick={() => {
+                          reportSearchResults();
+                          onClose();
+                        }}
+                      >
                         <span className="wall-search-result-meta">
                           <time dateTime={post.date?.start_date}>
                             {post.date?.start_date?.split('T')[0].replaceAll('-', '.')}

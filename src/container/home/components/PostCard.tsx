@@ -21,6 +21,7 @@ const PostCard = ({ post }: PostCard) => {
       <ThumbnailTransition
         key={post.id}
         href={`/${post.id}`}
+        postId={post.id}
         title={post.title}
         date={post.date.start_date}
         className="max-w-[600px]:gap-1 flex flex-col gap-2"

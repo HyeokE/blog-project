@@ -1,6 +1,6 @@
 'use client';
 
-import { ANALYTICS_ACTIONS } from '@/constants/analytics';
+import { ANALYTICS_ACTIONS, ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import { trackInteraction } from '@/utils/analytics';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -67,7 +67,11 @@ export default function LightWall({ posts }: { posts: NotionPosts }) {
       if (!userScrollingRef.current) {
         return;
       }
-      trackInteraction(ANALYTICS_ACTIONS.POST_NAVIGATE, { method: 'scroll', content_id: selectedPostId });
+      trackInteraction(ANALYTICS_ACTIONS.POST_NAVIGATE, {
+        method: 'scroll',
+        section: ANALYTICS_SECTIONS.POST_LIST,
+        content_id: selectedPostId,
+      });
       userScrollingRef.current = false;
     }, 250);
     return () => window.clearTimeout(timer);
@@ -89,11 +93,20 @@ export default function LightWall({ posts }: { posts: NotionPosts }) {
       <ProjectedWindowFallback mode={mode} />
       <div className="wall-light-source" aria-hidden="true" />
       <header className="wall-header">
-        <Link href="/" className="wall-wordmark" aria-label="HYEOK.DEV 홈">
+        <Link
+          data-analytics-label={ANALYTICS_ELEMENTS.HOME_LINK}
+          data-analytics-section={ANALYTICS_SECTIONS.HEADER}
+          data-analytics-id={'home'}
+          href="/"
+          className="wall-wordmark"
+          aria-label="HYEOK.DEV 홈"
+        >
           HYEOK<span>.</span>
         </Link>
         <div className="wall-header-actions">
           <button
+            data-analytics-label={ANALYTICS_ELEMENTS.SEARCH_OPEN}
+            data-analytics-section={ANALYTICS_SECTIONS.HEADER}
             ref={searchButtonRef}
             type="button"
             aria-label="글 검색"
@@ -117,6 +130,8 @@ export default function LightWall({ posts }: { posts: NotionPosts }) {
             <Search size={18} strokeWidth={1.5} />
           </button>
           <button
+            data-analytics-label={ANALYTICS_ELEMENTS.COLOR_MODE_TOGGLE}
+            data-analytics-section={ANALYTICS_SECTIONS.HEADER}
             type="button"
             aria-label={mode === 'light' ? '어두운 조명으로 전환' : '밝은 조명으로 전환'}
             onClick={toggleMode}
@@ -168,7 +183,7 @@ export default function LightWall({ posts }: { posts: NotionPosts }) {
 
         <div
           ref={scrollRef}
-          data-analytics-label="post_list"
+          data-analytics-section={ANALYTICS_SECTIONS.POST_LIST}
           className="wall-scroll"
           tabIndex={0}
           aria-label="위아래로 스크롤하여 글 탐색"
@@ -186,6 +201,7 @@ export default function LightWall({ posts }: { posts: NotionPosts }) {
               if (filtered.length > 1) {
                 trackInteraction(ANALYTICS_ACTIONS.POST_NAVIGATE, {
                   method: 'keyboard',
+                  section: ANALYTICS_SECTIONS.POST_LIST,
                   direction: event.key === 'ArrowDown' ? 'next' : 'previous',
                 });
               }
@@ -197,6 +213,7 @@ export default function LightWall({ posts }: { posts: NotionPosts }) {
               if (filtered.length > 1) {
                 trackInteraction(ANALYTICS_ACTIONS.POST_NAVIGATE, {
                   method: 'keyboard',
+                  section: ANALYTICS_SECTIONS.POST_LIST,
                   destination: event.key === 'Home' ? 'first' : 'last',
                 });
               }
@@ -227,6 +244,9 @@ export default function LightWall({ posts }: { posts: NotionPosts }) {
                   className="wall-row"
                 >
                   <Link
+                    data-analytics-label={ANALYTICS_ELEMENTS.POST_OPEN}
+                    data-analytics-section={ANALYTICS_SECTIONS.POST_LIST}
+                    data-analytics-id={post.id}
                     href={`/${post.id}`}
                     className="wall-post"
                     tabIndex={isActive ? 0 : -1}
@@ -278,6 +298,9 @@ export default function LightWall({ posts }: { posts: NotionPosts }) {
             {String(filtered.length).padStart(2, '0')}
           </span>
           <button
+            data-analytics-id={selected?.id}
+            data-analytics-label={ANALYTICS_ELEMENTS.POST_PREVIOUS}
+            data-analytics-section={ANALYTICS_SECTIONS.POST_LIST}
             type="button"
             aria-label="이전 글"
             disabled={filtered.length < 2}
@@ -289,6 +312,9 @@ export default function LightWall({ posts }: { posts: NotionPosts }) {
             <ArrowUp size={16} />
           </button>
           <button
+            data-analytics-id={selected?.id}
+            data-analytics-label={ANALYTICS_ELEMENTS.POST_NEXT}
+            data-analytics-section={ANALYTICS_SECTIONS.POST_LIST}
             type="button"
             aria-label="다음 글"
             disabled={filtered.length < 2}

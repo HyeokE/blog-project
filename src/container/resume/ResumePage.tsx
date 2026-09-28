@@ -1,3 +1,4 @@
+import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import React from 'react';
 import Link from '@/components/ThemedLink';
 import { Github, Mail, Coffee } from 'lucide-react';
@@ -7,8 +8,13 @@ const ResumePage = () => {
     <div className="font-suit bg-cloud-dancer/60 relative min-h-dvh min-w-dvw overflow-hidden dark:bg-cloud-dancer/60">
       <div className="mx-auto max-w-3xl px-6 py-12 sm:px-8 sm:py-8">
         {/* 상단 내비게이션 */}
-        <nav className="mb-12 flex items-center justify-between">
+        <nav
+          data-analytics-section={ANALYTICS_SECTIONS.RESUME_CONTACT}
+          className="mb-12 flex items-center justify-between"
+        >
           <Link
+            data-analytics-label={ANALYTICS_ELEMENTS.NAV_LINK}
+            data-analytics-id="about"
             href="/about"
             className="text-brand-500 hover:text-black text-xs tracking-[0.24em] uppercase transition-colors dark:text-muted-foreground dark:hover:text-foreground"
           >
@@ -16,6 +22,8 @@ const ResumePage = () => {
           </Link>
           <div className="flex space-x-4">
             <a
+              data-analytics-label={ANALYTICS_ELEMENTS.CONTACT_LINK}
+              data-analytics-id="email"
               href="mailto:jhjeong00@gmail.com"
               className="text-brand-500 hover:text-black dark:text-muted-foreground dark:hover:text-foreground"
               aria-label="Email"
@@ -23,6 +31,8 @@ const ResumePage = () => {
               <Mail className="h-5 w-5" />
             </a>
             <a
+              data-analytics-label={ANALYTICS_ELEMENTS.CONTACT_LINK}
+              data-analytics-id="github"
               href="https://github.com/HyeokE"
               target="_blank"
               rel="noopener noreferrer"
@@ -32,6 +42,8 @@ const ResumePage = () => {
               <Github className="h-5 w-5" />
             </a>
             <a
+              data-analytics-label={ANALYTICS_ELEMENTS.CONTACT_LINK}
+              data-analytics-id="coffee-chat"
               href="https://calendar.notion.so/meet/jason-jeong/coffee-chat"
               target="_blank"
               rel="noopener noreferrer"
@@ -45,7 +57,9 @@ const ResumePage = () => {
 
         {/* 헤더 섹션 */}
         <header className="mb-20">
-          <h1 className="text-brand-700 mb-8 text-5xl font-extrabold dark:text-foreground">ABOUT.</h1>
+          <h1 className="text-brand-700 mb-8 text-5xl font-extrabold dark:text-foreground">
+            ABOUT.
+          </h1>
           <p className="text-brand-700 mb-2 text-lg leading-relaxed dark:text-card-foreground">
             안녕하세요. 저는 정준혁입니다.
           </p>
@@ -97,14 +111,18 @@ const ResumePage = () => {
               <p className="text-brand-600 mb-6 dark:text-brand-700">Frontend Developer</p>
 
               <div className="mb-8">
-                <h4 className="mb-4 text-lg font-bold text-black dark:text-foreground">Qube(QDS).</h4>
+                <h4 className="mb-4 text-lg font-bold text-black dark:text-foreground">
+                  Qube(QDS).
+                </h4>
                 <p className="text-brand-700 mb-6 dark:text-card-foreground">
                   쿼타랩 디자인 시스템 'Qube'의 개발 및 유지보수를 주도적으로 담당했습니다. 관리되지
                   않던 디자인 시스템의 방향성을 재 정립하고, 프로덕트 안정성 향상이라는 목표를
                   달성하기 위해 사용 범위를 정의하여 실질적인 개선을 이뤄냈습니다.
                 </p>
 
-                <h5 className="mb-4 text-base font-bold text-black dark:text-foreground">WHAT I DID.</h5>
+                <h5 className="mb-4 text-base font-bold text-black dark:text-foreground">
+                  WHAT I DID.
+                </h5>
                 <ul className="mb-6 space-y-1">
                   <li className="flex">
                     <span className="mr-4 text-gray-400">-</span>
@@ -149,13 +167,17 @@ const ResumePage = () => {
               </div>
 
               <div className="mb-8">
-                <h4 className="mb-4 text-lg font-bold text-black dark:text-foreground">Quotabook.</h4>
+                <h4 className="mb-4 text-lg font-bold text-black dark:text-foreground">
+                  Quotabook.
+                </h4>
                 <p className="text-brand-700 mb-6 dark:text-card-foreground">
                   증권 관리 플랫폼 쿼타북을 유지보수 및 개발했습니다. "프로덕트 안정성 개선"이라는
                   미션을 달성하기 위한 여러 활동을 진행했습니다.
                 </p>
 
-                <h5 className="mb-4 text-base font-bold text-black dark:text-foreground">WHAT I DID.</h5>
+                <h5 className="mb-4 text-base font-bold text-black dark:text-foreground">
+                  WHAT I DID.
+                </h5>
                 <ul className="mb-6 space-y-1">
                   <li className="flex">
                     <span className="mr-4 text-gray-400">-</span>
@@ -189,7 +211,9 @@ const ResumePage = () => {
               <p className="text-brand-600 mb-6 dark:text-brand-700">Frontend Developer</p>
 
               <div className="mb-8">
-                <h4 className="mb-4 text-lg font-bold text-black dark:text-foreground">샤플플로우</h4>
+                <h4 className="mb-4 text-lg font-bold text-black dark:text-foreground">
+                  샤플플로우
+                </h4>
                 <p className="text-brand-700 mb-6 dark:text-card-foreground">
                   샤플, 하다 통합 디자인 시스템인 Shoplflow를 리드하여 개발했습니다. 오픈소스
                   프로젝트로 공개되어 있으며 하나의 언어를 만드는 것을 목표로 하고 있습니다. style,
@@ -198,7 +222,9 @@ const ResumePage = () => {
                   compound component 패턴으로 컴포넌트를 설계했습니다.
                 </p>
 
-                <h5 className="mb-4 text-base font-bold text-black dark:text-foreground">WHAT I DID.</h5>
+                <h5 className="mb-4 text-base font-bold text-black dark:text-foreground">
+                  WHAT I DID.
+                </h5>
                 <ul className="mb-6 space-y-1">
                   <li className="flex">
                     <span className="mr-4 text-gray-400">-</span>
@@ -254,7 +280,9 @@ const ResumePage = () => {
                   적극적인 의견 제시로 기획이 변경되기도 했습니다.
                 </p>
 
-                <h5 className="mb-4 text-base font-bold text-black dark:text-foreground">WHAT I DID.</h5>
+                <h5 className="mb-4 text-base font-bold text-black dark:text-foreground">
+                  WHAT I DID.
+                </h5>
                 <ul className="mb-6 space-y-1">
                   <li className="flex">
                     <span className="mr-4 text-gray-400">-</span>
@@ -300,7 +328,7 @@ const ResumePage = () => {
           </section>
 
           {/* 프로젝트 경험 */}
-          <section className="mb-20">
+          <section data-analytics-section={ANALYTICS_SECTIONS.RESUME_PROJECTS} className="mb-20">
             <h2 className="mb-10 text-2xl font-bold text-black dark:text-foreground">
               PROJECT EXPERIENCE.
             </h2>
@@ -315,6 +343,8 @@ const ResumePage = () => {
               </div>
               <div className="mb-4 flex space-x-6">
                 <a
+                  data-analytics-label={ANALYTICS_ELEMENTS.PROJECT_LINK}
+                  data-analytics-id="gdsc-dju-web-github"
                   href="https://github.com/GDSC-Daejin/gdsc-dju-websites/tree/master"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -323,6 +353,8 @@ const ResumePage = () => {
                   GitHub
                 </a>
                 <a
+                  data-analytics-label={ANALYTICS_ELEMENTS.PROJECT_LINK}
+                  data-analytics-id="gdsc-dju-web-website"
                   href="https://gdscdju.dev/"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -345,11 +377,15 @@ const ResumePage = () => {
                 <h3 className="text-xl font-bold text-black dark:text-foreground">
                   GDS (GDSC Design System)
                 </h3>
-                <span className="text-brand-500 text-sm dark:text-muted-foreground">2022.8 - 2022.12</span>
+                <span className="text-brand-500 text-sm dark:text-muted-foreground">
+                  2022.8 - 2022.12
+                </span>
               </div>
 
               <div className="mb-4 flex space-x-6">
                 <a
+                  data-analytics-label={ANALYTICS_ELEMENTS.PROJECT_LINK}
+                  data-analytics-id="gds-github"
                   href="https://github.com/GDSC-Daejin/design-seed"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -369,13 +405,17 @@ const ResumePage = () => {
             {/* GDSC DJU Admin */}
             <div>
               <div className="mb-4 flex items-baseline justify-between">
-                <h3 className="text-xl font-bold text-black dark:text-foreground">GDSC DJU Admin</h3>
+                <h3 className="text-xl font-bold text-black dark:text-foreground">
+                  GDSC DJU Admin
+                </h3>
                 <span className="text-brand-500 text-sm dark:text-muted-foreground">
                   2022.05.25 - 2022.07.04
                 </span>
               </div>
               <div className="mb-4 flex space-x-6">
                 <a
+                  data-analytics-label={ANALYTICS_ELEMENTS.PROJECT_LINK}
+                  data-analytics-id="gdsc-dju-admin-github"
                   href="https://github.com/GDSC-Daejin/gdsc-dju-admin"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -401,8 +441,12 @@ const ResumePage = () => {
             {/* GDG Korea WebTech */}
             <div className="mb-16">
               <div className="mb-2 flex items-baseline justify-between">
-                <h3 className="text-xl font-bold text-black dark:text-foreground">GDG Korea WebTech</h3>
-                <span className="text-brand-500 text-sm dark:text-muted-foreground">2023.03 - 2025.04</span>
+                <h3 className="text-xl font-bold text-black dark:text-foreground">
+                  GDG Korea WebTech
+                </h3>
+                <span className="text-brand-500 text-sm dark:text-muted-foreground">
+                  2023.03 - 2025.04
+                </span>
               </div>
               <p className="text-brand-600 mb-6 dark:text-brand-700">Organizer</p>
 
@@ -416,7 +460,9 @@ const ResumePage = () => {
             <div>
               <div className="mb-2 flex items-baseline justify-between">
                 <h3 className="text-xl font-bold text-black dark:text-foreground">GDSC Korea</h3>
-                <span className="text-brand-500 text-sm dark:text-muted-foreground">2021.08 - 2023.07</span>
+                <span className="text-brand-500 text-sm dark:text-muted-foreground">
+                  2021.08 - 2023.07
+                </span>
               </div>
               <p className="text-brand-600 mb-6 dark:text-brand-700">Lead</p>
 
@@ -425,7 +471,9 @@ const ResumePage = () => {
                 운영했습니다.
               </p>
 
-              <h5 className="mb-4 text-base font-bold text-black dark:text-foreground">WHAT I DID.</h5>
+              <h5 className="mb-4 text-base font-bold text-black dark:text-foreground">
+                WHAT I DID.
+              </h5>
               <ul className="mb-6 space-y-1">
                 <li className="flex">
                   <span className="mr-4 text-gray-400">-</span>
@@ -458,7 +506,9 @@ const ResumePage = () => {
 
           {/* 커뮤니케이션 */}
           <section className="mb-20">
-            <h2 className="mb-10 text-2xl font-bold text-black dark:text-foreground">COMMUNICATION.</h2>
+            <h2 className="mb-10 text-2xl font-bold text-black dark:text-foreground">
+              COMMUNICATION.
+            </h2>
 
             <h3 className="mb-6 text-xl font-bold text-black dark:text-foreground">OVERALL.</h3>
             <ul className="space-y-1">

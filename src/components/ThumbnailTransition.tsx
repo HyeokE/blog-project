@@ -1,5 +1,6 @@
 'use client';
 
+import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import { useRouter } from 'next/navigation';
 import ThemedLink from './ThemedLink';
 import { useDesignTheme } from '@/context/DesignThemeContext';
@@ -14,6 +15,7 @@ interface ThumbnailTransitionProps {
   date: string;
   useTransition?: boolean;
   href: string;
+  postId?: string;
   children: React.ReactNode;
   className?: string;
 }
@@ -23,6 +25,7 @@ export default function ThumbnailTransition({
   date,
   useTransition = false,
   href,
+  postId,
   children,
   className,
 }: ThumbnailTransitionProps) {
@@ -68,7 +71,14 @@ export default function ThumbnailTransition({
 
   return (
     <>
-      <ThemedLink href={href} onClick={handleClick} className={className}>
+      <ThemedLink
+        data-analytics-label={ANALYTICS_ELEMENTS.POST_OPEN}
+        data-analytics-section={ANALYTICS_SECTIONS.POST_LIST}
+        data-analytics-id={postId ?? href.split(/[?#]/)[0]}
+        href={href}
+        onClick={handleClick}
+        className={className}
+      >
         {children}
       </ThemedLink>
       <ClientPortal>

@@ -14,7 +14,7 @@ registerHooks({
 
 const { ANALYTICS_ACTIONS, ANALYTICS_EVENTS, GA_MEASUREMENT_ID } =
   await import('../src/constants/analytics.ts');
-const { analyticsLabel, analyticsUrl, initializeAnalytics, trackEvent, trackInteraction } =
+const { analyticsLabel, analyticsUrl, analyticsPage, initializeAnalytics, trackEvent, trackInteraction } =
   await import('../src/utils/analytics.ts');
 
 test('analytics is safe during server rendering', () => {
@@ -266,4 +266,18 @@ test('environment helpers are safe on the server and event constants meet GA nam
       assert.match(name, /^[a-z][a-z0-9_]{0,39}$/);
     }
   }
+});
+
+
+test('page families retain exact paths while grouping all three design variants', () => {
+  for (const prefix of ['', '/2025', '/2026']) {
+    assert.equal(analyticsPage(prefix || '/'), 'home');
+    for (const route of ['about', 'gallery', 'personal', 'resume']) {
+      assert.equal(analyticsPage(`${prefix}/${route}`), route);
+    }
+    assert.equal(analyticsPage(`${prefix}/10be703a-508d-4db8-adbc-194d2b4fb6b2`), 'post');
+    assert.equal(analyticsPage(`${prefix}/about-design`), 'about_design');
+  }
+  assert.equal(analyticsPage('/2025/light'), 'home');
+  assert.equal(analyticsPage('/designs'), 'designs');
 });
