@@ -14,7 +14,7 @@ The inventory comes from `src/app/**/page.tsx`. The global tracker supplies page
 | `/[slug]` | Top/end back links and article interaction classification; wall header/menu/color controls. |
 | `/2025/[slug]`, `/2026/[slug]` | Shared legacy article renderer and article interaction classification; shared layout controls. |
 | `/about`, `/2025/about`, `/2026/about` | Email, GitHub and coffee-chat contact links; project GitHub/website links with individual IDs and contact/project sections. |
-| `/gallery`, `/2025/gallery`, `/2026/gallery` | Photo thumbnails, viewer previous/next/close/backdrop, location link and retry. Keyboard/swipe navigation is recorded through interaction actions. |
+| `/gallery`, `/2025/gallery`, `/2026/gallery` | Photo thumbnails, viewer previous/next/close/backdrop, location link and retry. Native button activation is recorded as a click; swipe navigation is recorded through interaction actions. |
 | `/designs` | Every design selection with its design ID, design-story link, wall controls. |
 | `/about-design` | Sweet-home design story and design-picker link; wall controls. |
 | `/2025/about-design`, `/2026/about-design` | Both routes currently export the Cloud design-story component: home and design-archive links. |
@@ -54,3 +54,13 @@ node --test scripts/analytics-coverage.test.mjs
 ```
 
 Its diagnostic reports the current number of instrumented roots and narrow exceptions. This establishes source coverage only. Browser event generation, network delivery, GA receipt and production deployment remain separate evidence and must be verified separately.
+
+### Local verification on 2026-09-29
+
+- Analytics unit and source coverage checks: 13 passed; TypeScript passed. Changed TypeScript files pass ESLint with three existing Dock declaration-order warnings.
+- Aside Browser: `/resume` redirects to `/about`; all seven contact/project links have section and per-link IDs.
+- Wall search: a query with one result emits one `search_results`; selecting it records its post ID and position 1.
+- Command search on `/2025`: result rows render as anchors; Enter generates one result click, with result count and position.
+- Gallery: opening a photo emits one click and one `gallery_view`; next emits one click and a view for the next source; closing emits one click.
+
+Browser checks inspect the client `dataLayer`. They do not establish GA server receipt or production deployment.
