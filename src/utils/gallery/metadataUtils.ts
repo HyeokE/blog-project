@@ -1,3 +1,4 @@
+import { normalizeExifData } from './normalizeExifData.js';
 // exifr를 동적으로 import하도록 수정
 // import exifr from 'exifr';
 
@@ -270,127 +271,8 @@ export const parseImageMetadata = async (
  */
 const processExifData = async (
   exifData: any,
-): Promise<{ metadata: ImageMetadata; hasValidMetadata: boolean }> => {
-  try {
-    // EXIF 데이터 로깅 (디버깅 용도)
-    console.info('추출된 EXIF 데이터:', {
-      lat: exifData.GPSLatitude,
-      lng: exifData.GPSLongitude,
-      lens: exifData.LensModel,
-      device: exifData.Model || exifData.Make,
-      date: exifData.DateTimeOriginal,
-      aperture: exifData.FNumber || exifData.ApertureValue,
-      shutterSpeed: exifData.ShutterSpeedValue || exifData.ExposureTime,
-      iso: exifData.ISO,
-      focalLength: exifData.FocalLength,
-    });
-
-    // GPS 좌표 변환 (배열 → 십진수)
-    let decimalLat, decimalLng;
-
-    if (exifData.GPSLatitude !== undefined) {
-      decimalLat = convertGPSArrayToDecimal(exifData.GPSLatitude);
-    }
-
-    if (exifData.GPSLongitude !== undefined) {
-      decimalLng = convertGPSArrayToDecimal(exifData.GPSLongitude);
-    }
-
-    // 변환된 좌표가 유효한지 확인하고 좌표 저장
-    let coordinates, location;
-    if (
-      decimalLat !== undefined &&
-      decimalLng !== undefined &&
-      isValidCoordinate(decimalLat, decimalLng)
-    ) {
-      coordinates = {
-        lat: decimalLat,
-        lng: decimalLng,
-      };
-
-      // 변환된 좌표 로깅
-      console.info('변환된 GPS 좌표:', coordinates);
-
-      // 서버 API를 통해 좌표에서 위치 정보 얻기
-      location = await getLocationFromCoordinates(decimalLat, decimalLng);
-    }
-
-    // 조리개값 포맷팅
-    let aperture;
-    if (exifData.FNumber) {
-      aperture = `f/${exifData.FNumber.toFixed(1)}`;
-    } else if (exifData.ApertureValue) {
-      // ApertureValue는 APEX 값으로 저장되므로 변환이 필요합니다
-      const fNumber = Math.pow(Math.sqrt(2), exifData.ApertureValue);
-      aperture = `f/${fNumber.toFixed(1)}`;
-    }
-
-    // 셔터 스피드 포맷팅
-    let shutterSpeed;
-    if (exifData.ExposureTime) {
-      // ExposureTime은 초 단위로 저장됩니다 (예: 1/100초는 0.01로 저장)
-      const exposureTime = exifData.ExposureTime;
-      if (exposureTime >= 1) {
-        shutterSpeed = `${exposureTime.toFixed(1)}초`;
-      } else {
-        const denominator = Math.round(1 / exposureTime);
-        shutterSpeed = `1/${denominator}초`;
-      }
-    } else if (exifData.ShutterSpeedValue) {
-      // ShutterSpeedValue는 APEX 값으로 저장되므로 변환이 필요합니다
-      const exposureTime = Math.pow(2, -exifData.ShutterSpeedValue);
-      if (exposureTime >= 1) {
-        shutterSpeed = `${exposureTime.toFixed(1)}초`;
-      } else {
-        const denominator = Math.round(1 / exposureTime);
-        shutterSpeed = `1/${denominator}초`;
-      }
-    }
-
-    // ISO 포맷팅
-    const iso = exifData.ISO ? `ISO ${exifData.ISO}` : undefined;
-
-    // 초점 거리 포맷팅
-    const focalLength = exifData.FocalLength ? `${exifData.FocalLength}mm` : undefined;
-
-    // 날짜 포맷팅
-    const dateTimeOriginal = exifData.DateTimeOriginal
-      ? new Date(exifData.DateTimeOriginal)
-      : undefined;
-    const dateTime = dateTimeOriginal ? formatDate(dateTimeOriginal) : undefined;
-
-    // 메타데이터 객체 구성
-    const metadata: ImageMetadata = {
-      location,
-      lens: exifData.LensModel,
-      device: exifData.Model || exifData.Make,
-      dateTime,
-      dateTimeOriginal,
-      aperture,
-      shutterSpeed,
-      iso,
-      focalLength,
-      coordinates,
-    };
-
-    // 유효한 메타데이터가 있는지 확인
-    const hasValidMetadata = Boolean(
-      metadata.lens ||
-        metadata.device ||
-        metadata.dateTime ||
-        metadata.location ||
-        metadata.aperture ||
-        metadata.shutterSpeed ||
-        metadata.iso ||
-        metadata.focalLength,
-    );
-
-    return { metadata, hasValidMetadata };
-  } catch (error) {
-    console.error('EXIF 데이터 처리 중 오류 발생:', error);
-    return { metadata: {}, hasValidMetadata: false };
-  }
-};
+): Promise<{ metadata: ImageMetadata; hasValidMetadata: boolean }> =>
+  normalizeExifData(exifData, getLocationFromCoordinates);
 
 /**
  * 좌표를 사용자가 링크로 열 수 있는 형식으로 변환
