@@ -248,6 +248,8 @@ export default function LightWall({ posts }: { posts: NotionPosts }) {
                     data-analytics-section={ANALYTICS_SECTIONS.POST_LIST}
                     data-analytics-id={post.id}
                     href={`/${post.id}`}
+                    // Virtual rows must not download the article renderer during the intro.
+                    prefetch={false}
                     className="wall-post"
                     tabIndex={isActive ? 0 : -1}
                     aria-current={isActive ? 'true' : undefined}
