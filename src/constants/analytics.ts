@@ -1,6 +1,7 @@
 export const GA_MEASUREMENT_ID = 'G-07RYXQL1X0';
 
 export const ANALYTICS_EVENTS = {
+  WEB_VITAL: 'web_vital',
   PAGE_LOAD: 'page_load',
   UI_CLICK: 'ui_click',
   UI_INPUT: 'ui_input',

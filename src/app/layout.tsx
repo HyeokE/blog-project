@@ -11,6 +11,7 @@ import OverlayProvider from '@/context/OverlayProvider';
 import { LayoutGroup } from 'motion/react';
 import CurrentLayoutExtras from '@/container/designs/current/RootLayoutExtras';
 import InitialLightReveal from '@/container/light-wall/InitialLightReveal';
+import WebVitalsReporter from '@/components/WebVitalsReporter';
 
 export const revalidate = 3600;
 
@@ -83,6 +84,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <InitialLightReveal />
         <noscript><style>{`.initial-light-reveal { display: none !important; }`}</style></noscript>
         <GoogleAnalyticsTracker />
+        <WebVitalsReporter />
         <Analytics />
         <SpeedInsights />
         <div id="portal-root" />

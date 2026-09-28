@@ -82,6 +82,29 @@ mailto/tel 링크는 프로토콜만 수집합니다. 사용자 입력을 `track
 
 ## 검증
 
+### Web Vitals
+
+루트의 `WebVitalsReporter`가 Next.js `useReportWebVitals`로 `CLS`, `FCP`, `INP`, `LCP`,
+`TTFB`를 측정해 `web_vital` 이벤트로 보냅니다. 브라우저가 제공하면 `FID`도 기록합니다.
+Vercel Speed Insights는 계속 동작합니다. 설치된 Vercel SDK의 `beforeSend`는 URL/route만
+공개하므로, Vercel 서버의 수치를 복사하는 방식이 아닌 동일 표준 지표의 별도 수집입니다.
+수집 시점과 표본에 따라 두 보고서의 수치는 다를 수 있습니다.
+
+- `metric_name`, `metric_id`, `metric_rating`: 지표 종류, 측정 ID, 평가
+- `metric_value`, `metric_delta`: 원래 측정값과 변화량. CLS는 점수, 나머지는 ms
+- `metric_unit`: `score` 또는 `ms`
+- `value`: GA 전송용 반올림 값. CLS만 1,000배하며 원래 값은 `metric_value`에 보존
+- `metric_page_path`: 측정 대상 문서 경로. SPA 이동 후 보고돼도 최초 문서 경로 유지
+- `measurement_source`: `next_web_vitals`
+
+동일 측정 ID/값의 중복 콜백은 제거하고 갱신된 값은 다시 보냅니다. 측정 ID별 마지막 값을
+사용해 분포를 계산하세요. GA Explore에서는 `web_vital`로 필터링하고 `metric_name`,
+`metric_rating`, `metric_unit`, `metric_page_path`를 이벤트 범위 맞춤 측정기준으로,
+`metric_value`를 맞춤 측정항목으로 등록하세요. 단위가 다른 지표를 합산하지 마세요.
+
+참고: [Next.js Web Vitals](https://nextjs.org/docs/app/api-reference/functions/use-report-web-vitals),
+[Vercel SDK 설정](https://vercel.com/docs/speed-insights/package).
+
 `node --experimental-strip-types --test scripts/analytics.test.mjs`
 
 브라우저에서 `window.dataLayer`의 `event` 항목과 Network의 `g/collect` 요청을 확인합니다.
