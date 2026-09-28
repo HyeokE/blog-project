@@ -7,7 +7,9 @@ import filterPublishedPosts from '@/utils/notion/filterPublishedPosts';
 import { extractBlockValue, extractCollectionValue } from '@/utils/notion/extractValue';
 import { BLOG_CONFIG } from '../../.blog-project.config';
 
-export const notionService = new NotionAPI();
+export const notionService = new NotionAPI({
+  apiBaseUrl: 'https://app.notion.com/api/v3',
+});
 
 export async function getAllPosts({ includePages = false }) {
   let id = BLOG_CONFIG.NOTION_PAGE_ID as string;
