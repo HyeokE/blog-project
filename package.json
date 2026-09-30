@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node scripts/generate-gallery-previews.mjs && next dev",
-    "build": "node scripts/generate-gallery-previews.mjs && next build && node scripts/check-gallery-bundles.mjs",
-    "start": "next start",
+    "dev": "node scripts/generate-gallery-previews.mjs && bun run --bun next dev",
+    "build": "node scripts/generate-gallery-previews.mjs && bun run --bun next build && node scripts/check-gallery-bundles.mjs",
+    "start": "bun run --bun next start",
     "lint": "eslint src",
     "gallery:previews": "node scripts/generate-gallery-previews.mjs",
     "storybook": "NODE_ENV=development storybook dev -p 6006 --no-open",
