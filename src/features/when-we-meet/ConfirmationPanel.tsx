@@ -8,6 +8,7 @@ import {Badge} from '@/components/ui/badge';
 import {Card} from '@/components/ui/card';
 import {Collapsible,CollapsibleContent,CollapsibleTrigger} from '@/components/ui/collapsible';
 import {Notice} from './Notice';
+import {funnelSignal,funnelStep} from './funnel';
 import {RequiredFieldLabel} from '@/components/craft/RequiredFieldLabel';
 import {Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,DialogTitle} from '@/components/ui/dialog';
 import {DateTimePicker} from './DateTimePicker';
@@ -69,6 +70,10 @@ export function ConfirmationPanel({room,role,members=[],slots,responses,currentU
  const reviewed=useMemo(()=>selectionAvailability(members,responses,slots,range,t),[members,responses,slots,range,t]);
  const byResponse=(response:ConfirmationMember['response'])=>reviewed.filter(member=>member.response===response);
  const drifted=selectionDrift(baseline,reviewed);
+ // Drop-off tracking (funnel.ts): picked a time, opened the review, backed out of it.
+ const reviewOpened=useRef(false);
+ useEffect(()=>{if(range)funnelStep('confirm','time_selected')},[range]);
+ useEffect(()=>{if(review){reviewOpened.current=true;funnelStep('confirm','review_open',{recipient_count:recipients.length})}else if(reviewOpened.current){reviewOpened.current=false;if(!sent)funnelSignal('confirm','review_back')}},[review]);
  // Owner suggestions from saved availability (room bounds come from the slots; 30-minute minimum).
  const suggestions=useMemo(()=>owner?bestTimes({slots,responses,members}):[],[owner,slots,responses,members]);
  const busy=flowStatus==='pending'||flowStatus==='reconciling';

@@ -15,6 +15,9 @@ SDK 다운로드 전 이벤트도 설정 뒤에 큐에 보관합니다.
 | `form_submit` | 제출 이벤트 발생 시점 (서버 처리 성공을 뜻하지 않음) |
 | `ui_expand` | details 펼치기/접기 |
 | `content_scroll` | 페이지 및 표시한 내부 영역의 25/50/75/90% 도달, 페이지·영역별 한 번 |
+| `wwm_outcome` | When We Meet 서버 호출의 결과(성공/실패). 아래 "When We Meet 결과 이벤트" 참고 |
+| `wwm_funnel` | When We Meet 단계 도달과 부가 신호 (이탈 분석용) |
+| `wwm_exit` | When We Meet 흐름이 끝난 방식과 마지막 도달 단계 |
 | `ui_interaction` | 검색 단축키, 검색 결과 키보드 선택, Escape/외부 클릭 닫기, 갤러리 스와이프, 글 목록 탐색 |
 
 측정 ID, 모든 이벤트 이름, 동작 이름과 타입은 `src/constants/analytics.ts`에서 관리합니다.
@@ -59,6 +62,54 @@ GA의 기본 `page_view` 자동 수집을 유지합니다. 앱에서 `page_view`
 페이지 조회 → 브라우저 방문 기록 기반 페이지 변경이 켜져 있어야 합니다.
 이 저장소의 변경은 GA 관리 설정을 변경하지 않습니다.
 [Google의 SPA 측정 가이드](https://developers.google.com/analytics/devguides/collection/ga4/single-page-applications)를 참고하세요.
+
+## When We Meet 결과 이벤트
+
+`ui_click`과 `form_submit`은 눌렀다는 사실만 알려 주므로, 실제 성공 여부는 `wwm_outcome`으로 따로 봅니다.
+`src/features/when-we-meet/api.ts`의 `outcome()` 한 곳에서 서버 호출 결과를 기록합니다.
+
+| 파라미터 | 값 |
+| --- | --- |
+| `operation` | `ANALYTICS_WWM_OPERATIONS`의 동작 이름: `create_room`, `join_room`, `save_response`, `calendar_busy`, `confirm_send`, `confirm_update`, `confirm_resend`, `rename_room`, `update_schedule`, `delete_room`, `invitation_preview`, `calendar_connect_start`, `sign_in_start`, `load_meetings`/`load_room`/`load_confirmation`(실패만) |
+| `result` | `ok` 또는 `error` (캘린더 동의 복귀는 `success`/`error`/`info`) |
+| `http_status`, `reconnect` | 실패일 때만. 네트워크 오류는 상태 0 |
+| `duration_ms` | 요청 시작부터 응답까지 |
+| `slot_count`, `removed_slots` | 저장·캘린더 미리보기·일정 변경에서만 개수로 기록 |
+
+`calendar_connect_return`은 Google 캘린더 동의 후 방으로 돌아왔을 때 결과 톤만 기록합니다.
+방 ID, 이름, 제목, 이메일, 시간 목록은 보내지 않습니다. 새 서버 호출을 `api.ts`에 추가하면
+`outcome()`으로 감싸야 하며, `scripts/wwm-outcome-analytics.test.mjs`가 이를 검사합니다.
+
+## When We Meet 이탈 분석
+
+`src/features/when-we-meet/funnel.ts`가 흐름(flow)별로 단계를 기록합니다. 단계 순서는
+`ANALYTICS_WWM_FUNNELS`(`src/constants/analytics.ts`)가 정하고, `step_index`는 그 순서의 위치입니다.
+
+| flow | 단계 (순서대로) | 의미 |
+| --- | --- | --- |
+| `onboarding` | `guest_view` → `sign_in_click` → `list_view` | 비로그인 첫 화면 → 로그인 시도 → 로그인한 목록 |
+| `create` | `dialog_open` → `first_input` → `title_filled` → `dates_filled` → `name_filled` → `submit` → `created` → `invite_copied` | 모임 만들기 |
+| `invite` | `landing_view` → `sign_in_click` → `signed_in` → `join_submit` → `joined` | 초대받은 사람의 합류 |
+| `room` | `room_view` → `first_select` → `first_saved` | 방에서 시간 고르고 저장 |
+| `confirm` | `tab_view` → `time_selected` → `review_open` → `sent` | 주최자의 확정·발송 |
+
+`wwm_funnel`: `flow`, `step`, `step_index`, `elapsed_ms`(흐름 시작 후), 단계별 부가 값(`signed_in`, `link_state`, `role`, `people` 등).
+같은 흐름에서 같은 단계는 한 번만 기록합니다. 오류·탭 전환 같은 부가 신호는 `step_index = -1`, `signal = true`로
+기록하며 단계를 진행시키지 않습니다: `validation_error`(+`field`), `submit_failed`, `join_failed`, `save_failed`,
+`went_offline`, `tab_view`(+`tab`), `invite_copy`, `settings_open`, `calendar_fill_applied`(+`slot_count`),
+`review_back`, `login_prompt`.
+
+`wwm_exit`: 흐름이 끝난 방식. `reason`은 `dialog_close`(만들기 창을 닫음), `sign_in_prompt`/`handoff`(로그인으로 이동),
+`open_meeting`/`dismiss`(만든 뒤), `tab_leave`, `navigate`(다른 화면으로 이동), `page_hide`(탭 숨김·닫기, 처음 한 번만)입니다.
+`completed`는 마지막 단계에 도달했는지, `last_step`/`last_step_index`/`steps_reached`/`steps_total`은 어디까지 갔는지,
+`elapsed_ms`는 머문 시간입니다. 만들기는 입력 상태(`title_filled`, `dates_filled`, `name_filled`, `error_count`), 방은
+선택·저장 칸 수, 저장 안 된 변경 여부, 저장 상태, 본 탭 수, 역할, 참여 인원, 확정 여부가 함께 갑니다.
+`handoff`와 `page_hide`는 `transport_type: beacon`으로 보내 페이지가 떠나는 순간에도 전달되게 합니다.
+
+이탈 지점 보기: GA4 탐색 → 유입경로 탐색에서 `wwm_funnel`의 `step`을 단계로 놓거나, `wwm_exit`을
+`completed = false`로 필터한 뒤 `last_step`별로 나눕니다. 맞춤 측정기준으로 `flow`, `step`, `last_step`,
+`reason`, `completed`, `link_state`, `role`을 등록해야 보고서에 나타납니다(이 저장소는 GA 관리 설정을 바꾸지 않습니다).
+방 ID, 이름, 제목, 이메일, 시간 목록은 보내지 않습니다. `scripts/wwm-funnel.test.mjs`가 단계 동작과 호출 누락을 검사합니다.
 
 ## 새 상호작용 추가
 

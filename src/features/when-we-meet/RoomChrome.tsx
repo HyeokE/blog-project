@@ -1,5 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
+import {funnelStepIfActive} from './funnel';
 import {Check,Link2,MoreHorizontal} from 'lucide-react';
 import {toast} from 'sonner';
 import {ANALYTICS_ELEMENTS} from '@/constants/analytics';
@@ -23,7 +24,7 @@ export function LinkField({value,autoSelect=false}:{value:string;autoSelect?:boo
  useEffect(()=>()=>window.clearTimeout(timer.current),[]);
  useEffect(()=>{if(autoSelect)requestAnimationFrame(()=>input.current?.select())},[autoSelect]);
  async function copy(){
-  try{await navigator.clipboard.writeText(value);setCopied(true);window.clearTimeout(timer.current);timer.current=window.setTimeout(()=>setCopied(false),COPIED_MS)}
+  try{await navigator.clipboard.writeText(value);funnelStepIfActive('create','invite_copied');setCopied(true);window.clearTimeout(timer.current);timer.current=window.setTimeout(()=>setCopied(false),COPIED_MS)}
   catch{input.current?.focus();input.current?.select();toast.error(MEETING_TOASTS.copyFailed)}
  }
  return <div className="wwm-link-field"><Input ref={input} aria-label={t('room.invitationLink')} data-analytics-label={ANALYTICS_ELEMENTS.INVITE_LINK_INPUT} readOnly value={value} onFocus={event=>event.target.select()}/><Button type="button" variant="ghost" size="sm" className="wwm-link-copy" data-analytics-label={ANALYTICS_ELEMENTS.INVITE_LINK_COPY} data-analytics-id="inline" onClick={()=>void copy()}><span aria-live="polite">{copied?t('create.copied'):t('create.copy')}</span></Button></div>;

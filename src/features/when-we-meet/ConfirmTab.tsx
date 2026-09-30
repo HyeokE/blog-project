@@ -7,6 +7,7 @@ import {Button} from '@/components/ui/button';
 import {ConfirmationPanel} from './ConfirmationPanel';
 import {toast} from 'sonner';
 import {connectGoogleCalendar,loadConfirmation,postConfirmation,postConfirmationUpdate,type Response,type Room} from './api';
+import {funnelComplete,funnelSignal} from './funnel';
 import {useWwmCopy} from './i18n/WwmI18nProvider';
 import {confirmationBody,confirmFailure,confirmOutcome,confirmPanelState,confirmUpdateBody,normalizeConfirmationResponse,openEditBody,type ConfirmationData,type ConfirmationRecordData,type ConfirmPanelStatus,type ConfirmProposal,type ConfirmRequestBody,type ConfirmUpdateBody} from './confirm-tab.mjs';
 
@@ -47,9 +48,10 @@ export function ConfirmTab({roomId,room,slots,responses,onConfirmation}:{roomId:
    const outcome=confirmOutcome(await postConfirmation(roomId,body));
    setRecipientIds(body.recipients);
    if(outcome.confirmation)setData(current=>current&&{...current,confirmation:outcome.confirmation});
-   if(outcome.status==='confirmed'){storage.write(sentKey(roomId),null);toast.success(invitationsSentToast(body.recipients.length));if(outcome.confirmation?.status==='confirmed')setLocal(null);else reload();}
+   if(outcome.status==='confirmed'){funnelComplete('confirm','sent',{recipient_count:body.recipients.length});storage.write(sentKey(roomId),null);toast.success(invitationsSentToast(body.recipients.length));if(outcome.confirmation?.status==='confirmed')setLocal(null);else reload();}
    else setLocal({status:'reconciling'});
   }catch(error){
+   funnelSignal('confirm','submit_failed');
    const failure=confirmFailure(error,t);
    if(!failure.retrySame)storage.write(sentKey(roomId),null);
    setLocal({status:'failed',error:failure.error,calendar:failure.calendar});

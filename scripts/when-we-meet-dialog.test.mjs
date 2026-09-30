@@ -9,7 +9,7 @@ test('owned list and guest entry share a Radix create dialog, not an inline form
  assert.doesNotMatch(source,/<section className="wwm-card"><h2>Create a (?:room|meeting)<\/h2>/);
  assert.match(source,/<form id="wwm-create-form" noValidate[^>]*onSubmit=\{create\}>/);
  // Create failures stay inside the dialog as an alert (dictionary copy by status, never raw server text); success closes it and opens one "{Title} is ready" dialog (no toast).
- assert.match(source,/catch\(e\)\{setCreateError\(copy\.apiError\(e,'create'\)\);setStatus\(''\);\}/);
+ assert.match(source,/catch\(e\)\{(?:funnelSignal\('create','submit_failed'\);)?setCreateError\(copy\.apiError\(e,'create'\)\);setStatus\(''\);\}/);
  assert.match(source,/<div id="wwm-create-status"[^>]*role=\{createError\?'alert':'status'\}/);
  assert.match(source,/setCreated\(\{id:result\.id,title:form\.title\.trim\(\),link:`\$\{window\.location\.origin\}\/craft\/when-we-meet\/\$\{result\.id\}\?invite=\$\{result\.inviteToken\}`,summary:meetingSummary\(form\)\}\)/);
  assert.match(source,/<CreatedMeetingDialog meeting=\{created\}/);
@@ -26,7 +26,7 @@ test('owned list and guest entry share a Radix create dialog, not an inline form
 });
 test('creation guards pending and auth uncertainty and only closes after success',()=>{
  assert.match(source,/if\(busy\|\|accountLoading\|\|createPending\.current\)\{return;\}/);
- assert.match(source,/if\(!profile\)\{saveDraft/);
+ assert.match(source,/if\(!profile\)\{(?:funnelSignal\('create','login_prompt'\);funnelEnd\('create','sign_in_prompt'\);)?saveDraft/);
  assert.match(source,/setShowCreate\(false\);setForm\(\{...initial,timezone:defaultTimezone\.current\}\)/);
  assert.match(source,/onEscapeKeyDown=\{e=>\{if\(busy\|\|document\.querySelector\('\.wwm-range>\.wwm-picker-trigger\[aria-expanded="true"\]'\)\)\{e\.preventDefault\(\)\}\}\}/);
 });

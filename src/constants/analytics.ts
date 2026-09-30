@@ -11,6 +11,9 @@ export const ANALYTICS_EVENTS = {
   UI_INTERACTION: 'ui_interaction',
   UI_EXPAND: 'ui_expand',
   FORM_SUBMIT: 'form_submit',
+  WWM_OUTCOME: 'wwm_outcome',
+  WWM_FUNNEL: 'wwm_funnel',
+  WWM_EXIT: 'wwm_exit',
   CONTENT_SCROLL: 'content_scroll',
   ENVIRONMENT_BROWSER: 'environment_browser',
   ENVIRONMENT_DEVICE: 'environment_device',
@@ -37,6 +40,65 @@ export const ANALYTICS_ACTIONS = {
   MEDIA_VOLUME: 'media_volume',
 } as const;
 
+/** When We Meet operations reported by `wwm_outcome` (result of the server call, not the click). */
+export const ANALYTICS_WWM_OPERATIONS = {
+  SIGN_IN_START: 'sign_in_start',
+  CALENDAR_CONNECT_START: 'calendar_connect_start',
+  CALENDAR_CONNECT_RETURN: 'calendar_connect_return',
+  CREATE_ROOM: 'create_room',
+  JOIN_ROOM: 'join_room',
+  SAVE_RESPONSE: 'save_response',
+  CALENDAR_BUSY: 'calendar_busy',
+  CONFIRM_SEND: 'confirm_send',
+  CONFIRM_UPDATE: 'confirm_update',
+  CONFIRM_RESEND: 'confirm_resend',
+  RENAME_ROOM: 'rename_room',
+  UPDATE_SCHEDULE: 'update_schedule',
+  DELETE_ROOM: 'delete_room',
+  INVITATION_PREVIEW: 'invitation_preview',
+  LOAD_MEETINGS: 'load_meetings',
+  LOAD_ROOM: 'load_room',
+  LOAD_CONFIRMATION: 'load_confirmation',
+} as const;
+
+/**
+ * When We Meet funnels, in the order a person moves through them. `step_index` in `wwm_funnel` is the position here,
+ * so the last step reached before `wwm_exit` shows where people drop off. Signals are side events (errors, tab views)
+ * that do not advance a funnel.
+ */
+export const ANALYTICS_WWM_FUNNELS = {
+  /** Landing on /craft/when-we-meet: guest → sign-in → signed-in list. */
+  onboarding: ['guest_view', 'sign_in_click', 'list_view'],
+  /** Creating a meeting: dialog → typed → required fields → submitted → created. */
+  create: ['dialog_open', 'first_input', 'title_filled', 'dates_filled', 'name_filled', 'submit', 'created', 'invite_copied'],
+  /** Invitee: link opened → signed in → joined. */
+  invite: ['landing_view', 'sign_in_click', 'signed_in', 'join_submit', 'joined'],
+  /** Anyone inside a room: opened → picked times → saved. */
+  room: ['room_view', 'first_select', 'first_saved'],
+  /** Organizer on the Confirm tab: opened → picked a time → reviewed → sent. */
+  confirm: ['tab_view', 'time_selected', 'review_open', 'sent'],
+} as const;
+
+export type AnalyticsWwmFlow = keyof typeof ANALYTICS_WWM_FUNNELS;
+export type AnalyticsWwmStep<F extends AnalyticsWwmFlow> = (typeof ANALYTICS_WWM_FUNNELS)[F][number];
+
+export const ANALYTICS_WWM_SIGNALS = {
+  VALIDATION_ERROR: 'validation_error',
+  SUBMIT_FAILED: 'submit_failed',
+  JOIN_FAILED: 'join_failed',
+  SAVE_FAILED: 'save_failed',
+  WENT_OFFLINE: 'went_offline',
+  TAB_VIEW: 'tab_view',
+  INVITE_COPY: 'invite_copy',
+  SETTINGS_OPEN: 'settings_open',
+  CALENDAR_FILL_APPLIED: 'calendar_fill_applied',
+  REVIEW_BACK: 'review_back',
+  LOGIN_PROMPT: 'login_prompt',
+} as const;
+
+export type AnalyticsWwmSignal = (typeof ANALYTICS_WWM_SIGNALS)[keyof typeof ANALYTICS_WWM_SIGNALS];
+
+export type AnalyticsWwmOperation = (typeof ANALYTICS_WWM_OPERATIONS)[keyof typeof ANALYTICS_WWM_OPERATIONS];
 export type AnalyticsEvent = (typeof ANALYTICS_EVENTS)[keyof typeof ANALYTICS_EVENTS];
 export type AnalyticsAction = (typeof ANALYTICS_ACTIONS)[keyof typeof ANALYTICS_ACTIONS];
 
