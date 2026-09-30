@@ -5,16 +5,16 @@ import {isRangeDateDisabled,rangeDays,selectRangeDate} from '../src/features/whe
 const today='2026-09-30';
 const awaitingEnd={start:'2026-09-29',end:'',phase:'end',error:''};
 
-test('awaiting an end date: the 14th inclusive day stays enabled and the 15th is disabled',()=>{
- assert.equal(rangeDays(awaitingEnd.start,'2026-10-12'),14);
- assert.equal(isRangeDateDisabled(awaitingEnd,'2026-10-12','2026-09-01'),false);
- assert.equal(isRangeDateDisabled(awaitingEnd,'2026-10-13','2026-09-01'),true);
+test('awaiting an end date: the 28th inclusive day stays enabled and the 29th is disabled',()=>{
+ assert.equal(rangeDays(awaitingEnd.start,'2026-10-26'),28);
+ assert.equal(isRangeDateDisabled(awaitingEnd,'2026-10-26','2026-09-01'),false);
+ assert.equal(isRangeDateDisabled(awaitingEnd,'2026-10-27','2026-09-01'),true);
  assert.equal(isRangeDateDisabled(awaitingEnd,'2026-12-25','2026-09-01'),true);
 });
-test('cross-month 14-day window from the reference start',()=>{
+test('cross-month 28-day window from the reference start',()=>{
  const pending={start:'2026-10-25',end:'',phase:'end',error:''};
- assert.equal(isRangeDateDisabled(pending,'2026-11-07',today),false);
- assert.equal(isRangeDateDisabled(pending,'2026-11-08',today),true);
+ assert.equal(isRangeDateDisabled(pending,'2026-11-21',today),false);
+ assert.equal(isRangeDateDisabled(pending,'2026-11-22',today),true);
 });
 test('earlier dates (reverse restart) and the start itself stay enabled while awaiting an end',()=>{
  const pending={start:'2026-10-10',end:'',phase:'end',error:''};
@@ -32,8 +32,8 @@ test('dates before the minimum are disabled in every phase',()=>{
  assert.equal(isRangeDateDisabled({start:'2026-10-02',end:'',phase:'end',error:''},'2026-09-29',today),true);
  assert.equal(isRangeDateDisabled({start:'',end:'',phase:'start',error:''},today,today),false);
 });
-test('pure selection still rejects a 15th-day endpoint as defense in depth, keeping the draft',()=>{
- const rejected=selectRangeDate(awaitingEnd,'2026-10-13');
+test('pure selection still rejects a 29th-day endpoint as defense in depth, keeping the draft',()=>{
+ const rejected=selectRangeDate(awaitingEnd,'2026-10-27');
  assert.equal(rejected.start,awaitingEnd.start);
  assert.equal(rejected.phase,'end');
  assert.ok(rejected.error);

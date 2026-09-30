@@ -9,10 +9,10 @@ const slots=makeSlots(room);
 const at=(date,time)=>slots.find(slot=>slot.date===date&&slot.time===time).id;
 const now=new Date('2026-10-01T00:00:00Z');
 
-test('schedule validation matches creation: dates, 14-day cap, 30-minute times, timezone',()=>{
+test('schedule validation matches creation: dates, 28-day cap, 30-minute times, timezone',()=>{
  assert.deepEqual(scheduleErrors(room,{previousStart:room.startDate},now),{});
  assert.equal(scheduleErrors({...room,startDate:'',endDate:''},{previousStart:room.startDate},now).dates,'Choose a start and end date.');
- assert.equal(scheduleErrors({...room,endDate:'2026-10-30'},{previousStart:room.startDate},now).dates,'Choose at most 14 inclusive days.');
+ assert.equal(scheduleErrors({...room,endDate:'2026-11-02'},{previousStart:room.startDate},now).dates,'Choose at most 28 inclusive days.');
  assert.equal(scheduleErrors({...room,startTime:'12:00',endTime:'09:00'},{previousStart:room.startDate},now).times,'End time must be later than start time.');
  assert.equal(scheduleErrors({...room,timezone:'Mars/Base'},{previousStart:room.startDate},now).timezone,'Choose a valid timezone.');
 });
@@ -42,4 +42,15 @@ test('warning and delete copy',()=>{
  assert.equal(deleteMeetingCopy('Team coffee',false).title,'Delete Team coffee?');
  assert.equal(deleteMeetingCopy('Team coffee',false).description,'Everyone loses access to this meeting and its saved availability. This can’t be undone.');
  assert.match(deleteMeetingCopy('Team coffee',true).description,/The Google Calendar event isn’t cancelled/);
+});
+
+test('28-day limit is one constant shared by the app, the API and the database',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const read=path=>readFileSync(new URL(`../${path}`,import.meta.url),'utf8');
+ const {MAX_RANGE_DAYS,MAX_RESPONSE_SLOTS}=await import('../src/features/when-we-meet/limits.mjs');
+ assert.equal(MAX_RANGE_DAYS,28);assert.equal(MAX_RESPONSE_SLOTS,1344);
+ const sql=read('supabase/migrations/20261001030000_wwm_four_week_range.sql');
+ assert.match(sql,/end_date < start_date \+ 28/);assert.match(sql,/cardinality\(slots\) <= 1344/);assert.match(sql,/p_end_date>=p_start_date\+28/);
+ const route=read('src/app/api/craft/when-we-meet/[roomId]/route.ts');
+ assert.match(route,/value\.length<=MAX_RESPONSE_SLOTS/);assert.match(route,/body\(request,128\*1024\)/);
 });

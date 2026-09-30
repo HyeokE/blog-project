@@ -7,8 +7,8 @@ test('rejects calendar dates that roll into another month',()=>{
   assert.match(validateRoom(room),/valid dates/);
 });
 test('validates inclusive date and aligned time bounds',()=>{
-  assert.equal(validateRoom({title:'Dinner',startDate:'2026-10-01',endDate:'2026-10-14',startTime:'09:00',endTime:'10:00',timezone:'Asia/Seoul'}), null);
-  assert.match(validateRoom({title:'Dinner',startDate:'2026-10-01',endDate:'2026-10-15',startTime:'09:00',endTime:'10:00',timezone:'Asia/Seoul'}), /14/);
+  assert.equal(validateRoom({title:'Dinner',startDate:'2026-10-01',endDate:'2026-10-28',startTime:'09:00',endTime:'10:00',timezone:'Asia/Seoul'}), null);
+  assert.match(validateRoom({title:'Dinner',startDate:'2026-10-01',endDate:'2026-10-29',startTime:'09:00',endTime:'10:00',timezone:'Asia/Seoul'}), /28/);
   assert.match(validateRoom({title:'Dinner',startDate:'2026-10-01',endDate:'2026-10-01',startTime:'09:15',endTime:'10:00',timezone:'Asia/Seoul'}), /30/);
   assert.match(validateRoom({title:'Dinner',startDate:'2026-10-01',endDate:'2026-10-01',startTime:'10:00',endTime:'09:00',timezone:'Asia/Seoul'}), /time/i);
 });

@@ -1,4 +1,5 @@
 import {createWwmTranslator} from '../../i18n/wwm.mjs';
+import {MAX_RANGE_DAYS} from './limits.mjs';
 const english=createWwmTranslator('en');
 const dateRE=/^\d{4}-\d\d-\d\d$/;
 const timeRE=/^(?:[01]\d|2[0-3]):(?:00|30)$/;
@@ -9,7 +10,7 @@ export function validateRoomCode(r){
   const validDate=d=>dateRE.test(d)&&Number.isFinite(Date.parse(d+'T00:00:00Z'))&&new Date(d+'T00:00:00Z').toISOString().slice(0,10)===d;
   if(!validDate(r.startDate)||!validDate(r.endDate))return 'dates';
   const a=Date.parse(r.startDate+'T00:00:00Z'),b=Date.parse(r.endDate+'T00:00:00Z');
-  if(b<a||b-a>=14*86400000)return 'maxDays';
+  if(b<a||b-a>=MAX_RANGE_DAYS*86400000)return 'maxDays';
   if(!timeRE.test(r.startTime)||!(r.endTime==='24:00'||timeRE.test(r.endTime)))return 'aligned';
   if(minutes(r.endTime)<=minutes(r.startTime))return 'endAfterStart';
   try{new Intl.DateTimeFormat('en-US',{timeZone:r.timezone}).format();}catch{return 'timezone';}

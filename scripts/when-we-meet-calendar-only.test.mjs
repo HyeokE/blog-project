@@ -16,10 +16,10 @@ test('popup auto-commits completed range without action footer or visible guidan
  const visible=source.replace(/<p className="sr-only"[\s\S]*?<\/p>/g,'');
  assert.doesNotMatch(visible,/Choose start date|Choose end date|Up to 14 consecutive days|up to 14 days/i);
 });
-test('only end phase disables beyond 14 inclusive days, never earlier restart dates',()=>{
+test('only end phase disables beyond 28 inclusive days, never earlier restart dates',()=>{
  const pending={start:'2026-09-29',end:'',phase:'end',error:''};
- assert.equal(isRangeEndDisabled(pending,'2026-10-12'),false);
- assert.equal(isRangeEndDisabled(pending,'2026-10-13'),true);
+ assert.equal(isRangeEndDisabled(pending,'2026-10-26'),false);
+ assert.equal(isRangeEndDisabled(pending,'2026-10-27'),true);
  assert.equal(isRangeEndDisabled(pending,'2026-09-28'),false);
  assert.equal(isRangeEndDisabled({...pending,phase:'start'},'2026-10-13'),false);
  assert.equal(isRangeEndDisabled({...pending,phase:'complete'},'2026-10-13'),false);

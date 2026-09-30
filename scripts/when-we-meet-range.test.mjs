@@ -12,10 +12,10 @@ test('first click starts and second click completes an inclusive range across mo
 test('reverse selection restarts at earlier day',()=>{
  assert.deepEqual(selectRangeDate({start:'2026-10-08',end:'',phase:'end'},'2026-10-07'),{start:'2026-10-07',end:'',phase:'end',error:''});
 });
-test('14 inclusive days allowed but 15 gives feedback without changing selection',()=>{
+test('28 inclusive days allowed but 29 gives feedback without changing selection',()=>{
  const pending={start:'2026-09-29',end:'',phase:'end'};
- assert.equal(selectRangeDate(pending,'2026-10-12').phase,'complete');
- assert.deepEqual(selectRangeDate(pending,'2026-10-13'),{...pending,error:'최대 14일까지 선택할 수 있어요.'});
+ assert.equal(selectRangeDate(pending,'2026-10-26').phase,'complete');
+ assert.deepEqual(selectRangeDate(pending,'2026-10-27'),{...pending,error:'최대 28일까지 선택할 수 있어요.'});
 });
 test('reset and cancel/application preserve committed values independently',()=>{
  const committed={start:'2026-09-29',end:'2026-10-01'};

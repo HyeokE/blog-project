@@ -15,8 +15,8 @@ test('view labels distinguish editing from overlap without changing values',()=>
  assert.equal(slotLabel('overlap',false,0,0),'No saved responses');
 });
 test('range preview counts inclusive dates within limit',()=>{
- assert.deepEqual(rangePreview('2026-09-29','2026-10-12'),{days:14,valid:true});
- assert.deepEqual(rangePreview('2026-09-29','2026-10-13'),{days:15,valid:false});
+ assert.deepEqual(rangePreview('2026-09-29','2026-10-26'),{days:28,valid:true});
+ assert.deepEqual(rangePreview('2026-09-29','2026-10-27'),{days:29,valid:false});
 });
 
 import {offsetForDate,calendarDays} from '../src/features/when-we-meet/schedule-view.mjs';

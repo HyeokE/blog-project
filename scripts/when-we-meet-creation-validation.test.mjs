@@ -20,8 +20,9 @@ test('stale restored draft, incomplete and malformed date ranges are rejected',(
  assert.ok(creationErrors({...valid,endDate:''},now).dates);
  assert.ok(creationErrors({...valid,startDate:'2026-02-30'},now).dates);
 });
-test('fourteen inclusive days pass and fifteen fail; correction clears error',()=>{
+test('twenty-eight inclusive days pass and twenty-nine fail; correction clears error',()=>{
  assert.deepEqual(creationErrors(valid,now),{});
- assert.ok(creationErrors({...valid,endDate:'2026-10-15'},now).dates);
+ assert.deepEqual(creationErrors({...valid,endDate:'2026-10-28'},now),{});
+ assert.ok(creationErrors({...valid,endDate:'2026-10-29'},now).dates);
  assert.deepEqual(creationErrors({...valid,title:'  corrected  '},now),{});
 });

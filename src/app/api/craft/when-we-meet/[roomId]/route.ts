@@ -1,4 +1,5 @@
 import {currentSupabaseUser,craftRoom} from '@/lib/supabase/server';
+import {MAX_RESPONSE_SLOTS} from '@/features/when-we-meet/limits.mjs';
 import {mergeAvailability} from '@/features/when-we-meet/availability-changes.mjs';
 import {normalizeResponses} from '@/features/when-we-meet/normalize.mjs';
 import {validateRoom} from '@/features/when-we-meet/domain.mjs';
@@ -6,11 +7,11 @@ import {body,failed,invalid,ok,sameOrigin,unauthorized,uuid} from '../http';
 export const dynamic='force-dynamic';
 type Context={params:Promise<{roomId:string}>};
 export async function GET(_request:Request,context:Context){const {roomId}=await context.params;if(!uuid(roomId)){return invalid('Invalid meeting ID.');}try{const context=await currentSupabaseUser();if(!context.user){return unauthorized();}const result=await craftRoom(roomId,context);return result?ok(result):failed('Meeting unavailable or you are not a member.',403)}catch{return failed('Could not load the meeting.')}}
-const validSlots=(value:unknown):value is string[]=>Array.isArray(value)&&value.length<=672&&value.every(s=>typeof s==='string'&&/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(s))&&new Set(value).size===value.length;
+const validSlots=(value:unknown):value is string[]=>Array.isArray(value)&&value.length<=MAX_RESPONSE_SLOTS&&value.every(s=>typeof s==='string'&&/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(s))&&new Set(value).size===value.length;
 export async function POST(request:Request,context:Context){
  if(!sameOrigin(request))return failed('Invalid request origin.',403);
  const {roomId}=await context.params;if(!uuid(roomId))return invalid('Invalid meeting ID.');
- const input=await body(request,64*1024);if(!input)return invalid();
+ const input=await body(request,128*1024);if(!input)return invalid();
  // Owner-only meeting rename; the RPC re-checks ownership, trims and bounds the title.
  if(input.action==='rename'){
   const title=typeof input.title==='string'?input.title.trim():'';
@@ -31,7 +32,7 @@ export async function POST(request:Request,context:Context){
   try{
    const {client,user}=await currentSupabaseUser();if(!user)return unauthorized();
    const {data,error}=await client.rpc('wwm_update_room_schedule',{p_room_id:roomId,p_start_date:startDate,p_end_date:endDate,p_start_time:startTime,p_end_time:endTime,p_timezone:timezone});
-   if(error)return error.code==='42501'?failed('Only the meeting owner can change the dates and times.',403):error.code==='22023'?invalid('Choose dates that are not in the past, up to 14 days, with 30-minute times.'):failed('Could not update the dates and times.',502);
+   if(error)return error.code==='42501'?failed('Only the meeting owner can change the dates and times.',403):error.code==='22023'?invalid('Choose dates that are not in the past, up to 28 days, with 30-minute times.'):failed('Could not update the dates and times.',502);
    const row=Array.isArray(data)?data[0]:null;
    return ok({schedule:{startDate,endDate,startTime,endTime,timezone},removedSlots:Number(row?.removed_slots??0)});
   }catch{return failed('Could not update the dates and times.')}
