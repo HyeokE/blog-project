@@ -317,13 +317,14 @@
     "was": "기존",
     "newTime": "새 시간",
     "review": "다음",
+    "reviewTitle": "이대로 변경할까요?",
     "noChanges": "아직 바뀐 게 없어요.",
-    "save": "바꾸고 알리기",
-    "saving": "바꾸고 있어요",
+    "save": "변경하기",
+    "saving": "변경하고 있어요",
     "reconciling": "Google 캘린더에 바꾼 내용을 반영하고 있어요. 다시 확인해도 알림은 한 번만 가요.",
     "chooseNewTime": "새 시간을 골라주세요.",
     "savedToast": "시간을 바꾸고 참석자에게 알렸어요",
-    "reviewDescription": "같은 일정이 바뀌고 참석자에게 변경 메일이 가요. 받는 사람에서 뺀 사람에게는 취소 메일이 가요.",
+    "reviewDescription": "참석자에게 변경 메일이 전송돼요.",
     "errors": {
       "google": "Google 캘린더가 변경을 마치지 못했어요. 다시 확인해도 알림은 한 번만 가요.",
       "network": "서버에 연결하지 못했어요. 다시 확인해서 반영됐는지 볼 수 있어요. 알림은 한 번만 가요."
