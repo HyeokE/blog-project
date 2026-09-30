@@ -102,7 +102,7 @@
       "availability": "내 일정",
       "everyone": "전체 일정",
       "people": "참여자",
-      "confirm": "확정"
+      "confirm": "일정 확정"
     },
     "invite": "초대하기",
     "invitePeople": "사람 초대하기",
@@ -208,8 +208,8 @@
     "loadFailed": "참여자를 불러오지 못했어요. 다시 시도해주세요."
   },
   "confirm": {
-    "heading": "확정",
-    "region": "모임 시간 확정",
+    "heading": "일정 확정",
+    "region": "모임 일정 확정",
     "bestTimes": "추천 시간",
     "everyoneAvailable": "모두 돼요",
     "partlyAvailableLine": "{total}명 중 {count}명 돼요 · 안 되는 사람: {names}",
