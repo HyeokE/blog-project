@@ -11,3 +11,12 @@ test('device timezone is detected with safe UTC fallback',()=>{
 test('timezone menu has no device update shortcut',()=>{
  assert.doesNotMatch(readFileSync(new URL('../src/features/when-we-meet/TimezoneCombobox.tsx',import.meta.url),'utf8'),/Use device timezone/);
 });
+
+test('a UTC report (fingerprinting protection) falls back to Seoul for Korean UI only',async()=>{
+ const zones=await import('../src/features/when-we-meet/timezone-options.mjs');
+ const reporting=timeZone=>({DateTimeFormat:()=>({resolvedOptions:()=>({timeZone})})});
+ assert.equal(zones.deviceTimezone(reporting('UTC'),'ko'),'Asia/Seoul');
+ assert.equal(zones.deviceTimezone(reporting('Etc/UTC'),'ko'),'Asia/Seoul');
+ assert.equal(zones.deviceTimezone(reporting('UTC'),'en'),'UTC');
+ assert.equal(zones.deviceTimezone(reporting('America/New_York'),'ko'),'America/New_York');
+});

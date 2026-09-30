@@ -8,7 +8,9 @@ test('creation field mounts the timezone selector with committed draft state and
   // Commit goes through updateForm and re-derives "today" for the new zone; the meeting start date is the DST reference.
   assert.match(form,/<TimezoneCombobox id="wwm-create-timezone" required value=\{form\.timezone\} onChange=\{timezone=>\{updateForm\('timezone',timezone,'timezone'\);clearField\('dates'\);setToday\(todayInTimezone\(timezone\)\|\|''\)\}\}[^\n]*? referenceDate=\{form\.startDate\}\/>/);
   // Device timezone is the default, with no separate "Use device timezone" shortcut.
-  assert.match(form,/defaultTimezone\.current=deviceTimezone\(\)/);
+  assert.match(form,/defaultTimezone\.current=deviceTimezone\(Intl,locale\)/);
+  assert.doesNotMatch(form,/setForm\(initial\)/);
+  assert.match(form,/setForm\(\{...initial,timezone:defaultTimezone\.current\}\)/);
   assert.doesNotMatch(form,/Use device timezone/i);
   assert.doesNotMatch(form,/<Input id="wwm-create-timezone"/);
 });

@@ -1,4 +1,4 @@
-export function deviceTimezone(intl?: typeof Intl): string;
+export function deviceTimezone(intl?: typeof Intl, locale?: string): string;
 export function timezoneOptions(intl?: typeof Intl): string[];
 export function isValidTimezone(value: unknown): boolean;
 export function searchTimezones(query: string, options?: string[]): string[];

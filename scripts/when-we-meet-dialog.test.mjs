@@ -27,6 +27,6 @@ test('owned list and guest entry share a Radix create dialog, not an inline form
 test('creation guards pending and auth uncertainty and only closes after success',()=>{
  assert.match(source,/if\(busy\|\|accountLoading\|\|createPending\.current\)\{return;\}/);
  assert.match(source,/if\(!profile\)\{saveDraft/);
- assert.match(source,/setShowCreate\(false\);setForm\(initial\)/);
+ assert.match(source,/setShowCreate\(false\);setForm\(\{...initial,timezone:defaultTimezone\.current\}\)/);
  assert.match(source,/onEscapeKeyDown=\{e=>\{if\(busy\|\|document\.querySelector\('\.wwm-range>\.wwm-picker-trigger\[aria-expanded="true"\]'\)\)\{e\.preventDefault\(\)\}\}\}/);
 });

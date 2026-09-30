@@ -1,10 +1,15 @@
 const fallback = ['UTC', 'Asia/Seoul'];
 
-export function deviceTimezone(intl = Intl) {
+// Browsers with fingerprinting protection report UTC whatever the real zone; for Korean UI that is almost
+// never what the person means, so fall back to Seoul. Other locales keep the reported zone.
+const LOCALE_ZONES = { ko: 'Asia/Seoul' };
+export function deviceTimezone(intl = Intl, locale) {
+  let zone = 'UTC';
   try {
-    const zone = intl.DateTimeFormat().resolvedOptions().timeZone;
-    return isValidTimezone(zone) ? zone : 'UTC';
-  } catch { return 'UTC'; }
+    const reported = intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (isValidTimezone(reported)) zone = reported;
+  } catch { /* keep UTC */ }
+  return /^(Etc\/)?(UTC|GMT|Universal|Zulu)$/.test(zone) && LOCALE_ZONES[locale] ? LOCALE_ZONES[locale] : zone;
 }
 const aliases = { 'Asia/Seoul': '서울 한국 korea' };
 
