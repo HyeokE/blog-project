@@ -3,6 +3,9 @@ import type {User} from '@supabase/supabase-js';
 import {currentSupabaseUser,craftRoomMetadata} from '@/lib/supabase/server';
 import {calendarAccessToken} from '@/features/when-we-meet/calendar-access';
 import {readCredential} from '@/features/when-we-meet/calendar-db';
+import {getEvent} from '@/features/when-we-meet/calendar-google.mjs';
+import {confirmationEventId} from '@/features/when-we-meet/confirmation-foundation.mjs';
+import {rsvpByMember} from '@/features/when-we-meet/rsvp.mjs';
 import {normalizeAttendees,normalizeConfirmation,normalizeConfirmationDetail} from '@/features/when-we-meet/normalize.mjs';
 import {failed} from '../../http';
 
@@ -42,4 +45,15 @@ export async function ownerSession(roomId:string,action:string):Promise<{session
 export async function organizerToken(user:User,message:string):Promise<{token:string}|{response:Response}>{
  try{return {token:await calendarAccessToken(user)};}
  catch(error){if((error as {reconnect?:boolean}).reconnect)return {response:Response.json({error:message,reconnect:true},{status:409,headers:privateHeaders})};throw error;}
+}
+/** Owner-only attendee replies read from the confirmed Google event with the owner's own token.
+ * Emails are matched here and never returned. Best effort: a missing/expired token, a slow or failed read → null (the UI omits RSVP). */
+export async function ownerRsvp(user:User,roomId:string,members:Array<{userId:string;email:string|null}>){
+ let timer:ReturnType<typeof setTimeout>|undefined;
+ try{
+  const read=(async()=>rsvpByMember(await getEvent(await calendarAccessToken(user),confirmationEventId(roomId,1)),members))();
+  const timeout=new Promise<null>(resolve=>{timer=setTimeout(()=>resolve(null),4000)});
+  return await Promise.race([read.catch(()=>null),timeout]);
+ }catch{return null}
+ finally{clearTimeout(timer)}
 }

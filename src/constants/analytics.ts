@@ -140,6 +140,7 @@ export const ANALYTICS_ELEMENTS = {
   CONFIRM_RESEND: 'confirm_resend',
   CONFIRM_RESEND_SEND: 'confirm_resend_send',
   CONFIRM_MANUAL_TIME: 'confirm_manual_time',
+  CONFIRM_SHOW_AVAILABILITY: 'confirm_show_availability',
 } as const;
 
 export const ANALYTICS_SECTIONS = {

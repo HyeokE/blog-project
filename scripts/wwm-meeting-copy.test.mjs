@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {plural,compactRange,meetingSummary,confirmedLine,confirmedFacts,saveStatus,fillButtonLabel,fillToast,invitationsSentToast,resendQuestion,MEETING_TOASTS} from '../src/features/when-we-meet/meeting-copy.mjs';
+import {plural,compactRange,meetingSummary,saveStatus,fillButtonLabel,fillToast,invitationsSentToast,resendQuestion,MEETING_TOASTS} from '../src/features/when-we-meet/meeting-copy.mjs';
 
 test('plural picks the singular only for exactly one',()=>{
  assert.equal(plural(1,'member'),'1 member');
@@ -20,21 +20,6 @@ test('compactRange drops the repeated year (and keeps it across a year boundary)
 test('meetingSummary is one line: dates · hours (or All day) · timezone',()=>{
  assert.equal(meetingSummary({startDate:'2026-10-01',endDate:'2026-10-14',startTime:'09:00',endTime:'18:00',timezone:'Asia/Seoul'}),'2026.10.01 – 10.14 · 09:00–18:00 · Asia/Seoul');
  assert.equal(meetingSummary({startDate:'2026-10-01',endDate:'2026-10-14',startTime:'00:00',endTime:'24:00',timezone:'Asia/Seoul'}),'2026.10.01 – 10.14 · All day · Asia/Seoul');
-});
-
-test('confirmedLine shows weekday, date and local time without repeating the timezone',()=>{
- // 01:00Z = 10:00 in Seoul (UTC+9), a Thursday.
- assert.equal(confirmedLine({startsAt:'2026-10-01T01:00:00Z',endsAt:'2026-10-01T01:30:00Z',timezone:'Asia/Seoul'}),'Confirmed · Thu 2026.10.01 · 10:00–10:30');
- // A meeting that ends at local midnight shows 24:00, not 00:00.
- assert.equal(confirmedLine({startsAt:'2026-10-01T14:30:00Z',endsAt:'2026-10-01T15:00:00Z',timezone:'Asia/Seoul'}),'Confirmed · Thu 2026.10.01 · 23:30–24:00');
- assert.equal(confirmedLine(null),'');
-});
-
-test('confirmedFacts lays the record out as label/value pairs',()=>{
- assert.deepEqual(confirmedFacts({date:'2026-10-01',start:'10:00',end:'10:30',organizer:'Alex',attendeeNames:['Alex','Morgan']}),[
-  {label:'Date',value:'Thu 2026.10.01'},{label:'Time',value:'10:00–10:30'},{label:'Organizer',value:'Alex'},{label:'Attendees',value:'Alex, Morgan'},
- ]);
- assert.deepEqual(confirmedFacts({date:'2026-10-01',start:'10:00',end:'10:30',organizer:'Alex',attendeeNames:[]}).map(row=>row.label),['Date','Time','Organizer']);
 });
 
 test('saveStatus is compact: nothing before the first edit, Saving… while in flight, Saved after, error offers retry',()=>{

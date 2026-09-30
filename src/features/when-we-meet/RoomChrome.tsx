@@ -1,13 +1,13 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
-import {Link2,MoreHorizontal} from 'lucide-react';
+import {Check,Link2,MoreHorizontal} from 'lucide-react';
 import {toast} from 'sonner';
 import {ANALYTICS_ELEMENTS} from '@/constants/analytics';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,DialogTitle} from '@/components/ui/dialog';
 import {DropdownMenu,DropdownMenuContent,DropdownMenuItem,DropdownMenuTrigger} from '@/components/ui/dropdown-menu';
-import {compactRange,confirmedLine,MEETING_TOASTS,resendQuestion} from './meeting-copy.mjs';
+import {compactRange,confirmedChip,MEETING_TOASTS,resendQuestion} from './meeting-copy.mjs';
 import {resendFailure,type ConfirmationRecordData} from './confirm-tab.mjs';
 import './room-chrome.css';
 
@@ -56,7 +56,8 @@ type HeaderProps={
  /** Owner of a confirmed meeting only. */
  resend?:{recipientCount:()=>Promise<number|undefined>;send:()=>Promise<unknown>};
 };
-/** Room identity: title, one meta line (dates · timezone, the only timezone in the view), confirmed status, Invite and a ⋯ menu. */
+/** Room identity: title, one meta line (dates · timezone, the only timezone in the view) with a compact Confirmed chip (day only, on every tab so the header never changes height), Invite and a ⋯ menu.
+ * Phones: the title takes the full width; Invite (icon only) and ⋯ share the meta row. */
 export function RoomHeader({title,startDate,endDate,timezone,confirmation,offline,settingsDisabled,menuTrigger,onInvite,onSettings,resend}:HeaderProps){
  const [asking,setAsking]=useState(false),[count,setCount]=useState<number|undefined>(),[sending,setSending]=useState(false);
  const confirmed=confirmation?.status==='confirmed';
@@ -69,9 +70,9 @@ export function RoomHeader({title,startDate,endDate,timezone,confirmation,offlin
   finally{setSending(false)}
  }
  return <header className="wwm-room-header">
-  <div className="wwm-room-title-row"><h1>{title}</h1>
+  <h1>{title}</h1>
    <div className="wwm-header-actions">
-    <Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.INVITE_LINK_COPY} onClick={onInvite}><Link2 aria-hidden="true"/>Invite</Button>
+    <Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.INVITE_LINK_COPY} onClick={onInvite}><Link2 aria-hidden="true"/><span className="wwm-invite-label">Invite</span></Button>
     <DropdownMenu modal={false}><DropdownMenuTrigger asChild><Button ref={menuTrigger} type="button" variant="ghost" size="icon" className="wwm-room-menu-trigger" aria-label="Meeting options" data-analytics-label={ANALYTICS_ELEMENTS.MEETING_MENU}><MoreHorizontal aria-hidden="true"/></Button></DropdownMenuTrigger>
      <DropdownMenuContent align="end" className="wwm-room-menu">
       <DropdownMenuItem disabled={settingsDisabled} data-analytics-label={ANALYTICS_ELEMENTS.MEETING_SETTINGS} onSelect={onSettings}>Settings</DropdownMenuItem>
@@ -79,9 +80,7 @@ export function RoomHeader({title,startDate,endDate,timezone,confirmation,offlin
      </DropdownMenuContent>
     </DropdownMenu>
    </div>
-  </div>
-  <p className="wwm-room-meta">{compactRange(startDate,endDate)}<span aria-hidden="true"> · </span>{timezone}{offline&&<span className="wwm-offline" role="status"><i aria-hidden="true"/>Offline</span>}</p>
-  {confirmed&&confirmation&&<p className="wwm-room-status"><span>{confirmedLine(confirmation)}</span>{confirmation.googleEventUrl&&<a href={confirmation.googleEventUrl} target="_blank" rel="noopener noreferrer" data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_EVENT_LINK}>View event</a>}</p>}
+  <p className="wwm-room-meta"><span>{compactRange(startDate,endDate)}<span aria-hidden="true"> · </span>{timezone}</span>{confirmed&&confirmation&&<span className="wwm-room-chip"><Check aria-hidden="true"/>{confirmedChip(confirmation)}</span>}{offline&&<span className="wwm-offline" role="status"><i aria-hidden="true"/>Offline</span>}</p>
   <Dialog open={asking} onOpenChange={open=>{if(!sending)setAsking(open)}}><DialogContent className="wwm-resend-dialog" showCloseButton={!sending} onCloseAutoFocus={event=>{event.preventDefault();menuTrigger.current?.focus()}}><DialogHeader><DialogTitle>{resendQuestion(count)}</DialogTitle><DialogDescription>Google Calendar sends the same invitation again.</DialogDescription></DialogHeader><DialogFooter><Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.DIALOG_CANCEL} disabled={sending} onClick={()=>setAsking(false)}>Cancel</Button><Button type="button" data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_RESEND_SEND} disabled={sending} aria-busy={sending||undefined} onClick={()=>void sendResend()}>{sending?'Resending…':'Resend'}</Button></DialogFooter></DialogContent></Dialog>
  </header>;
 }

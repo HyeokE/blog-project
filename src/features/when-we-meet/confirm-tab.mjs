@@ -2,6 +2,7 @@
 // Room-local wall clocks are converted through makeSlots ids (never ad hoc offset math).
 import {rangeFields,rangeInstants,rangeSlotIds} from './confirm-selection.mjs';
 import {formatCraftInstant} from './display-date.mjs';
+import {RSVP_STATUSES} from './rsvp.mjs';
 
 const HALF_HOUR=30*60*1000;
 const minutes=clock=>Number(clock.slice(0,2))*60+Number(clock.slice(3));
@@ -25,13 +26,19 @@ function normalizeEdit(value){
   open:open?{revision:open.revision,status:open.status,title:isString(open.title)?open.title:'',startsAt:open.startsAt,endsAt:open.endsAt,recipientIds:idList(open.recipientIds),excludedIds:idList(open.excludedIds),optionalIds:idList(open.optionalIds)}:null,
   lastResentAt:isString(value.lastResentAt)?value.lastResentAt:null};
 }
+/** Owner-only attendee replies (ids + status). Null when the server could not read the event (e.g. no calendar token). */
+function normalizeRsvp(value){
+ if(value===null||value===undefined)return null;
+ if(!Array.isArray(value))fail('Invalid RSVP');
+ return value.map(row=>{if(!row||!isString(row.userId)||!RSVP_STATUSES.includes(row.response))fail('Invalid RSVP');return {userId:row.userId,response:row.response};});
+}
 function normalizeReview(value){
  if(value===null||value===undefined)return null;
  if(typeof value!=='object'||!Array.isArray(value.attendees))fail('Invalid confirmation review');
  return {calendarConnected:value.calendarConnected===true,organizerEmail:isString(value.organizerEmail)&&value.organizerEmail?value.organizerEmail:null,attendees:value.attendees.map(row=>{
   if(!row||!isString(row.userId)||!isString(row.name))fail('Invalid attendee');
   return {userId:row.userId,name:row.name,email:isString(row.email)&&row.email?row.email:null,hasAvailability:row.hasAvailability===true,isOrganizer:row.isOrganizer===true};
- }),edit:normalizeEdit(value.edit)};
+ }),edit:normalizeEdit(value.edit),rsvp:normalizeRsvp(value.rsvp)};
 }
 /** Validates the (already camelCase) API payload; the server's row normalizer owns the snake_case conversion. */
 export function normalizeConfirmationResponse(raw){
@@ -92,8 +99,13 @@ export function confirmPanelState({data,slots,organizerName,recipientIds}){
   const start=localClock(record.startsAt,record.timezone,slots,'start'),end=localClock(record.endsAt,record.timezone,slots,'end');
   const edit=review?.edit;
   const shown=edit?edit.recipientIds:recipientIds;
-  const names=(shown?attendees.filter(row=>shown.includes(row.userId)):attendees).map(row=>row.name);
-  state.confirmation={title:record.title,date:start.date,start:start.time,end:end.time,timezone:record.timezone,organizer:attendees.find(row=>row.isOrganizer)?.name||organizerName||'Organizer',attendeeNames:names,...((record.revision??1)>1?{updated:true}:{}),...(record.googleEventUrl?{eventUrl:record.googleEventUrl}:{})};
+  const recipients=shown?attendees.filter(row=>shown.includes(row.userId)):attendees;
+  const names=recipients.map(row=>row.name);
+  // Owner only: the recipient roster with Optional and, when Google could be read, each reply. Members see no roster.
+  const replies=review?.rsvp?new Map(review.rsvp.map(row=>[row.userId,row.response])):null;
+  const optional=edit?.optionalIds||[];
+  const roster=recipients.map(row=>({id:row.userId,name:row.name,optional:optional.includes(row.userId),...(replies?{rsvp:replies.get(row.userId)||'needsAction'}:{})}));
+  state.confirmation={title:record.title,date:start.date,start:start.time,end:end.time,timezone:record.timezone,organizer:attendees.find(row=>row.isOrganizer)?.name||organizerName||'Organizer',attendeeNames:names,attendees:roster,rsvp:Boolean(replies),...(review?{recipientCount:recipients.length}:{}),...((record.revision??1)>1?{updated:true}:{}),...(record.googleEventUrl?{eventUrl:record.googleEventUrl}:{})};
   // Edit review starts from the confirmed snapshot; members who joined since then start excluded.
   if(edit)state.edit={baseRevision:edit.revision,initial:{title:record.title,date:start.date,start:start.time,end:end.time,excludedIds:attendees.map(row=>row.userId).filter(id=>!edit.recipientIds.includes(id)),optionalIds:edit.optionalIds.filter(id=>edit.recipientIds.includes(id))},status:edit.open?'reconciling':'idle',lastResentAt:edit.lastResentAt};
  }

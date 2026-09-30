@@ -13,7 +13,7 @@ test('purposeful English tabs and a header invite without bottom sharing',()=>{
  assert.match(src,/const tabNames=\{availability:'Availability',everyone:'Everyone',people:'People'(?:,[a-z]+:'[A-Z][a-z]+')?\} as const/);
  for(const gone of ['Overlap','Suggestions'])assert.ok(!src.includes(`'${gone}'`),`superseded tab ${gone}`);
  assert.match(src,/<RoomHeader [^>]*onInvite=\{\(\)=>void invite\(\)\}/);
- assert.match(readFileSync(new URL('../src/features/when-we-meet/RoomChrome.tsx',import.meta.url),'utf8'),/<div className="wwm-header-actions">\s*<Button type="button" variant="outline"[^>]*onClick=\{onInvite\}><Link2 aria-hidden="true"\/>Invite<\/Button>/);
+ assert.match(readFileSync(new URL('../src/features/when-we-meet/RoomChrome.tsx',import.meta.url),'utf8'),/<div className="wwm-header-actions">\s*<Button type="button" variant="outline"[^>]*onClick=\{onInvite\}><Link2 aria-hidden="true"\/><span className="wwm-invite-label">Invite<\/span><\/Button>/);
  assert.doesNotMatch(src,/<h2>공유<\/h2>/);
  const people=readFileSync(new URL('../src/features/when-we-meet/PeoplePanel.tsx',import.meta.url),'utf8');
  assert.match(people,/Could not load participants\. Please try again\./);

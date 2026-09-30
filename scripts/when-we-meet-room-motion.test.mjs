@@ -16,7 +16,7 @@ test('room title owns metadata and header actions without redundant headings',()
  const chrome=readFileSync(new URL('../src/features/when-we-meet/RoomChrome.tsx',import.meta.url),'utf8');
  assert.match(chrome,/<h1>\{title\}<\/h1>/);
  // Meta: date range · timezone (the only timezone in the view); no "Live updates" text, only an Offline dot.
- assert.match(chrome,/<p className="wwm-room-meta">\{compactRange\(startDate,endDate\)\}<span aria-hidden="true"> · <\/span>\{timezone\}\{offline&&/);
+ assert.match(chrome,/<p className="wwm-room-meta"><span>\{compactRange\(startDate,endDate\)\}<span aria-hidden="true"> · <\/span>\{timezone\}<\/span>\{confirmed&&confirmation&&<span className="wwm-room-chip">[^\n]*\{offline&&/);
  assert.doesNotMatch(component+chrome,/Live updates|Connecting…/);
  assert.doesNotMatch(component,/<div className="wwm-heading"><div><h2>시간표<\/h2>/);
 });

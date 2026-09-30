@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useMemo,useRef,useState} from 'react';
-import {ChevronDown,ChevronUp} from 'lucide-react';
+import {AlertCircle,Check,ChevronDown,ChevronUp,Clock,ExternalLink} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Checkbox} from '@/components/ui/checkbox';
@@ -11,13 +11,16 @@ import {WeeklyAvailability} from './WeeklyAvailability';
 import {fieldsRange,rangeFields,selectionAvailability,type ConfirmRange} from './confirm-selection.mjs';
 import './confirmation-panel.css';
 import {ANALYTICS_ELEMENTS,ANALYTICS_SECTIONS} from '@/constants/analytics';
-import {confirmedFacts,dayLabel} from './meeting-copy.mjs';
+import {confirmedWhen,invitationsSentToast,RSVP_LABELS,rsvpSummary} from './meeting-copy.mjs';
+import {rsvpCounts,type RsvpStatus} from './rsvp.mjs';
 import {useMediaQuery} from './use-media-query';
 
 export type ConfirmationMember={id:string;name:string;response:'available'|'partial'|'unavailable'|'not-responded';email?:string;availability?:string};
 type Slot={id:string;utc:string;date:string;time:string};
 type SavedResponse={userId:string;displayName:string;slots:string[]};
-export type ConfirmationRecord={title?:string;date:string;start:string;end:string;timezone:string;organizer:string;attendeeNames:string[];eventUrl?:string;updated?:boolean};
+export type ConfirmedAttendee={id:string;name:string;optional:boolean;rsvp?:RsvpStatus};
+/** `attendees`/`recipientCount` are owner-only (members never receive the roster); `rsvp` is true when Google replies could be read. */
+export type ConfirmationRecord={title?:string;date:string;start:string;end:string;timezone:string;organizer:string;attendeeNames:string[];attendees?:ConfirmedAttendee[];rsvp?:boolean;recipientCount?:number;eventUrl?:string;updated?:boolean};
 export type ConfirmationProposal={date:string;start:string;end:string;startId:string;endId:string;recipientIds:string[];excludedIds:string[];title:string;optionalIds:string[]};
 /** Owner editing of a confirmed meeting. `initial` is the confirmed snapshot; status is the edit request, not the meeting. */
 export type ConfirmationEditState={initial:{title:string;date:string;start:string;end:string;excludedIds:string[];optionalIds:string[]};status:'idle'|'pending'|'reconciling'|'failed'|'saved';error?:string};
@@ -28,10 +31,14 @@ const label=(date:string)=>date.replaceAll('-','.');
 const responseLabel=(member:ConfirmationMember)=>member.response==='not-responded'?'Not responded':member.response==='unavailable'?'Unavailable':member.response==='partial'?member.availability||'Partly available':'Available';
 const names=(list:ConfirmationMember[])=>list.map(member=>member.name).join(', ');
 const sameSet=(a:string[],b:string[])=>a.length===b.length&&a.every(id=>b.includes(id));
+/** Inline status with an icon: pending work, or an error that keeps its next step beside it. */
+function Notice({tone,children,action}:{tone:'pending'|'error';children:React.ReactNode;action?:React.ReactNode}){
+ return <div className="wwm-confirm-notice" data-tone={tone}>{tone==='error'?<AlertCircle aria-hidden="true"/>:<Clock aria-hidden="true"/>}<p role={tone==='error'?'alert':'status'}>{children}</p>{action}</div>;
+}
 const editFlow={idle:'draft',saved:'draft',pending:'pending',reconciling:'reconciling',failed:'failed'} as const;
 export function ConfirmationPanel({room,role,members=[],slots,responses,currentUserId,organizerEmail,calendar,status,confirmation,error,onRetry,onConnectCalendar,onConfirm,edit,onEdit,onCheckEdit}:ConfirmationPanelProps){
  const [date,setDate]=useState(''),[start,setStart]=useState(''),[end,setEnd]=useState(''),[range,setRange]=useState<ConfirmRange|null>(null),[excludedIds,setExcludedIds]=useState<string[]>([]),[review,setReview]=useState(false),[sent,setSent]=useState(false),[eventTitle,setEventTitle]=useState(room.title),[optionalIds,setOptionalIds]=useState<string[]>([]);
- const [editing,setEditing]=useState(false),[manual,setManual]=useState(false);
+ const [editing,setEditing]=useState(false),[manual,setManual]=useState(false),[showGrid,setShowGrid]=useState(false);
  // Phones: the calendar comes first; the typed date/time fields fold into "Enter time manually".
  const compactLayout=useMediaQuery('(max-width: 640px)');
  const sentRef=useRef(false),previousStatus=useRef(status),reviewTrigger=useRef<HTMLButtonElement>(null),editTrigger=useRef<HTMLButtonElement>(null),refocusEdit=useRef(false);
@@ -55,7 +62,7 @@ export function ConfirmationPanel({room,role,members=[],slots,responses,currentU
  // Only an in-flight request locks the dialog; a reconciling result can be closed and checked again later.
  const locked=flowStatus==='pending';
  const retry=editMode?onCheckEdit:onRetry;
- const checkAgain=flowStatus==='reconciling'&&retry?<Button type="button" variant="outline" className="wwm-confirm-retry" data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_CHECK_AGAIN} onClick={retry}>Check again</Button>:null;
+ const checkAgain=flowStatus==='reconciling'&&retry?<Button type="button" variant="outline" size="sm" className="wwm-confirm-retry" data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_CHECK_AGAIN} onClick={retry}>Check again</Button>:null;
  const initial=edit?.initial;
  const unchanged=editMode&&initial?eventTitle.trim()===initial.title&&date===initial.date&&start===initial.start&&end===initial.end&&sameSet(excludedIds,initial.excludedIds)&&sameSet(optionalIds.filter(id=>!excludedIds.includes(id)),initial.optionalIds):false;
  function resetSent(){sentRef.current=false;setSent(false)}
@@ -69,23 +76,39 @@ export function ConfirmationPanel({room,role,members=[],slots,responses,currentU
  const calendarView=(selection:React.ComponentProps<typeof WeeklyAvailability>['selection'])=>selection&&<WeeklyAvailability startDate={room.startDate} endDate={room.endDate} timezone={room.timezone} slots={slots} responses={responses} currentUserId={currentUserId} selection={selection}/>;
  function send(){if(!owner||busy||sentRef.current||calendar!=='connected'||!proposalValid||!eventTitle.trim()||missing.length||!recipients.length||!organizerEmail||unchanged){return;}sentRef.current=true;setSent(true);if(!range)return;const proposal={date,start,end,startId:range.startId,endId:range.endId,recipientIds:recipients.map(m=>m.id),excludedIds:members.filter(m=>excludedIds.includes(m.id)).map(m=>m.id),title:eventTitle.trim(),optionalIds:optionalIds.filter(id=>recipients.some(m=>m.id===id))};if(editMode)onEdit?.(proposal);else onConfirm(proposal)}
  const editBusy=edit?.status==='pending'||edit?.status==='reconciling';
- const record=recorded&&<div className="wwm-confirm-record"><h2>Confirmed meeting</h2>{confirmation.title&&confirmation.title!==room.title&&<p className="wwm-confirm-record-title">{confirmation.title}</p>}
-  <dl className="wwm-confirm-facts wwm-confirm-record-facts">{confirmedFacts(confirmation).map(row=><div key={row.label}><dt>{row.label}</dt><dd>{row.value}</dd></div>)}</dl>
-  {confirmation.updated&&<p className="wwm-confirm-note">Updated by the organizer after the first invitation.</p>}
-  {owner&&edit&&!editMode&&<><div className="wwm-confirm-record-actions"><Button ref={editTrigger} type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_EDIT} disabled={editBusy} onClick={startEdit}>Edit meeting</Button></div>
-   {edit.status==='reconciling'&&<div className="wwm-confirm-status"><p role="status">Saving your changes to Google Calendar. Checking again never notifies attendees twice.</p>{onCheckEdit&&<Button type="button" variant="outline" className="wwm-confirm-retry" data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_CHECK_AGAIN} onClick={onCheckEdit}>Check again</Button>}</div>}
-   {edit.status==='failed'&&edit.error&&<p role="alert" className="wwm-confirm-error">{edit.error}</p>}</>}
- </div>;
+ // The confirmed card: one status, the sent event name, one time line, who was invited and the next step.
+ const roster=confirmation?.attendees??[];
+ const replies=confirmation?.rsvp?rsvpCounts(roster.map(row=>({response:row.rsvp}))):null;
+ const invitedLine=owner?(typeof confirmation?.recipientCount==='number'?invitationsSentToast(confirmation.recipientCount):'Invitations sent'):confirmation?.organizer&&confirmation.organizer!=='Organizer'?`You’re invited · Organized by ${confirmation.organizer}`:'You’re invited';
+ const record=recorded&&<article className="wwm-confirmed" aria-labelledby="wwm-confirmed-title">
+  <p className="wwm-confirmed-status"><Check aria-hidden="true"/>Confirmed</p>
+  <h2 id="wwm-confirmed-title">{confirmation.title||room.title}</h2>
+  <p className="wwm-confirmed-when">{confirmedWhen(confirmation)}</p>
+  <p className="wwm-confirmed-invited">{invitedLine}</p>
+  {confirmation.updated&&<p className="wwm-confirmed-invited">Updated by the organizer after the first invitation.</p>}
+  {(confirmation.eventUrl||owner&&edit)&&<div className="wwm-confirmed-actions">
+   {confirmation.eventUrl&&<Button asChild><a href={confirmation.eventUrl} target="_blank" rel="noopener noreferrer" data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_EVENT_LINK}>Open in Google Calendar<ExternalLink aria-hidden="true"/><span className="wwm-sr-only"> (opens in a new tab)</span></a></Button>}
+   {owner&&edit&&!editMode&&<Button ref={editTrigger} type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_EDIT} disabled={editBusy} onClick={startEdit}>Edit meeting</Button>}
+  </div>}
+  {owner&&edit&&!editMode&&edit.status==='reconciling'&&<Notice tone="pending" action={onCheckEdit&&<Button type="button" variant="outline" size="sm" data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_CHECK_AGAIN} onClick={onCheckEdit}>Check again</Button>}>Saving your changes to Google Calendar. Checking again never notifies attendees twice.</Notice>}
+  {owner&&edit&&!editMode&&edit.status==='failed'&&edit.error&&<Notice tone="error">{edit.error}</Notice>}
+  {owner&&roster.length>0&&<section className="wwm-confirmed-people" aria-labelledby="wwm-confirmed-people-title">
+   <div className="wwm-confirmed-people-head"><h3 id="wwm-confirmed-people-title">Attendees</h3>{replies&&<p>{rsvpSummary(replies)}</p>}</div>
+   <ul>{roster.map(row=><li key={row.id}><span className="wwm-confirmed-name">{row.name}{row.optional&&<span className="wwm-confirmed-tag">Optional</span>}</span>{row.rsvp&&<span className="wwm-confirmed-rsvp" data-rsvp={row.rsvp}>{RSVP_LABELS[row.rsvp]}</span>}</li>)}</ul>
+  </section>}
+ </article>;
+ // Under a confirmed meeting the grid is reference only: folded away until asked for.
+ const availability=<div className="wwm-confirmed-availability"><Button type="button" variant="ghost" size="sm" aria-expanded={showGrid} aria-controls="wwm-confirmed-grid" data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_SHOW_AVAILABILITY} onClick={()=>setShowGrid(value=>!value)}>{showGrid?'Hide availability':'Show availability'}{showGrid?<ChevronUp aria-hidden="true"/>:<ChevronDown aria-hidden="true"/>}</Button><div id="wwm-confirmed-grid" hidden={!showGrid}>{showGrid&&calendarView({memberCount:members.length,range:confirmedRange,rangeLabel:'Confirmed'})}</div></div>;
  const fields=<fieldset className="wwm-confirm-controls" disabled={busy}><DateTimePicker kind="date" label="Meeting date" value={date} min={room.startDate} max={room.endDate} onChange={value=>changeFields({date:value,start,end})}/><DateTimePicker kind="time" label="Start" value={start} min={room.startTime} max={room.endTime==='24:00'?'23:30':room.endTime} onChange={changeStart}/><DateTimePicker kind="time" label="End" value={end} minTime={start||room.startTime} max={room.endTime} onChange={value=>changeFields({date,start,end:value})}/></fieldset>;
  return <section className="wwm-confirm" aria-label="Meeting confirmation" data-analytics-section={ANALYTICS_SECTIONS.WWM_CONFIRM}>
-  {recorded&&!editMode?<>{record}{calendarView({memberCount:members.length,range:confirmedRange,rangeLabel:'Confirmed'})}</>:
-  !owner?<><div className="wwm-confirm-record"><h2>Meeting not confirmed yet</h2><p>{status==='reconciling'?'The organizer is sending invitations. Check back shortly.':'The organizer will choose a time and send invitations.'}</p></div>{calendarView({memberCount:members.length,range:null})}</>:
-  <>{editMode&&confirmation?<header className="wwm-confirm-heading"><div><h2>Edit confirmed meeting</h2><p>Now: {dayLabel(confirmation.date)} · {confirmation.start}–{confirmation.end}</p></div></header>:<header className="wwm-confirm-heading"><div><h2>Confirm a time</h2></div></header>}
+  {recorded&&!editMode?<>{record}{availability}</>:
+  !owner?<><div className="wwm-confirmed wwm-confirmed-waiting"><p className="wwm-confirmed-status"><Clock aria-hidden="true"/>Not confirmed yet</p><h2>Waiting for the organizer</h2><p className="wwm-confirmed-invited">{status==='reconciling'?'The organizer is sending invitations. Check back shortly.':'The organizer will choose a time and send invitations.'}</p></div>{calendarView({memberCount:members.length,range:null})}</>:
+  <>{editMode&&confirmation?<header className="wwm-confirm-heading"><div><p className="wwm-confirmed-status"><Check aria-hidden="true"/>Confirmed · {confirmedWhen(confirmation)}</p><h2>Edit confirmed meeting</h2><p>Pick a new time on the calendar, then review the changes.</p></div></header>:<header className="wwm-confirm-heading"><div><h2>Confirm a time</h2></div></header>}
    {!compactLayout&&fields}
    {calendarView({memberCount:members.length,range,rangeLabel:editMode?'New time':'Selected',onChange:busy?undefined:selectRange})}
    {compactLayout&&<div className="wwm-confirm-manual"><Button type="button" variant="ghost" size="sm" aria-expanded={manual} aria-controls="wwm-confirm-manual-fields" data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_MANUAL_TIME} onClick={()=>setManual(value=>!value)}>Enter time manually{manual?<ChevronUp aria-hidden="true"/>:<ChevronDown aria-hidden="true"/>}</Button><div id="wwm-confirm-manual-fields" hidden={!manual}>{fields}</div></div>}
-   {flowStatus==='failed'&&<p role="alert" className="wwm-confirm-error">{(editMode?edit?.error:error)||'Confirmation failed. Review the details before trying again.'}</p>}
-   {flowStatus==='reconciling'&&<div className="wwm-confirm-status"><p role="status">{retry?'Checking event status. Checking again never sends invitations twice.':'Checking event status. Please do not retry yet.'}</p>{checkAgain}</div>}
+   {flowStatus==='failed'&&<Notice tone="error">{(editMode?edit?.error:error)||'Confirmation failed. Review the details before trying again.'}</Notice>}
+   {flowStatus==='reconciling'&&<Notice tone="pending" action={checkAgain}>{retry?'Checking event status. Checking again never sends invitations twice.':'Checking event status. Please do not retry yet.'}</Notice>}
    {/* The sticky footer appears once a time is chosen; in edit mode Cancel stays reachable. */}
    <p className="wwm-sr-only" aria-live="polite">{range&&proposalValid?`${label(date)} · ${start}–${end}`:''}</p>
    {(range&&proposalValid||editMode)&&<div className="wwm-confirm-actions"><p aria-hidden="true">{range&&proposalValid?<strong>{label(date)} · {start}–{end}</strong>:'Choose a new time.'}</p><div className="wwm-confirm-action-buttons">{editMode&&<Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_EDIT_CANCEL} disabled={locked} onClick={cancelEdit}>Cancel</Button>}<Button ref={reviewTrigger} type="button" data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_REVIEW} disabled={!proposalValid||busy} onClick={()=>setReview(true)}>{editMode?'Review changes':'Review confirmation'}</Button></div></div>}
@@ -101,8 +124,8 @@ export function ConfirmationPanel({room,role,members=[],slots,responses,currentU
     {excludedIds.length>0&&<p className="wwm-confirm-warning">Excluded: {members.filter(m=>excludedIds.includes(m.id)).map(m=>m.name).join(', ')}</p>}
     {unchanged&&<p className="wwm-confirm-note">No changes to save yet.</p>}
     {calendar!=='connected'&&<div className="wwm-confirm-consent"><p>Connect the organizer’s Google Calendar before sending. Connecting does not send invitations. Review again after consent.</p><Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.CALENDAR_CONNECT} disabled={calendar==='connecting'||busy} onClick={onConnectCalendar}>Connect Google Calendar</Button></div>}
-    {flowStatus==='failed'&&<p role="alert" className="wwm-confirm-error">{(editMode?edit?.error:error)||'Unable to confirm. Review and try again.'}</p>}
-    {busy&&<div className="wwm-confirm-status"><p role="status">{flowStatus==='reconciling'?'Checking event status':editMode?'Saving changes…':'Requesting invitations…'}</p>{checkAgain}</div>}
+    {flowStatus==='failed'&&<Notice tone="error">{(editMode?edit?.error:error)||'Unable to confirm. Review and try again.'}</Notice>}
+    {busy&&<Notice tone="pending" action={checkAgain}>{flowStatus==='reconciling'?'Checking event status. Checking again never sends twice.':editMode?'Saving changes…':'Requesting invitations…'}</Notice>}
     {sent&&!busy&&flowStatus==='draft'&&<p role="status">Request submitted. Waiting for verified status.</p>}
    </div><DialogFooter className="wwm-confirm-footer"><Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.DIALOG_CANCEL} disabled={locked} onClick={()=>setReview(false)}>Back</Button>{editMode?<Button type="button" disabled={!proposalValid||!eventTitle.trim()||busy||sentRef.current||calendar!=='connected'||Boolean(missing.length)||!recipients.length||!organizerEmail||unchanged} data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_EDIT_SAVE} onClick={send}>Save &amp; notify attendees</Button>:<Button type="button" disabled={!proposalValid||!eventTitle.trim()||busy||sentRef.current||calendar!=='connected'||Boolean(missing.length)||!recipients.length||!organizerEmail} data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_SEND} onClick={send}>Confirm &amp; send invitations</Button>}</DialogFooter></DialogContent></Dialog>
   </>}

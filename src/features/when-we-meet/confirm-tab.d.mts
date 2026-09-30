@@ -1,6 +1,8 @@
+import type {RsvpStatus} from './rsvp.mjs';
+export type ConfirmedAttendee={id:string;name:string;optional:boolean;rsvp?:RsvpStatus};
 export type ConfirmationRecordData={status:string;title:string;startsAt:string;endsAt:string;timezone:string;googleEventUrl:string|null;revision?:number};
 export type ConfirmationEdit={revision:number;recipientIds:string[];excludedIds:string[];optionalIds:string[];open:null|{revision:number;status:string;title:string;startsAt:string;endsAt:string;recipientIds:string[];excludedIds:string[];optionalIds:string[]};lastResentAt:string|null};
-export type ConfirmationReview={calendarConnected:boolean;organizerEmail:string|null;attendees:Array<{userId:string;name:string;email:string|null;hasAvailability:boolean;isOrganizer:boolean}>;edit?:ConfirmationEdit|null};
+export type ConfirmationReview={calendarConnected:boolean;organizerEmail:string|null;attendees:Array<{userId:string;name:string;email:string|null;hasAvailability:boolean;isOrganizer:boolean}>;edit?:ConfirmationEdit|null;rsvp?:Array<{userId:string;response:RsvpStatus}>|null};
 export type ConfirmationData={confirmation:ConfirmationRecordData|null;review:ConfirmationReview|null};
 export type ConfirmProposal={date:string;start:string;end:string;startId?:string;endId?:string;recipientIds:string[];excludedIds:string[];title?:string;optionalIds?:string[]};
 export type ConfirmRequestBody={title:string;date:string;start:string;end:string;recipients:string[];excluded:string[];optional:string[]};
@@ -8,7 +10,7 @@ export type ConfirmUpdateBody=ConfirmRequestBody&{baseRevision:number};
 export type ConfirmEditState={baseRevision:number;initial:{title:string;date:string;start:string;end:string;excludedIds:string[];optionalIds:string[]};status:'idle'|'reconciling';lastResentAt:string|null};
 type Slot={id:string;utc:string;date:string;time:string};
 export type ConfirmPanelStatus='draft'|'pending'|'reconciling'|'failed'|'confirmed';
-export type ConfirmPanelState={role:'owner'|'member';members:Array<{id:string;name:string;email?:string;response:'available'|'not-responded'}>;organizerEmail?:string;calendar:'connected'|'disconnected';status:ConfirmPanelStatus;error?:string;confirmation?:{title?:string;date:string;start:string;end:string;timezone:string;organizer:string;attendeeNames:string[];eventUrl?:string;updated?:boolean};edit?:ConfirmEditState};
+export type ConfirmPanelState={role:'owner'|'member';members:Array<{id:string;name:string;email?:string;response:'available'|'not-responded'}>;organizerEmail?:string;calendar:'connected'|'disconnected';status:ConfirmPanelStatus;error?:string;confirmation?:{title?:string;date:string;start:string;end:string;timezone:string;organizer:string;attendeeNames:string[];attendees:ConfirmedAttendee[];rsvp:boolean;recipientCount?:number;eventUrl?:string;updated?:boolean};edit?:ConfirmEditState};
 export function normalizeConfirmationResponse(raw:unknown):ConfirmationData;
 export function proposalInstants(proposal:{date:string;start:string;end:string;startId?:string;endId?:string},slots:Slot[]):{start:string;end:string};
 export function confirmationBody(input:{title:string;proposal:ConfirmProposal;slots:Slot[];attendeeIds:string[]}):ConfirmRequestBody;

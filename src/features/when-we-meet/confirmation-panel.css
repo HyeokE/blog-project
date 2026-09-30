@@ -46,3 +46,64 @@
 .wwm .wwm-confirm .wwm-confirm-manual>[data-slot='button']{padding-inline:0;color:var(--craft-muted)}
 .wwm .wwm-confirm .wwm-confirm-manual>div{margin-top:var(--craft-space-3)}
 @media(max-width:600px){.wwm-confirm-facts div{grid-template-columns:minmax(88px,max-content) 1fr}}
+
+/* Confirmed card (stage 2 iteration): one status, the sent event name, one time line, recipients, next step. */
+.wwm .wwm-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.wwm .wwm-confirmed{display:grid;gap:var(--craft-space-1);padding:var(--craft-space-6);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:var(--craft-surface)}
+.wwm .wwm-confirm .wwm-confirmed h2{margin:var(--craft-space-1) 0 0;font-size:var(--craft-fs-20);line-height:28px;overflow-wrap:anywhere}
+.wwm .wwm-confirmed-status{display:flex;align-items:flex-start;gap:var(--craft-space-2);margin:0;font-size:var(--craft-fs-14);line-height:20px;font-weight:var(--craft-fw-medium);color:var(--craft-ink)}
+.wwm .wwm-confirmed-status svg{width:16px;height:16px;flex:none;margin-top:2px}
+.wwm .wwm-confirmed-updated{font-weight:var(--craft-fw-regular);color:var(--craft-muted)}
+.wwm .wwm-confirm .wwm-confirmed-when{margin:0;font-size:var(--craft-fs-16);line-height:24px;font-weight:var(--craft-fw-medium);color:var(--craft-ink);font-variant-numeric:tabular-nums}
+.wwm .wwm-confirm .wwm-confirmed-invited{margin:0;font-size:var(--craft-fs-14);line-height:20px;color:var(--craft-muted)}
+.wwm .wwm-confirmed-actions{display:flex;flex-wrap:wrap;gap:var(--craft-space-2);margin-top:var(--craft-space-4)}
+.wwm .wwm-confirmed .wwm-confirm-notice{margin-top:var(--craft-space-3)}
+.wwm .wwm-confirmed-people{margin-top:var(--craft-space-6);padding-top:var(--craft-space-4);border-top:1px solid var(--craft-rule)}
+.wwm .wwm-confirmed-people-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--craft-space-1) var(--craft-space-4);margin-bottom:var(--craft-space-2)}
+.wwm .wwm-confirm .wwm-confirmed-people h3{margin:0;font-size:var(--craft-fs-14);line-height:20px;font-weight:var(--craft-fw-semibold)}
+.wwm .wwm-confirm .wwm-confirmed-people-head p{margin:0;font-size:var(--craft-fs-14);line-height:20px;color:var(--craft-muted);font-variant-numeric:tabular-nums}
+.wwm .wwm-confirmed-people ul{list-style:none;margin:0;padding:0}
+.wwm .wwm-confirmed-people li{display:flex;align-items:center;justify-content:space-between;gap:var(--craft-space-3);min-height:var(--craft-h-md);border-bottom:1px solid var(--craft-rule-soft,var(--craft-rule));font-size:var(--craft-fs-14)}
+.wwm .wwm-confirmed-people li:last-child{border-bottom:0}
+.wwm .wwm-confirmed-name{display:inline-flex;align-items:center;gap:var(--craft-space-2);min-width:0;overflow-wrap:anywhere;color:var(--craft-ink)}
+.wwm .wwm-confirmed-tag{padding:0 var(--craft-space-1);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);font-size:var(--craft-fs-12);line-height:18px;color:var(--craft-muted)}
+.wwm .wwm-confirmed-rsvp{flex:none;font-size:var(--craft-fs-14);color:var(--craft-muted)}
+.wwm .wwm-confirmed-rsvp[data-rsvp='accepted']{color:var(--craft-ink);font-weight:var(--craft-fw-medium)}
+.wwm .wwm-confirmed-rsvp[data-rsvp='declined']{color:var(--craft-danger)}
+.wwm .wwm-confirmed-availability{margin-top:var(--craft-space-4)}
+.wwm .wwm-confirm .wwm-confirmed-availability>[data-slot='button']{padding-inline:0;color:var(--craft-muted)}
+.wwm .wwm-confirm .wwm-confirmed-availability>[data-slot='button']:hover:not(:disabled){background:transparent;color:var(--craft-ink)}
+.wwm .wwm-confirmed-availability>div{margin-top:var(--craft-space-3)}
+.wwm .wwm-confirmed-waiting{margin-bottom:var(--craft-space-6)}
+.wwm .wwm-confirm .wwm-confirm-heading .wwm-confirmed-status{margin-bottom:var(--craft-space-2)}
+/* Inline status/error with an icon (not bare red text); the action sits beside it. */
+.wwm .wwm-confirm-notice{display:flex;flex-wrap:wrap;align-items:center;gap:var(--craft-space-2) var(--craft-space-3);margin:var(--craft-space-3) 0;padding:var(--craft-space-3) var(--craft-space-4);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:var(--craft-canvas);font-size:var(--craft-fs-14);line-height:20px;color:var(--craft-ink)}
+.wwm .wwm-confirm-notice[data-tone='error']{border-color:var(--craft-danger)}
+.wwm .wwm-confirm-notice>svg{width:16px;height:16px;flex:none}
+.wwm .wwm-confirm-notice[data-tone='error']>svg{color:var(--craft-danger)}
+.wwm .wwm-confirm .wwm-confirm-notice p{flex:1 1 200px;margin:0;min-width:0}
+@media(max-width:600px){
+ .wwm .wwm-confirmed{padding:var(--craft-space-4)}
+ .wwm .wwm-confirmed-actions{flex-direction:column}
+ .wwm .wwm-confirmed-actions [data-slot='button']{width:100%}
+}
+/* Dialog: Notice also lives in the review dialog (not under .wwm); the scroll body keeps room for focus rings. */
+.wwm-confirm-dialog .wwm-confirm-notice{display:flex;flex-wrap:wrap;align-items:center;gap:var(--craft-space-2) var(--craft-space-3);margin:var(--craft-space-3) 0 0;padding:var(--craft-space-3) var(--craft-space-4);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);font-size:var(--craft-fs-14);line-height:20px;color:var(--craft-ink)}
+.wwm-confirm-dialog .wwm-confirm-notice[data-tone='error']{border-color:var(--craft-danger)}
+.wwm-confirm-dialog .wwm-confirm-notice>svg{width:16px;height:16px;flex:none}
+.wwm-confirm-dialog .wwm-confirm-notice[data-tone='error']>svg{color:var(--craft-danger)}
+.wwm-confirm-dialog .wwm-confirm-notice p{flex:1 1 200px;margin:0;min-width:0}
+.wwm-confirm-dialog .wwm-confirm-dialog-body{padding:4px;margin:-4px}
+/* Sweep: confirm load error as a notice; skeleton outlines a card instead of one solid block; dialog warnings at body-small size. */
+.wwm .wwm-confirm-load-error{display:flex;align-items:flex-start;gap:var(--craft-space-3);margin-top:var(--craft-space-2);padding:var(--craft-space-4);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:var(--craft-surface)}
+.wwm .wwm-confirm-load-error>svg{flex:none;width:20px;height:20px;color:var(--craft-danger)}
+.wwm .wwm-confirm-load-error p{margin:0 0 var(--craft-space-3);font-size:var(--craft-fs-14);line-height:20px;color:var(--craft-ink)}
+.wwm .wwm-tab-panel>.wwm-tab-reveal>.wwm-confirm.wwm-confirm-skeleton,.wwm .wwm-confirm-skeleton{padding:var(--craft-space-6);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:var(--craft-surface)}
+.wwm .wwm-confirm-skeleton .wwm-confirm-skeleton-title{width:96px;height:16px}
+.wwm .wwm-confirm-skeleton .wwm-confirm-skeleton-line{width:min(280px,100%);height:24px}
+.wwm .wwm-confirm-skeleton .wwm-confirm-skeleton-grid{width:min(420px,100%);height:16px}
+.wwm-confirm-dialog .wwm-confirm-warning,.wwm-confirm-dialog .wwm-confirm-note,.wwm-confirm-dialog .wwm-confirm-error{margin:var(--craft-space-2) 0 0;font-size:var(--craft-fs-14);line-height:20px}
+/* Sweep: dialog headers align left like every other Craft dialog; the consent step is a quiet bordered note. */
+.wwm-confirm-dialog [data-slot='dialog-header']{text-align:left}
+.wwm-confirm-dialog .wwm-confirm-consent{display:grid;gap:var(--craft-space-3);justify-items:start;margin-top:var(--craft-space-3);padding:var(--craft-space-3) var(--craft-space-4);border:1px solid var(--craft-rule);border-radius:var(--craft-radius)}
+.wwm-confirm-dialog .wwm-confirm-consent p{margin:0;font-size:var(--craft-fs-14);line-height:20px;color:var(--craft-ink)}

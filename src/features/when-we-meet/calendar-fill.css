@@ -9,4 +9,4 @@
 .wwm-fill-summary .wwm-fill-muted{color:var(--craft-muted)}
 .wwm-fill-actions{display:flex;justify-content:flex-end;gap:var(--craft-space-2)}
 .wwm-fill-sheet [data-slot='dialog-header']{text-align:left}
-.wwm-fill-sheet .wwm-fill-body{padding:0 var(--craft-space-4) var(--craft-space-4)}
+.wwm-fill-sheet .wwm-fill-body{padding:0}

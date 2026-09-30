@@ -88,10 +88,10 @@
 .wwm.wwm-index .wwm-shell>header{margin-bottom:20px}
 .wwm.wwm-index .wwm-hero-row{flex-direction:row;align-items:center;gap:12px;flex-wrap:nowrap}
 .wwm.wwm-index .wwm-hero-row h1{flex:1;margin:0}
-.wwm.wwm-index .wwm-hero-row .wwm-new-meeting{align-self:center;width:auto;min-height:36px;height:36px;padding:0 12px;font-size:12px;line-height:18px;border-radius:4px}
+.wwm.wwm-index .wwm-hero-row .wwm-new-meeting{align-self:center;width:auto;min-height:var(--craft-h-md);height:var(--craft-h-md);padding:0 var(--craft-space-4);font-size:var(--craft-fs-14);line-height:20px;border-radius:var(--craft-radius)}
 .wwm.wwm-index .wwm-shell>header>p{margin:8px 0 0;font-size:13px;line-height:20px;color:var(--craft-muted,#635f52);font-weight:400}
 .wwm.wwm-index .wwm-meetings{margin-top:0;border-radius:0}
-@media(max-width:700px){.wwm.wwm-index .wwm-hero-row{gap:8px}.wwm.wwm-index .wwm-hero-row h1{font-size:clamp(20px,5.8vw,24px);letter-spacing:-.045em;white-space:nowrap}.wwm.wwm-index .wwm-hero-row .wwm-new-meeting{padding-inline:9px;font-size:11px}.wwm.wwm-index .wwm-topline{margin-bottom:8px}}
+@media(max-width:700px){.wwm.wwm-index .wwm-hero-row{gap:8px}.wwm.wwm-index .wwm-hero-row h1{font-size:clamp(20px,5.8vw,24px);letter-spacing:-.045em;white-space:nowrap}.wwm.wwm-index .wwm-hero-row .wwm-new-meeting{padding-inline:var(--craft-space-3)}.wwm.wwm-index .wwm-topline{margin-bottom:8px}}
 /* One neutral segmented track; no generated line pseudo-element. */
 .wwm .wwm-view-switch{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:4px;width:100%;height:auto;padding:4px;margin:16px 0;background:var(--craft-surface);border:1px solid var(--craft-rule);border-radius:4px;box-sizing:border-box}
 .wwm .wwm-view-switch [data-slot='tabs-trigger']{display:flex;align-items:center;justify-content:center;height:44px;min-height:44px;min-width:0;width:100%;padding:0 8px;border:1px solid transparent;border-radius:4px;background:transparent;color:var(--craft-muted);font-size:14px;font-weight:500;line-height:1.2;white-space:nowrap;box-shadow:none;transform:none}
@@ -119,3 +119,10 @@
 
 @keyframes wwm-fade{from{opacity:0}to{opacity:1}}
 .wwm-login-dialog[data-state=open],.wwm-login-dialog[data-state=closed]{animation:wwm-fade .18s ease-out both;transform:translate(-50%,-50%)}
+
+/* Sweep: balanced guest headline (no one-word orphan line). */
+.wwm .wwm-guest-panel h2{text-wrap:balance}
+/* Sweep: create failure is a bordered notice above the footer, not loose red text. */
+.wwm-create-dialog .wwm-create-status[role=alert]:not(:empty){margin:0 var(--craft-space-6) var(--craft-space-3);padding:var(--craft-space-3) var(--craft-space-4);border:1px solid var(--craft-danger);border-radius:var(--craft-radius);color:var(--craft-ink);line-height:20px}
+/* Sweep: "Creating meeting…" is progress, not an error — muted until the status becomes an alert. */
+.wwm-create-dialog .wwm-create-status:not([role=alert]){color:var(--craft-muted)}

@@ -4,7 +4,7 @@ import {finalizeConfirmation} from '@/features/when-we-meet/calendar-db';
 import {getEvent,insertEvent} from '@/features/when-we-meet/calendar-google.mjs';
 import {validateConfirmation,confirmationEventId,confirmationFingerprint} from '@/features/when-we-meet/confirmation-foundation.mjs';
 import {confirmMeeting} from '@/features/when-we-meet/confirmation-flow.mjs';
-import {attendees,calendarConnected,confirmationDetail,confirmationStatus} from './shared';
+import {attendees,calendarConnected,confirmationDetail,confirmationStatus,ownerRsvp} from './shared';
 import {body,failed,invalid,ok,sameOrigin,unauthorized,uuid} from '../../http';
 export const dynamic='force-dynamic';export const runtime='nodejs';
 type Context={params:Promise<{roomId:string}>};
@@ -19,7 +19,9 @@ export async function GET(_request:Request,context:Context){
   const confirmation=await confirmationStatus(session,roomId);
   if(metadata.room.ownerId!==session.user.id)return ok({confirmation,review:null});
   const [rows,connected,edit]=await Promise.all([attendees(session,roomId),calendarConnected(session.user),confirmation?confirmationDetail(session,roomId):null]);
-  return ok({confirmation,review:{calendarConnected:connected,organizerEmail:session.user.email??null,attendees:rows.map(row=>({userId:row.userId,name:row.displayName,email:row.email,hasAvailability:row.hasAvailability,isOrganizer:row.userId===session.user!.id})),edit}});
+  // RSVP (owner only): ids + reply status read from the owner's Google event; null without a usable calendar token.
+  const rsvp=confirmation?.status==='confirmed'&&connected?await ownerRsvp(session.user,roomId,rows.map(row=>({userId:row.userId,email:row.email}))):null;
+  return ok({confirmation,review:{calendarConnected:connected,organizerEmail:session.user.email??null,attendees:rows.map(row=>({userId:row.userId,name:row.displayName,email:row.email,hasAvailability:row.hasAvailability,isOrganizer:row.userId===session.user!.id})),edit,rsvp}});
  }catch{return failed('Could not load the confirmation.');}
 }
 

@@ -1,13 +1,13 @@
 /* Room chrome (stage 2): header hierarchy, tab row with save status, invite/created dialogs. Tokens only. */
-.wwm.wwm-room .wwm-room-header{display:grid;gap:var(--craft-space-1);margin:0 0 var(--craft-space-6)}
-.wwm.wwm-room .wwm-room-title-row{display:flex;align-items:center;justify-content:space-between;gap:var(--craft-space-4);min-width:0}
-.wwm.wwm-room .wwm-room-title-row h1{flex:1 1 auto;min-width:0;margin:0;font-size:var(--craft-fs-28);font-weight:var(--craft-fw-semibold);line-height:36px;letter-spacing:-.02em;overflow-wrap:anywhere}
-.wwm.wwm-room .wwm-header-actions{display:flex;flex:none;align-items:center;gap:var(--craft-space-2);width:auto}
+.wwm.wwm-room .wwm-room-header{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'title actions' 'meta meta';align-items:center;column-gap:var(--craft-space-4);row-gap:var(--craft-space-1);margin:0 0 var(--craft-space-6)}
+.wwm.wwm-room .wwm-room-header h1{grid-area:title;min-width:0;margin:0;font-size:var(--craft-fs-28);font-weight:var(--craft-fw-semibold);line-height:36px;letter-spacing:-.02em;overflow-wrap:anywhere}
+.wwm.wwm-room .wwm-header-actions{grid-area:actions;display:flex;flex:none;align-items:center;gap:var(--craft-space-2);width:auto}
 .wwm.wwm-room .wwm-header-actions [data-slot='button']:not([data-size='icon']){width:auto}
-.wwm.wwm-room .wwm-room-meta,.wwm.wwm-room .wwm-room-status{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--craft-space-1);margin:0;font-size:var(--craft-fs-14);line-height:20px;color:var(--craft-muted)}
-.wwm.wwm-room .wwm-room-status{color:var(--craft-ink);font-weight:var(--craft-fw-medium)}
-.wwm.wwm-room .wwm-room-status a{margin-left:var(--craft-space-2);color:inherit;font-weight:var(--craft-fw-regular);text-underline-offset:3px}
-.wwm.wwm-room .wwm-offline{display:inline-flex;align-items:center;gap:var(--craft-space-1);margin-left:var(--craft-space-3);color:var(--craft-warning)}
+.wwm.wwm-room .wwm-room-meta{grid-area:meta;display:flex;flex-wrap:wrap;align-items:center;gap:var(--craft-space-1) var(--craft-space-3);min-width:0;margin:0;font-size:var(--craft-fs-14);line-height:20px;color:var(--craft-muted)}
+/* Compact confirmed status: the same quiet tag as the meetings list, day only (the card on Confirm carries the time). */
+.wwm.wwm-room .wwm-room-chip{display:inline-flex;align-items:center;gap:var(--craft-space-1);padding:0 var(--craft-space-2);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);font-size:var(--craft-fs-12);font-weight:var(--craft-fw-medium);line-height:18px;color:var(--craft-ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.wwm.wwm-room .wwm-room-chip svg{width:12px;height:12px}
+.wwm.wwm-room .wwm-offline{display:inline-flex;align-items:center;gap:var(--craft-space-1);margin:0;color:var(--craft-warning)}
 .wwm.wwm-room .wwm-offline i{width:8px;height:8px;border-radius:50%;background:currentColor}
 [data-slot='dropdown-menu-content'].wwm-room-menu{z-index:var(--craft-z-popover);min-width:200px;padding:var(--craft-space-1);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:var(--craft-surface);color:var(--craft-ink);font-family:var(--craft-font);box-shadow:var(--craft-shadow-pop)}
 .wwm-room-menu [data-slot='dropdown-menu-item']{min-height:var(--craft-h-md);padding:0 var(--craft-space-3);border-radius:var(--craft-radius);font-size:var(--craft-fs-14)}
@@ -38,7 +38,11 @@
 @media(prefers-reduced-motion:reduce){.wwm .wwm-meetings li[data-fresh='true']{animation:none;background:var(--craft-hover)}}
 
 @media(max-width:600px){
- .wwm.wwm-room .wwm-room-title-row{align-items:flex-start}
+ .wwm.wwm-room .wwm-room-header{grid-template-areas:'title title' 'meta actions';row-gap:var(--craft-space-2)}
+ .wwm.wwm-room .wwm-header-actions{align-self:start}
+ /* Invite becomes icon-only beside ⋯; its label stays for assistive tech. */
+ .wwm.wwm-room .wwm-header-actions [data-slot='button']:not([data-size='icon']){width:var(--craft-h-md);padding:0}
+ .wwm.wwm-room .wwm-invite-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
  .wwm.wwm-room .wwm-tabs-row{flex-direction:column;align-items:stretch;border-bottom:0}
  .wwm.wwm-room .wwm-tabs-row .wwm-view-switch{border-bottom:1px solid var(--craft-rule)}
  .wwm.wwm-room .wwm-save-state{order:-1;margin:0}

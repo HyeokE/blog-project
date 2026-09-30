@@ -28,19 +28,20 @@ function localParts(instant,timezone){
 /** `Thu 2026.10.01` */
 export function dayLabel(date){return date?`${weekdayOf(date)} ${formatCraftDate(date)}`:''}
 
-/** Room header status for a confirmed meeting. The timezone is already in the header meta, so it is not repeated. */
-export function confirmedLine(confirmation){
- if(!confirmation?.startsAt||!confirmation?.endsAt)return '';
- const start=localParts(confirmation.startsAt,confirmation.timezone),end=localParts(confirmation.endsAt,confirmation.timezone);
- const endTime=end.date>start.date&&end.time==='00:00'?'24:00':end.time;
- return `Confirmed · ${dayLabel(start.date)} · ${start.time}–${endTime}`;
+const shortFormat=new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'short',month:'short',day:'numeric'});
+/** `Thu, Oct 1` (room-local calendar date). */
+export function shortDay(date){return date?shortFormat.format(new Date(`${date}T00:00:00Z`)):''}
+/** `Thu, Oct 1 · 10:00–10:30 · Asia/Seoul`: the confirmed card's one time line. */
+export function confirmedWhen({date,start,end,timezone}){return [shortDay(date),`${start}–${end}`,timezone].filter(Boolean).join(' · ')}
+/** Compact header status for a confirmed meeting: day only; the card on Confirm carries the time. */
+export function confirmedChip(confirmation){
+ if(!confirmation?.startsAt||!confirmation?.timezone)return '';
+ return `Confirmed · ${shortDay(localParts(confirmation.startsAt,confirmation.timezone).date)}`;
 }
-
-/** The confirmed record as definition-list rows. */
-export function confirmedFacts({date,start,end,organizer,attendeeNames=[]}){
- const rows=[{label:'Date',value:dayLabel(date)},{label:'Time',value:`${start}–${end}`},{label:'Organizer',value:organizer}];
- if(attendeeNames.length)rows.push({label:'Attendees',value:attendeeNames.join(', ')});
- return rows;
+export const RSVP_LABELS=Object.freeze({accepted:'Accepted',declined:'Declined',tentative:'Maybe',needsAction:'No reply'});
+/** `2 accepted · 1 declined · 1 no reply` (empty groups skipped). */
+export function rsvpSummary(counts){
+ return [['accepted','accepted'],['declined','declined'],['tentative','maybe'],['needsAction','no reply']].filter(([k])=>counts[k]>0).map(([k,word])=>`${counts[k]} ${word}`).join(' · ');
 }
 
 /** Compact autosave status shown beside the tabs. */
