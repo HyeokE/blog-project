@@ -67,7 +67,7 @@
 .wwm .wwm-confirmed-people li:last-child{border-bottom:0}
 .wwm .wwm-confirmed-name{display:inline-flex;align-items:center;gap:var(--craft-space-2);min-width:0;overflow-wrap:anywhere;color:var(--craft-ink)}
 .wwm .wwm-confirmed-tag{padding:0 var(--craft-space-1);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);font-size:var(--craft-fs-12);line-height:18px;color:var(--craft-muted)}
-.wwm .wwm-confirmed-rsvp{flex:none;font-size:var(--craft-fs-14);color:var(--craft-muted)}
+.wwm .wwm-confirmed-rsvp{display:inline-flex;flex:none;color:var(--craft-muted)}.wwm .wwm-confirmed-rsvp svg{width:18px;height:18px}.wwm .wwm-confirmed-rsvp[data-rsvp='tentative']{color:var(--craft-warning)}
 .wwm .wwm-confirmed-rsvp[data-rsvp='accepted']{color:var(--craft-ink);font-weight:var(--craft-fw-medium)}
 .wwm .wwm-confirmed-rsvp[data-rsvp='declined']{color:var(--craft-danger)}
 .wwm .wwm-confirmed-availability{margin-top:var(--craft-space-4)}
@@ -122,3 +122,9 @@
 .wwm .wwm-confirm-manual [data-slot='collapsible-content'],.wwm .wwm-confirmed-availability [data-slot='collapsible-content']{min-width:0}
 /* Phones: "Confirm & send invitations" never clips — the review footer stacks, primary on top. */
 @media(max-width:480px){:root[data-craft] .wwm-confirm-dialog [data-slot='dialog-footer'].wwm-confirm-footer{flex-direction:column-reverse;align-items:stretch}:root[data-craft] .wwm-confirm-dialog [data-slot='dialog-footer'].wwm-confirm-footer>*{flex:none;width:100%}}
+.wwm-confirm-dialog .wwm-confirm-recipient strong{display:inline-flex;align-items:center;gap:var(--craft-space-2)}
+.wwm-response-icon{display:inline-flex;flex:none;color:var(--craft-muted)}
+.wwm-response-icon svg{width:16px;height:16px}
+.wwm-response-icon[data-response='available']{color:var(--craft-ink)}
+.wwm-response-icon[data-response='partial']{color:var(--craft-warning)}
+.wwm-response-icon[data-response='unavailable']{color:var(--craft-danger)}

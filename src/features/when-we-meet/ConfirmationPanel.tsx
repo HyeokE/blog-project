@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useMemo,useRef,useState} from 'react';
-import {Check,ChevronDown,ChevronUp,Clock,ExternalLink} from 'lucide-react';
+import {Check,ChevronDown,ChevronUp,CircleCheck,CircleDashed,CircleHelp,CircleX,Clock,ExternalLink} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Checkbox} from '@/components/ui/checkbox';
@@ -34,6 +34,12 @@ export type ConfirmationPanelProps={room:{title:string;startDate:string;endDate:
  edit?:ConfirmationEditState;onEdit?:(proposal:ConfirmationProposal)=>void;onCheckEdit?:()=>void};
 const clock=(value:string)=>Number(value.slice(0,2))*60+Number(value.slice(3));
 const responseLabel=(member:ConfirmationMember,t:WwmTranslate)=>member.response==='not-responded'?t('confirm.status.notResponded'):member.response==='unavailable'?t('confirm.status.unavailable'):member.response==='partial'?member.availability||t('confirm.status.partial'):t('confirm.status.available');
+/** Response status as an icon; the label stays available to assistive tech and as a hover title. */
+function ResponseIcon({member,t}:{member:ConfirmationMember;t:WwmTranslate}){
+ const label=responseLabel(member,t);
+ const Icon=member.response==='available'?CircleCheck:member.response==='partial'?Clock:member.response==='unavailable'?CircleX:CircleDashed;
+ return <span className="wwm-response-icon" data-response={member.response} role="img" aria-label={label} title={label}><Icon aria-hidden="true"/></span>;
+}
 const sameSet=(a:string[],b:string[])=>a.length===b.length&&a.every(id=>b.includes(id));
 const editFlow={idle:'draft',saved:'draft',pending:'pending',reconciling:'reconciling',failed:'failed'} as const;
 export function ConfirmationPanel({room,role,members=[],slots,responses,currentUserId,organizerEmail,calendar,status,confirmation,error,onRetry,onConnectCalendar,onConfirm,edit,onEdit,onCheckEdit}:ConfirmationPanelProps){
@@ -102,7 +108,7 @@ export function ConfirmationPanel({room,role,members=[],slots,responses,currentU
   {owner&&edit&&!editMode&&edit.status==='failed'&&edit.error&&<Notice tone="error">{edit.error}</Notice>}
   {owner&&roster.length>0&&<section className="wwm-confirmed-people" aria-labelledby="wwm-confirmed-people-title">
    <div className="wwm-confirmed-people-head"><h3 id="wwm-confirmed-people-title">{t('confirmed.attendees')}</h3>{replies&&<p>{rsvpSummary(replies)}</p>}</div>
-   <ul>{roster.map(row=><li key={row.id}><span className="wwm-confirmed-name">{row.name}{row.optional&&<Badge variant="outline" size="sm" className="wwm-confirmed-tag">{t('common.optional')}</Badge>}</span>{row.rsvp&&<span className="wwm-confirmed-rsvp" data-rsvp={row.rsvp}>{RSVP_LABELS[row.rsvp]}</span>}</li>)}</ul>
+   <ul>{roster.map(row=><li key={row.id}><span className="wwm-confirmed-name">{row.name}{row.optional&&<Badge variant="outline" size="sm" className="wwm-confirmed-tag">{t('common.optional')}</Badge>}</span>{row.rsvp&&(()=>{const Icon=row.rsvp==='accepted'?CircleCheck:row.rsvp==='declined'?CircleX:row.rsvp==='tentative'?CircleHelp:CircleDashed;return <span className="wwm-confirmed-rsvp" data-rsvp={row.rsvp} role="img" aria-label={RSVP_LABELS[row.rsvp]} title={RSVP_LABELS[row.rsvp]}><Icon aria-hidden="true"/></span>})()}</li>)}</ul>
   </section>}
  </Card>;
  // Under a confirmed meeting the grid is reference only: folded away until asked for.
@@ -125,7 +131,7 @@ export function ConfirmationPanel({room,role,members=[],slots,responses,currentU
     <div className="wwm-labeled-field wwm-confirm-title"><RequiredFieldLabel required htmlFor="wwm-confirm-title">{t('confirm.eventName')}</RequiredFieldLabel><Input id="wwm-confirm-title" required maxLength={100} value={eventTitle} disabled={busy} aria-invalid={!eventTitle.trim()} data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_EVENT_TITLE} onChange={event=>{setEventTitle(event.target.value);resetSent()}}/></div>
     <dl className="wwm-confirm-facts">{editMode&&confirmation&&<div><dt>{t('edit.was')}</dt><dd>{dayTime(confirmation)}</dd></div>}<div><dt>{t('common.date')}</dt><dd>{shortDay(date)}</dd></div><div><dt>{t('common.time')}</dt><dd>{start}–{end} · {room.timezone}</dd></div><div><dt>{t('common.organizer')}</dt><dd>{organizerEmail||t('confirm.organizerUnavailable')}</dd></div></dl>
     {drifted&&<Notice tone="warning">{t('confirm.warnings.noLongerWorks')}</Notice>}
-    <h3>{t('confirm.recipients',{count:recipients.length})}</h3><ul className="wwm-confirm-roster">{reviewed.map(member=><li key={member.id}><label className="wwm-confirm-recipient" htmlFor={`wwm-recipient-${member.id}`}><Checkbox id={`wwm-recipient-${member.id}`} data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_RECIPIENT} checked={!excludedIds.includes(member.id)} disabled={busy} onCheckedChange={()=>{setExcludedIds(current=>current.includes(member.id)?current.filter(id=>id!==member.id):[...current,member.id]);setOptionalIds(current=>current.filter(id=>id!==member.id));resetSent()}}/><span><strong>{member.name}</strong><small>{member.email||t('confirm.missingEmail')} · {responseLabel(member,t)}{excludedIds.includes(member.id)?` · ${t('confirm.excludedTag')}`:optionalIds.includes(member.id)?` · ${t('common.optional')}`:''}</small></span></label>{!excludedIds.includes(member.id)&&<Button type="button" variant="ghost" size="sm" className="wwm-confirm-optional" data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_RECIPIENT_OPTIONAL} aria-pressed={optionalIds.includes(member.id)} aria-label={t('confirm.markOptional',{name:member.name})} disabled={busy} onClick={()=>{setOptionalIds(current=>current.includes(member.id)?current.filter(id=>id!==member.id):[...current,member.id]);resetSent()}}>{t('common.optional')}</Button>}</li>)}</ul>
+    <h3>{t('confirm.recipients',{count:recipients.length})}</h3><ul className="wwm-confirm-roster">{reviewed.map(member=><li key={member.id}><label className="wwm-confirm-recipient" htmlFor={`wwm-recipient-${member.id}`}><Checkbox id={`wwm-recipient-${member.id}`} data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_RECIPIENT} checked={!excludedIds.includes(member.id)} disabled={busy} onCheckedChange={()=>{setExcludedIds(current=>current.includes(member.id)?current.filter(id=>id!==member.id):[...current,member.id]);setOptionalIds(current=>current.filter(id=>id!==member.id));resetSent()}}/><span><strong>{member.name}<ResponseIcon member={member} t={t}/></strong><small>{member.email||t('confirm.missingEmail')}{excludedIds.includes(member.id)?` · ${t('confirm.excludedTag')}`:optionalIds.includes(member.id)?` · ${t('common.optional')}`:''}</small></span></label>{!excludedIds.includes(member.id)&&<Button type="button" variant="ghost" size="sm" className="wwm-confirm-optional" data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_RECIPIENT_OPTIONAL} aria-pressed={optionalIds.includes(member.id)} aria-label={t('confirm.markOptional',{name:member.name})} disabled={busy} onClick={()=>{setOptionalIds(current=>current.includes(member.id)?current.filter(id=>id!==member.id):[...current,member.id]);resetSent()}}>{t('common.optional')}</Button>}</li>)}</ul>
     {missing.length>0&&<p className="wwm-confirm-error" role="alert">{t('confirm.warnings.missingEmail',{names:names(missing)})}</p>}
     {byResponse('unavailable').length>0&&<Notice tone="warning">{t('confirm.warnings.unavailable',{names:names(byResponse('unavailable'))})}</Notice>}
     {byResponse('partial').length>0&&<p className="wwm-confirm-warning">{t('confirm.warnings.partly',{names:byResponse('partial').map(member=>`${member.name} (${responseLabel(member,t)})`).join(t('common.listSeparator'))})}</p>}
