@@ -6,7 +6,7 @@ Applies to `src/i18n/locales/wwm/ko.json` and any Korean copy in Craft. English 
 1. **해요체, 짧게.** One idea per sentence. `~할 수 있어요`, not `~하실 수 있습니다`.
 2. **Talk about what the user did or can do.** `모임을 만들었어요` (not `모임이 생성되었습니다`).
 3. **Plain words over Sino-Korean jargon.** Prefer `고르기`, `정하기`, `보내기`; use `확정`, `선택`, `진행` only where nothing simpler fits.
-4. **Buttons say the outcome.** `초대 보내기`, `3칸 채우기`, `시간 정하기` — avoid bare `확인`/`완료` unless it truly only closes something.
+4. **Buttons say the outcome.** `초대 보내기`, `3칸 채우기`, `확정` — avoid bare `확인`/`완료` unless it truly only closes something.
 5. **Questions end with `~할까요?`.** Never `~하시겠습니까?`.
 6. **Errors give cause + next step.** `인터넷 연결을 확인하고 다시 시도해주세요`. No `오류가 발생했습니다`.
 7. **Positive framing first.** `~하면 돼요` before `~할 수 없어요`.
@@ -20,8 +20,9 @@ Applies to `src/i18n/locales/wwm/ko.json` and any Korean copy in Craft. English 
 | meeting | 모임 | 미팅, 방 |
 | half-hour cell | 칸 | 슬롯, 30분 블록 |
 | availability | 되는 시간 / 가능한 시간 | 가용성 |
+| room tabs | 내 일정 · 전체 일정 · 참여자 · 확정 | 내 시간, 모두의 시간 |
 | organizer | 주최자 | 관리자, 방장 |
-| confirm a time | 시간 정하기 / 확정 | 컨펌 |
+| confirm a time (tab) | 확정 | 시간 정하기, 컨펌 |
 | invitation | 초대 | 인비테이션 |
 | Google Calendar | Google 캘린더 | 구글 캘린더 |
 

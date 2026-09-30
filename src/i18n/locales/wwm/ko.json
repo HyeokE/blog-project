@@ -100,10 +100,10 @@
   "room": {
     "views": "모임 화면",
     "tabs": {
-      "availability": "내 시간",
-      "everyone": "모두의 시간",
+      "availability": "내 일정",
+      "everyone": "전체 일정",
       "people": "참여자",
-      "confirm": "시간 정하기"
+      "confirm": "확정"
     },
     "invite": "초대하기",
     "invitePeople": "사람 초대하기",
@@ -157,8 +157,8 @@
     "cellStartSuffix": ", 시작",
     "when": "{day} {time}",
     "labelChoose": "시간 고르기 · {timezone}",
-    "labelEveryone": "모두의 시간 · {timezone}",
-    "labelYours": "내 시간 · {timezone}",
+    "labelEveryone": "전체 일정 · {timezone}",
+    "labelYours": "내 일정 · {timezone}",
     "instructions": {
       "anchor": "{time}부터 시작해요. 같은 날 더 늦은 칸에서 Enter나 스페이스를 누르면 끝 시간이 정해져요.",
       "select": "화살표 키로 칸과 날짜를 옮겨요. Enter나 스페이스로 시작과 끝을 정하고, Shift와 위아래 키로 늘릴 수 있어요. 화면에서는 두 번 누르거나 길게 누른 채 끌어주세요.",
@@ -209,8 +209,8 @@
     "loadFailed": "참여자를 불러오지 못했어요. 다시 시도해주세요."
   },
   "confirm": {
-    "heading": "시간 정하기",
-    "region": "모임 시간 정하기",
+    "heading": "확정",
+    "region": "모임 시간 확정",
     "bestTimes": "추천 시간",
     "everyoneAvailable": "모두 돼요",
     "partlyAvailableLine": "{total}명 중 {count}명 돼요 · 안 되는 사람: {names}",
@@ -285,8 +285,8 @@
     "openInCalendar": "Google 캘린더에서 보기",
     "editMeeting": "시간 바꾸기",
     "attendees": "참석자",
-    "showAvailability": "모두의 시간 보기",
-    "hideAvailability": "모두의 시간 접기",
+    "showAvailability": "전체 일정 보기",
+    "hideAvailability": "전체 일정 접기",
     "updatedByOrganizer": "주최자가 처음 초대한 뒤로 시간을 바꿨어요.",
     "youreInvited": "초대받았어요",
     "youreInvitedBy": "{name}님이 초대했어요",
@@ -375,11 +375,11 @@
     "heading": "모임에 초대받았어요",
     "loading": "초대를 불러오고 있어요",
     "guestBody": "Google로 계속하면 모임에 참여하고 되는 시간을 알려줄 수 있어요.",
-    "memberBody": "참여하면 모두의 시간을 볼 수 있어요.",
+    "memberBody": "참여하면 전체 일정을 볼 수 있어요.",
     "join": "참여하기",
     "joining": "모임에 참여하고 있어요",
     "joiningStatus": "참여하고 있어요",
-    "preparing": "내 시간 캘린더를 준비하고 있어요",
+    "preparing": "내 일정 캘린더를 준비하고 있어요",
     "retry": "다시 참여하기",
     "invalid": "초대 링크가 올바르지 않아요. 주최자에게 새 링크를 받아주세요.",
     "goToMeetings": "내 모임으로 가기",
