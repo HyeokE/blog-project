@@ -87,6 +87,9 @@ export const ANALYTICS_ELEMENTS = {
   DIALOG_DONE: 'dialog_done',
   AUTH_RETURN: 'auth_return',
   CRAFT_PROJECT: 'craft_project',
+  CRAFT_LEGAL_LINK: 'craft_legal_link',
+  CRAFT_LEGAL_CONTACT: 'craft_legal_contact',
+  CRAFT_LEGAL_EXTERNAL: 'craft_legal_external',
   // When We Meet. Room IDs, names, emails and titles are never attached as ids or labels.
   MEETING_OPEN: 'meeting_open',
   MEETING_NEW: 'meeting_new',
@@ -147,6 +150,7 @@ export const ANALYTICS_SECTIONS = {
   FOOTER: 'footer',
   ERROR: 'error',
   CRAFT_PROJECTS: 'craft_projects',
+  CRAFT_LEGAL: 'craft_legal',
   CRAFT_ACCOUNT: 'craft_account',
   WWM_AUTH: 'wwm_auth',
   WWM_MEETINGS: 'wwm_meetings',

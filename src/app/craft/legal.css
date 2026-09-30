@@ -1,0 +1,16 @@
+/* Craft legal pages: plain reading layout on the Craft canvas. */
+.craft-legal .craft-shell{max-width:720px}
+.craft-legal .craft-header{padding-bottom:clamp(20px,4vh,32px)}
+.craft-legal-meta{margin:8px 0 0;color:var(--craft-muted,#635f52);font-size:13px}
+.craft-legal section{padding:24px 0;border-top:1px solid var(--craft-border,#81775b30)}
+.craft-legal h2{margin:0 0 12px;font-size:18px;font-weight:600}
+.craft-legal h3{margin:16px 0 8px;font-size:15px;font-weight:600}
+.craft-legal p,.craft-legal li{line-height:1.7;font-size:15px}
+.craft-legal p{margin:0 0 10px}
+.craft-legal ul{margin:0 0 10px;padding-left:20px}
+.craft-legal a{color:inherit;text-underline-offset:3px}
+.craft-legal blockquote{margin:12px 0;padding:12px 16px;border-left:2px solid currentColor;border-radius:0 4px 4px 0;background:color-mix(in srgb,currentColor 5%,transparent)}
+.craft-legal-ko{margin-top:32px}
+.craft-legal-nav{display:flex;gap:16px;flex-wrap:wrap;padding-top:24px;border-top:1px solid var(--craft-border,#81775b30);font-size:13px}
+.craft-legal-links{display:flex;gap:16px;flex-wrap:wrap;margin-top:48px;padding-top:20px;border-top:1px solid var(--craft-border,#81775b30);font-size:13px;color:var(--craft-muted,#635f52)}
+.craft-legal-links a{color:inherit;text-underline-offset:3px}

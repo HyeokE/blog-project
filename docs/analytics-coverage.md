@@ -19,10 +19,12 @@ The inventory comes from `src/app/**/page.tsx`. The global tracker supplies page
 | `/about-design` | Sweet-home design story and design-picker link; wall controls. |
 | `/2025/about-design`, `/2026/about-design` | Both routes currently export the Cloud design-story component: home and design-archive links. |
 | `/resume`, `/2025/resume`, `/2026/resume` | Server redirects to `/about`, `/2025/about`, `/2026/about` respectively. The destination page is tracked; the redirect has no clickable UI of its own. |
-| `/craft` | Craft project link (`craft_projects` section); Craft account sign-in and account-check retry (`craft_account`). |
+| `/craft` | Craft project link (`craft_projects` section); Privacy Policy and Terms links (`craft_legal_link`); Craft account sign-in and account-check retry (`craft_account`). |
 | `/craft/when-we-meet` | Back link, guest sign-in and create entry, owned-meeting links without room IDs (`wwm_meetings`); create dialog form, title/name inputs, date range, time range/all-day, timezone picker/search/options, cancel/submit (`wwm_create`); invitation-link copy/done. |
 | `/craft/when-we-meet/[roomId]` | Invitation landing name/join/sign-in (`wwm_invitation`); share, settings form, room tabs with the constant tab key as ID, availability cells and saved-response bars, compact toggle, calendar fill/apply/dismiss/connect, save and section retries (`wwm_room`); people retry (`wwm_people`); confirmation cells, date/time pickers, review, recipient checkboxes, calendar connect, back/send, check-again and event link (`wwm_confirm`). |
 | `/craft/when-we-meet/auth/callback` | OAuth return link after a failed exchange (`wwm_auth`). |
+| `/craft/privacy` | Contact mailto link, Google policy and permissions external links, links to Craft and Terms (`craft_legal`). |
+| `/craft/terms` | Contact mailto link and links to Craft and Privacy Policy (`craft_legal`). |
 
 Craft labels are fixed UI names from `ANALYTICS_ELEMENTS`; names, emails, meeting titles and room IDs are never attached as labels or `data-analytics-id`. Explicit labels also stop the tracker from falling back to `aria-label`/text content, which in When We Meet contains participant names and meeting titles. Link URLs and `page_location` still carry the room path, as for every route. The error boundaries (`src/app/error.tsx`, `src/app/global-error.tsx`) and the 404 page render `SiteError`; their retry and home controls are labelled in the `error` section.
 

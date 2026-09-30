@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import './craft.css';
+import './legal.css';
 import {ANALYTICS_ELEMENTS,ANALYTICS_SECTIONS} from '@/constants/analytics';
 
 export const metadata: Metadata = {
@@ -28,6 +29,10 @@ export default function CraftPage() {
             <ArrowUpRight aria-hidden="true" size={28} strokeWidth={1.2} />
           </Link>
         </section>
+        <nav className="craft-legal-links" aria-label="Craft information">
+          <Link href="/craft/privacy" data-analytics-label={ANALYTICS_ELEMENTS.CRAFT_LEGAL_LINK}>Privacy Policy</Link>
+          <Link href="/craft/terms" data-analytics-label={ANALYTICS_ELEMENTS.CRAFT_LEGAL_LINK}>Terms of Service</Link>
+        </nav>
       </div>
     </main>
   );
