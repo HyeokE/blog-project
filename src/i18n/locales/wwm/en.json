@@ -39,7 +39,6 @@
     "createMeeting": "Create a meeting",
     "signInToCreate": "Sign in with Google to create a meeting",
     "draftKept": "Your draft stays in this tab. Sign in, then press Create meeting again.",
-    "sampleCalendar": "Sample calendar · illustrative availability",
     "weekView": "Week view",
     "previewHeading": "Availability"
   },
@@ -53,7 +52,10 @@
     "memberCountUnavailable": "Member count unavailable",
     "checkingAccount": "Checking your account",
     "gettingReady": "Getting your meetings ready.",
-    "memberCount": { "one": "{count} member", "other": "{count} members" }
+    "memberCount": {
+      "one": "{count} member",
+      "other": "{count} members"
+    }
   },
   "create": {
     "dialogTitle": "New meeting",
@@ -115,7 +117,10 @@
     "sectionLoadFailed": "Couldn’t load this part of the page",
     "addYourTimes": "Add your times",
     "joined": "You joined {title}",
-    "selected": { "one": "{count} selected", "other": "{count} selected" },
+    "selected": {
+      "one": "{count} selected",
+      "other": "{count} selected"
+    },
     "connectionRequired": "Connection required",
     "notConfigured": "This service is not connected to Supabase yet. No meeting or availability can be saved. Ask the site owner to configure the shared project and review the migration. Google login must be enabled before meeting actions can work.",
     "findingTimes": "Finding the times you’re planning together.",
@@ -136,7 +141,10 @@
     "nextDays": "Next days",
     "legend": "Saved respondent colors",
     "noResponses": "No saved responses yet",
-    "savedResponses": { "one": "{count} saved response", "other": "{count} saved responses" },
+    "savedResponses": {
+      "one": "{count} saved response",
+      "other": "{count} saved responses"
+    },
     "dragHint": "Drag on one day to choose a time",
     "selected": "Selected",
     "cellAvailable": "{when}, available",
@@ -168,8 +176,14 @@
     "intro": "Preview the half-hours your calendar shows as free, then fill them.",
     "onlyTheseDates": "Only these dates change",
     "none": "No free half-hours on these dates",
-    "button": { "one": "Fill {count} slot", "other": "Fill {count} slots" },
-    "toast": { "one": "Filled {count} half-hour", "other": "Filled {count} half-hours" },
+    "button": {
+      "one": "Fill {count} slot",
+      "other": "Fill {count} slots"
+    },
+    "toast": {
+      "one": "Filled {count} half-hour",
+      "other": "Filled {count} half-hours"
+    },
     "toastWithRemoved": "Filled {count} · removed {removed}",
     "undo": "Undo",
     "connect": "Connect",
@@ -180,7 +194,10 @@
     "denied": "Google Calendar wasn’t connected. Your selection is unchanged.",
     "permissionMissing": "Tick the Google Calendar permission to continue",
     "connectFailed": "Couldn’t connect Google Calendar. Try again.",
-    "freeCount": { "one": "{count} free half-hour", "other": "{count} free half-hours" }
+    "freeCount": {
+      "one": "{count} free half-hour",
+      "other": "{count} free half-hours"
+    }
   },
   "people": {
     "heading": "People",
@@ -204,7 +221,10 @@
     "reviewTitle": "Review confirmation",
     "reviewDescription": "Check the exact time and recipients before sending invitations.",
     "eventName": "Event name",
-    "recipients": { "one": "Recipient ({count})", "other": "Recipients ({count})" },
+    "recipients": {
+      "one": "Recipient ({count})",
+      "other": "Recipients ({count})"
+    },
     "markOptional": "Mark {name} as optional",
     "status": {
       "available": "Available",
@@ -229,7 +249,10 @@
     "sendFailed": "Couldn’t send the invitations. Review the details and try again.",
     "reconciling": "Checking event status. Checking again never sends invitations twice.",
     "checkAgain": "Check again",
-    "invitationsSent": { "one": "Invitations sent to {count} person", "other": "Invitations sent to {count} people" },
+    "invitationsSent": {
+      "one": "Invitations sent to {count} person",
+      "other": "Invitations sent to {count} people"
+    },
     "loadFailed": "Couldn’t load the confirmation. Check your connection and try again.",
     "loading": "Loading confirmation",
     "calendarUnavailable": "Google Calendar connection is unavailable. Try again.",
@@ -308,7 +331,10 @@
   },
   "resend": {
     "menuItem": "Resend invitations…",
-    "question": { "one": "Email {count} attendee again?", "other": "Email {count} attendees again?" },
+    "question": {
+      "one": "Email {count} attendee again?",
+      "other": "Email {count} attendees again?"
+    },
     "questionUnknown": "Email the attendees again?",
     "body": "Google Calendar sends the same invitation again.",
     "confirm": "Resend",
@@ -328,7 +354,10 @@
     "memberDescription": "Your name in this meeting.",
     "meetingName": "Meeting name",
     "scheduleHeading": "Dates and times",
-    "scheduleWarningLost": { "one": "{count} saved half-hour from {names} falls outside the new times and will be removed.", "other": "{count} saved half-hours from {names} fall outside the new times and will be removed." },
+    "scheduleWarningLost": {
+      "one": "{count} saved half-hour from {names} falls outside the new times and will be removed.",
+      "other": "{count} saved half-hours from {names} fall outside the new times and will be removed."
+    },
     "scheduleConfirmedStays": "The confirmed time and its invitations stay as they are.",
     "deleteMeeting": "Delete meeting",
     "deleteHint": "Removes the meeting and everyone’s availability.",
