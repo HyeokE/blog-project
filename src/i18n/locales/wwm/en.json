@@ -167,6 +167,7 @@
     },
     "startSet": "Start set at {time}.",
     "pagerDay": "{weekday} {day}",
+    "pagerMonthDay": "{weekday} {month} {day}",
     "blockName": "{name}, {date}, {start} to {end}",
     "blockTime": "{start} to {end}",
     "showEarlier": "Show {from}–{to}"

@@ -167,6 +167,7 @@
     },
     "startSet": "{time}부터 시작해요.",
     "pagerDay": "{day}일 ({weekday})",
+    "pagerMonthDay": "{month} {day}일 ({weekday})",
     "blockName": "{name}, {date}, {start}부터 {end}까지",
     "blockTime": "{start}부터 {end}까지",
     "showEarlier": "{from}–{to} 펼치기"
