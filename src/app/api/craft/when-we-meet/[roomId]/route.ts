@@ -1,6 +1,7 @@
 import {currentSupabaseUser,craftRoom} from '@/lib/supabase/server';
 import {mergeAvailability} from '@/features/when-we-meet/availability-changes.mjs';
 import {normalizeResponses} from '@/features/when-we-meet/normalize.mjs';
+import {validateRoom} from '@/features/when-we-meet/domain.mjs';
 import {body,failed,invalid,ok,sameOrigin,unauthorized,uuid} from '../http';
 export const dynamic='force-dynamic';
 type Context={params:Promise<{roomId:string}>};
@@ -20,6 +21,29 @@ export async function POST(request:Request,context:Context){
    if(error)return error.code==='42501'?failed('Only the meeting owner can rename it.',403):error.code==='22023'?invalid('Enter a meeting name (1–100 characters).'):failed('Could not rename the meeting.',502);
    return ok({title:typeof data==='string'?data:title});
   }catch{return failed('Could not rename the meeting.')}
+ }
+ // Owner-only schedule edit. Saved availability outside the new window is removed by the RPC; a confirmed meeting is untouched.
+ if(input.action==='schedule'){
+  const {startDate,endDate,startTime,endTime,timezone}=input;
+  if([startDate,endDate,startTime,endTime,timezone].some(value=>typeof value!=='string')||(timezone as string).length>64)return invalid('Choose valid dates and times.');
+  const problem=validateRoom({title:'Valid',startDate:startDate as string,endDate:endDate as string,startTime:startTime as string,endTime:endTime as string,timezone:timezone as string});
+  if(problem)return invalid(problem);
+  try{
+   const {client,user}=await currentSupabaseUser();if(!user)return unauthorized();
+   const {data,error}=await client.rpc('wwm_update_room_schedule',{p_room_id:roomId,p_start_date:startDate,p_end_date:endDate,p_start_time:startTime,p_end_time:endTime,p_timezone:timezone});
+   if(error)return error.code==='42501'?failed('Only the meeting owner can change the dates and times.',403):error.code==='22023'?invalid('Choose dates that are not in the past, up to 14 days, with 30-minute times.'):failed('Could not update the dates and times.',502);
+   const row=Array.isArray(data)?data[0]:null;
+   return ok({schedule:{startDate,endDate,startTime,endTime,timezone},removedSlots:Number(row?.removed_slots??0)});
+  }catch{return failed('Could not update the dates and times.')}
+ }
+ // Owner-only delete; membership, availability and the confirmation record cascade. The Google event is not cancelled.
+ if(input.action==='delete'){
+  try{
+   const {client,user}=await currentSupabaseUser();if(!user)return unauthorized();
+   const {error}=await client.rpc('wwm_delete_room',{p_room_id:roomId});
+   if(error)return error.code==='42501'?failed('Only the meeting owner can delete it.',403):failed('Could not delete the meeting.',502);
+   return ok({deleted:true});
+  }catch{return failed('Could not delete the meeting.')}
  }
  const {action,name}=input;if(typeof name!=='string'||!name.trim()||name.trim().length>50)return invalid('Enter your name.');
  try{

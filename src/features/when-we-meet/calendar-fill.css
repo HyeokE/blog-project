@@ -10,3 +10,6 @@
 .wwm-fill-actions{display:flex;justify-content:flex-end;gap:var(--craft-space-2)}
 .wwm-fill-sheet [data-slot='dialog-header']{text-align:left}
 .wwm-fill-sheet .wwm-fill-body{padding:0}
+/* Buttons never overflow the 320px panel: they wrap (right-aligned) instead of pushing past the edge. */
+.wwm-fill-actions{flex-wrap:wrap}
+.wwm-fill-actions>[data-slot='button']{max-width:100%;min-width:0}

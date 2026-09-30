@@ -9,7 +9,7 @@ try {
  if(visible.length!==1)throw new Error(`Expected exactly one visible creation CTA, found ${visible.map(x=>x.label).join(', ') || 'none'}; snapshot: ${initial}`);
  const entry=visible[0].element;
  await entry.click();
- const title=p.getByRole('textbox',{name:'What are we planning?'});
+ const title=p.getByRole('textbox',{name:'Title'});
  const name=p.getByRole('textbox',{name:'Your name'});
  // The range trigger's visible copy is still being iterated; its id is the stable contract (also used by create() focus routing).
  const dates=p.locator('#wwm-range-trigger');

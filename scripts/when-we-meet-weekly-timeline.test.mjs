@@ -71,3 +71,8 @@ test('fall-back repeated wall times remain two distinct UTC slots; spring-forwar
  assert.deepEqual(spring.map(s=>s.time),['01:00','01:30','03:00','03:30']);
  assert.deepEqual(projectWeeklyTimeline({slots:spring,responses:[],currentUserId:''}).days[0].slots.map(s=>s.id),spring.map(s=>s.id));
 });
+test('rows sort names naturally (Participant 2 before Participant 10)',()=>{
+  const slots=makeSlots(room('2026-09-01','2026-09-01'));
+  const responses=[11,2,10,1].map(n=>response(`u${n}`,`Participant ${n}`,[slots[0].id]));
+  assert.deepEqual(projectWeeklyTimeline({slots,responses,currentUserId:'x'}).rows.map(r=>r.label),['Participant 1','Participant 2','Participant 10','Participant 11']);
+});

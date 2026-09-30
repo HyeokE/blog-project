@@ -11,12 +11,15 @@ import {MockAccountProvider,PERSON} from './mock-account';
 import {state,calendar,type Room,type Response,type ConfirmationPayload} from './mock-api';
 import {MeetingRowsSkeleton,RoomSkeleton} from '@/features/when-we-meet/ServerSkeletons';
 import ServerSectionBoundary from '@/features/when-we-meet/ServerSectionBoundary';
+import ServerSectionRetry from '@/features/when-we-meet/ServerSectionRetry';
+import {ConfirmationPanel,type ConfirmationPanelProps} from '@/features/when-we-meet/ConfirmationPanel';
 import CraftError from '@/components/craft/CraftError';
 import SiteError from '@/components/site-error/SiteError';
 import {saveDraft} from '@/features/when-we-meet/draft.mjs';
 import {todayInTimezone} from '@/features/when-we-meet/creation-validation.mjs';
 import {expect,waitFor} from 'storybook/test';
 import {Toaster} from '@/components/ui/sonner';
+import {Button} from '@/components/ui/button';
 import type {ConfirmationRecordData} from '@/features/when-we-meet/confirm-tab.mjs';
 const id='22222222-2222-4222-8222-222222222222';
 const room:Room={id,title:'Team coffee',ownerId:PERSON.id,role:'ADMIN',startDate:'2026-09-30',endDate:'2026-10-02',startTime:'00:00',endTime:'24:00',timezone:'Asia/Seoul',inviteToken:'storybook-only'};
@@ -49,8 +52,16 @@ export const SingleHalfHour:Story={render:()=> <Frame><Calendar density="single"
 export const DoubleHalfHour:Story={render:()=> <Frame><Calendar density="double"/></Frame>};
 export const FullDay:Story={render:()=> <Frame><Calendar density="many"/></Frame>};
 export const ManyRespondents:Story={render:()=> <Frame><Calendar density="many" readOnly/></Frame>};
-function Invite({signedIn=false,loading=false,busy=false,valid=true,error='',nameReady=false}:{signedIn?:boolean;loading?:boolean;busy?:boolean;valid?:boolean;error?:string;nameReady?:boolean}){const [name,setName]=useState('');return <Frame user={signedIn}><div className="wwm"><div className="wwm-shell"><InvitationLanding signedIn={signedIn} loading={loading} busy={busy} valid={valid} name={name} nameReady={nameReady} onName={setName} error={error} onSignIn={()=>{}} onJoin={()=>{}} onRetry={()=>{}}/></div></div></Frame>}
-export const InvitationGuest:Story={render:()=> <Invite/>};
+const invitePreview={title:'Team coffee',startDate:'2026-09-30',endDate:'2026-10-02',timezone:'Asia/Seoul',organizerName:'Morgan Sample'};
+function Invite({signedIn=false,loading=false,busy=false,valid=true,error='',nameReady=false,preview=invitePreview}:{signedIn?:boolean;loading?:boolean;busy?:boolean;valid?:boolean;error?:string;nameReady?:boolean;preview?:React.ComponentProps<typeof InvitationLanding>['preview']}){const [name,setName]=useState('');return <Frame user={signedIn}><div className="wwm"><div className="wwm-shell"><InvitationLanding signedIn={signedIn} loading={loading} busy={busy} valid={valid} name={name} nameReady={nameReady} onName={setName} error={error} preview={preview} onSignIn={()=>{}} onJoin={()=>{}} onRetry={()=>{}}/></div></div></Frame>}
+export const InvitationGuest:Story={render:()=> <Invite/>,play:async({canvasElement})=>{const c=within(canvasElement);await expect(c.getByRole('heading',{name:'Team coffee'})).toBeVisible();await expect(c.getByText('2026.09.30 – 10.02 · Asia/Seoul')).toBeVisible();await expect(c.getByText('Organized by Morgan Sample')).toBeVisible();}};
+export const InvitationGuestMobile:Story={...InvitationGuest,globals:{viewport:{value:'mobile',isRotated:false}}};
+export const InvitationGuestDark:Story={...InvitationGuest,globals:{theme:'dark'}};
+export const InvitationPreviewLoading:Story={render:()=> <Invite preview={undefined}/>};
+export const InvitationLinkMismatch:Story={render:()=> <Invite preview={null}/>,play:async({canvasElement})=>{await expect(within(canvasElement).getByText(/incomplete or invalid/)).toBeVisible();}};
+export const InvitationPreviewUnavailable:Story={render:()=> <Invite preview="unavailable"/>};
+// The real landing: the token in the URL drives the token-gated preview read (mock), then Google sign-in.
+export const InvitationGuestLive:Story={render:()=> <Frame user={false}><WhenWeMeet roomId={id}/></Frame>,beforeEach:()=>{calendar.preview='success';window.history.replaceState(null,'',`${window.location.pathname}${window.location.search}&invite=33333333-3333-4333-8333-333333333333`);},play:async({canvasElement})=>{await waitFor(()=>expect(within(canvasElement).getByRole('heading',{name:'Team coffee'})).toBeVisible());}};
 export const InvitationLoading:Story={render:()=> <Invite loading/>};
 export const InvitationSignedIn:Story={render:()=> <Invite signedIn/>};
 export const InvitationJoining:Story={render:()=> <Invite signedIn nameReady/>};
@@ -61,7 +72,10 @@ export const ListLoading:Story={render:()=> <Frame><WhenWeMeet meetingsSection={
 export const RoomLoading:Story={render:()=> <Frame><main className="wwm"><RoomSkeleton/></main></Frame>};
 function BrokenSection():React.ReactNode{throw new Error('Synthetic section failure');}
 export const ListLoadError:Story={render:()=> <Frame><WhenWeMeet meetingsSection={<ServerSectionBoundary><BrokenSection/></ServerSectionBoundary>}/></Frame>};
-export const RoomLoadError:Story={render:()=> <Frame><main className="wwm"><ServerSectionBoundary><BrokenSection/></ServerSectionBoundary></main></Frame>};
+export const RoomLoadError:Story={render:()=> <Frame><ServerSectionRetry room/></Frame>};
+export const RoomLoadErrorMobile:Story={...RoomLoadError,globals:{viewport:{value:'mobile',isRotated:false}}};
+export const RoomLoadErrorDark:Story={...RoomLoadError,globals:{theme:'dark'}};
+export const RoomSectionError:Story={render:()=> <Frame><main className="wwm wwm-room"><div className="wwm-shell"><ServerSectionBoundary><BrokenSection/></ServerSectionBoundary></div></main></Frame>};
 export const RouteNotFound:Story={render:()=> <Frame><SiteError status="404"/></Frame>};
 export const RouteServerError:Story={render:()=> <Frame><SiteError status="500" retry={<button onClick={()=>{}}>다시 시도</button>}/></Frame>};
 // Craft routes (/craft/**) render their own English error pages; the blog keeps SiteError in Korean.
@@ -79,9 +93,9 @@ export const CreateSubmitting:Story={...EmptyMeetings,beforeEach:()=>{seeded();s
 export const CreateFailure:Story={...EmptyMeetings,beforeEach:()=>{seeded();state.create='failure';},play:submitCreate};
 export const CreateSuccess:Story={...EmptyMeetings,beforeEach:()=>{seeded();state.create='success';},play:submitCreate};
 export const LoginRequired:Story={...GuestHome,beforeEach:seeded,play:async(ctx)=>{await GuestCreateDialog.play?.(ctx);await userEvent.click(within(document.body).getByRole('button',{name:'Create meeting'}));await waitFor(()=>expect(within(document.body).getByText('Sign in with Google to create a meeting')).toBeVisible());}};
-const editCell=async({canvasElement}:Parameters<NonNullable<Story['play']>>[0])=>{const cell=canvasElement.querySelector<HTMLButtonElement>('.wwm-week-edit');if(!cell)throw Error('Edit cell missing');await userEvent.click(cell);};
+const editCell=async({canvasElement}:Parameters<NonNullable<Story['play']>>[0])=>{const cell=canvasElement.querySelector<HTMLElement>('[role="gridcell"]');if(!cell)throw Error('Edit cell missing');await userEvent.click(cell);};
 export const Saving:Story={...RoomAvailability,beforeEach:()=>{state.save='pending';},play:async(ctx)=>{await editCell(ctx);await waitFor(()=>expect(within(ctx.canvasElement).getAllByText(/Saving/)[0]).toBeVisible());}};
-export const SaveFailed:Story={...RoomAvailability,beforeEach:()=>{state.save='failure';},play:async(ctx)=>{await editCell(ctx);await waitFor(()=>expect(within(ctx.canvasElement).getAllByText(/Couldn’t save/)[0]).toBeVisible());}};
+export const SaveFailed:Story={...RoomAvailability,beforeEach:()=>{state.save='failure';},play:async(ctx)=>{await editCell(ctx);await waitFor(()=>expect(within(ctx.canvasElement).getAllByText(/Not saved/)[0]).toBeVisible(),{timeout:8000});}};
 export const SaveRetryRecovered:Story={...SaveFailed,play:async(ctx)=>{await SaveFailed.play?.(ctx);state.save='success';await userEvent.click(within(ctx.canvasElement).getByRole('button',{name:'Retry'}));await waitFor(()=>expect(within(ctx.canvasElement).getAllByText(/^Saved/)[0]).toBeVisible());}};
 export const LiveConnected:Story={...RoomAvailability,beforeEach:()=>{state.connected=true;state.responses=rows;},play:async({canvasElement})=>{await new Promise(r=>setTimeout(r,200));await expect(within(canvasElement).queryByText('Offline')).not.toBeInTheDocument();}};
 export const Offline:Story={...RoomAvailability,beforeEach:()=>{state.offline=true;},play:async({canvasElement})=>{await waitFor(()=>expect(within(canvasElement).getByText('Offline')).toBeVisible());}};
@@ -98,7 +112,7 @@ export const CalendarDark:Story={...RoomAvailability,globals:{theme:'dark'}};
 const openFill=async({canvasElement}:Parameters<NonNullable<Story['play']>>[0])=>{const c=within(canvasElement);await userEvent.click(c.getByRole('button',{name:'Fill from Google Calendar'}));};
 const freeIds=slots.filter(s=>['10:00','10:30','11:00','14:00','14:30'].includes(s.time)).map(s=>s.id);
 export const AutofillPreview:Story={...RoomAvailability,beforeEach:()=>{calendar.busyIds=freeIds;calendar.slotCount=slots.length;},play:async(ctx)=>{await openFill(ctx);await waitFor(()=>expect(within(document.body).getByRole('button',{name:'Fill 15 slots'})).toBeVisible());}};
-export const AutofillApplied:Story={...AutofillPreview,play:async(ctx)=>{await AutofillPreview.play?.(ctx);await userEvent.click(within(document.body).getByRole('button',{name:'Fill 15 slots'}));await waitFor(()=>expect(within(document.body).getByText('Filled 15 half-hours')).toBeVisible());await expect(within(document.body).queryByRole('button',{name:'Fill 15 slots'})).not.toBeInTheDocument();}};
+export const AutofillApplied:Story={...AutofillPreview,play:async(ctx)=>{await AutofillPreview.play?.(ctx);await userEvent.click(within(document.body).getByRole('button',{name:'Fill 15 slots'}));await waitFor(()=>expect(within(document.body).getByText('Filled 15 · removed 3')).toBeVisible());await expect(within(document.body).queryByRole('button',{name:'Fill 15 slots'})).not.toBeInTheDocument();}};
 export const AutofillZero:Story={...RoomAvailability,beforeEach:()=>{calendar.busyIds=[];calendar.slotCount=slots.length;},play:async(ctx)=>{await openFill(ctx);await waitFor(()=>expect(within(document.body).getByText(/No free half-hours/)).toBeVisible());await expect(within(document.body).queryByRole('button',{name:/^Fill \d/})).not.toBeInTheDocument();}};
 export const AutofillReconnect:Story={...RoomAvailability,beforeEach:()=>{calendar.busy='reconnect';},play:async(ctx)=>{await openFill(ctx);await waitFor(()=>expect(within(document.body).getByRole('button',{name:'Connect Google Calendar'})).toBeVisible());}};
 export const AutofillError:Story={...RoomAvailability,beforeEach:()=>{calendar.busy='error';},play:async(ctx)=>{await openFill(ctx);await waitFor(()=>expect(within(document.body).getByRole('button',{name:'Retry'})).toBeVisible());}};
@@ -110,11 +124,11 @@ const MORGAN='33333333-3333-4333-8333-333333333333';
 const review:NonNullable<ConfirmationPayload['review']>={calendarConnected:true,organizerEmail:'alex@example.test',attendees:[{userId:PERSON.id,name:'Alex Sample',email:'alex@example.test',hasAvailability:true,isOrganizer:true},{userId:MORGAN,name:'Morgan Sample',email:'morgan@example.test',hasAvailability:true,isOrganizer:false}]};
 const confirmed=(status:string)=>({status,title:'Team coffee',startsAt:slots[12].id,endsAt:new Date(Date.parse(slots[13].id)+1800000).toISOString(),timezone:'Asia/Seoul',googleEventUrl:status==='confirmed'?'https://calendar.google.com/calendar/event?eid=storybook':null});
 const openConfirm=async({canvasElement}:Parameters<NonNullable<Story['play']>>[0])=>{const c=within(canvasElement);await userEvent.click(c.getByRole('tab',{name:'Confirm'}));};
-const pickAndReview=async(ctx:Parameters<NonNullable<Story['play']>>[0])=>{await openConfirm(ctx);const c=within(ctx.canvasElement);const cell=await waitFor(()=>c.getByRole('button',{name:/^2026\.09\.30 06:00–06:30/}));await userEvent.click(cell);await userEvent.click(c.getByRole('button',{name:'Review confirmation'}));await waitFor(()=>expect(within(document.body).getByRole('dialog')).toBeVisible());};
+const pickAndReview=async(ctx:Parameters<NonNullable<Story['play']>>[0])=>{await openConfirm(ctx);const c=within(ctx.canvasElement);const cell=await waitFor(()=>c.getByRole('gridcell',{name:/^Wed, Sep 30, 6:00 AM,/}));await userEvent.click(cell);await userEvent.click(c.getByRole('button',{name:'Review confirmation'}));await waitFor(()=>expect(within(document.body).getByRole('dialog')).toBeVisible());};
 export const ConfirmOwnerDraft:Story={...RoomAvailability,beforeEach:()=>{calendar.confirmation={confirmation:null,review};},play:async(ctx)=>{await openConfirm(ctx);await waitFor(()=>expect(within(ctx.canvasElement).getByRole('heading',{name:'Confirm a time'})).toBeVisible());}};
 export const ConfirmOwnerReview:Story={...ConfirmOwnerDraft,play:pickAndReview};
-// Keyboard path: Enter on a half-hour sets the start, Enter on another sets the end; the fields and action bar follow.
-const selectRange=async(ctx:Parameters<NonNullable<Story['play']>>[0])=>{await openConfirm(ctx);const c=within(ctx.canvasElement);const from=await waitFor(()=>c.getByRole('button',{name:/^2026\.09\.30 06:00–06:30/}));from.focus();await userEvent.keyboard('{Enter}');c.getByRole('button',{name:/^2026\.09\.30 07:00–07:30/}).focus();await userEvent.keyboard('{Enter}');await waitFor(()=>expect(c.getAllByText('2026.09.30 · 06:00–07:30')[0]).toBeVisible());await expect(c.getByRole('combobox',{name:'Start'})).toHaveTextContent('06:00');};
+// Keyboard path: Enter on a half-hour sets the start, arrows move, Enter sets the end; the fields and action bar follow.
+const selectRange=async(ctx:Parameters<NonNullable<Story['play']>>[0])=>{await openConfirm(ctx);const c=within(ctx.canvasElement);const from=await waitFor(()=>c.getByRole('gridcell',{name:/^Wed, Sep 30, 6:00 AM,/}));from.focus();await userEvent.keyboard('{Enter}');await userEvent.keyboard('{ArrowDown}{ArrowDown}{Enter}');await waitFor(()=>expect(c.getAllByText('Wed, Sep 30 · 06:00–07:30')[0]).toBeVisible());const manual=c.queryByRole('button',{name:'Enter time manually'});if(manual&&manual.getAttribute('aria-expanded')!=='true')await userEvent.click(manual);await waitFor(()=>expect(c.getByRole('combobox',{name:'Start'})).toHaveTextContent('06:00'));};
 export const ConfirmOwnerSelectedRange:Story={...ConfirmOwnerDraft,play:selectRange};
 export const ConfirmOwnerSelectedRangeDark:Story={...ConfirmOwnerSelectedRange,globals:{theme:'dark'}};
 export const ConfirmCalendarDisconnected:Story={...RoomAvailability,beforeEach:()=>{calendar.confirmation={confirmation:null,review:{...review,calendarConnected:false}};},play:pickAndReview};
@@ -135,6 +149,7 @@ const memberConfirmed=(isRecipient:boolean|undefined,check:(c:ReturnType<typeof 
 export const ConfirmMemberRecipient:Story=memberConfirmed(true,async c=>{await waitFor(()=>expect(c.getByText(/^You’re invited · Organized by /)).toBeVisible());await expect(c.getByRole('link',{name:/Open in Google Calendar/})).toBeVisible();});
 export const ConfirmMemberNotRecipient:Story=memberConfirmed(false,async c=>{await waitFor(()=>expect(c.getByText(/You weren’t included in the invitation/)).toBeVisible());await expect(c.queryByRole('link',{name:/Open in Google Calendar/})).not.toBeInTheDocument();});
 export const ConfirmMemberRecipientUnknown:Story=memberConfirmed(undefined,async c=>{await waitFor(()=>expect(c.getByText(/^Organized by |^Confirmed by the organizer$/)).toBeVisible());await expect(c.queryByText(/You’re invited/)).not.toBeInTheDocument();await expect(c.queryByRole('link',{name:/Open in Google Calendar/})).not.toBeInTheDocument();});
+export const ConfirmMemberConfirmed:Story={...ConfirmMemberRecipient};
 export const ConfirmMemberRecipientMobile:Story={...ConfirmMemberRecipient,globals:{viewport:{value:'mobile',isRotated:false}}};
 export const ConfirmMemberNotRecipientMobile:Story={...ConfirmMemberNotRecipient,globals:{viewport:{value:'mobile',isRotated:false}}};
 export const ConfirmMemberNotRecipientDark:Story={...ConfirmMemberNotRecipient,globals:{theme:'dark'}};
@@ -158,7 +173,7 @@ const editDetail=(over:Partial<NonNullable<NonNullable<ConfirmationPayload['revi
 const confirmedOwner=(over:Partial<NonNullable<NonNullable<ConfirmationPayload['review']>['edit']>>={})=>()=>{calendar.confirmation={confirmation:{...confirmed('confirmed'),revision:1},review:{...review,edit:editDetail(over)}};};
 const openConfirmed=async(ctx:Parameters<NonNullable<Story['play']>>[0])=>{await openConfirm(ctx);await waitFor(()=>expect(within(ctx.canvasElement).getByRole('button',{name:'Edit meeting'})).toBeVisible());};
 export const ConfirmOwnerConfirmedActions:Story={...RoomAvailability,beforeEach:confirmedOwner(),play:openConfirmed};
-const openEditReview=async(ctx:Parameters<NonNullable<Story['play']>>[0])=>{await openConfirmed(ctx);const c=within(ctx.canvasElement);await userEvent.click(c.getByRole('button',{name:'Edit meeting'}));await waitFor(()=>expect(c.getByRole('heading',{name:'Edit confirmed meeting'})).toBeVisible());const cell=await waitFor(()=>c.getByRole('button',{name:/^2026\.09\.30 08:00–08:30/}));await userEvent.click(cell);await userEvent.click(c.getByRole('button',{name:'Review changes'}));await waitFor(()=>expect(within(document.body).getByRole('dialog')).toBeVisible());};
+const openEditReview=async(ctx:Parameters<NonNullable<Story['play']>>[0])=>{await openConfirmed(ctx);const c=within(ctx.canvasElement);await userEvent.click(c.getByRole('button',{name:'Edit meeting'}));await waitFor(()=>expect(c.getByRole('heading',{name:'Edit confirmed meeting'})).toBeVisible());const cell=await waitFor(()=>c.getByRole('gridcell',{name:/^Wed, Sep 30, 8:00 AM,/}));await userEvent.click(cell);await userEvent.click(c.getByRole('button',{name:'Review changes'}));await waitFor(()=>expect(within(document.body).getByRole('dialog')).toBeVisible());};
 export const ConfirmEditReview:Story={...RoomAvailability,beforeEach:confirmedOwner(),play:openEditReview};
 export const ConfirmEditReviewMobile:Story={...ConfirmEditReview,globals:{viewport:{value:'mobile',isRotated:false}}};
 export const ConfirmEditReviewDark:Story={...ConfirmEditReview,globals:{theme:'dark'}};
@@ -197,3 +212,25 @@ export const JoinedToast:Story={render:()=> <Frame><WhenWeMeet roomId={id}/></Fr
 export const AutofillPreviewDarkMobile:Story={...AutofillPreview,globals:{theme:'dark',viewport:{value:'mobile',isRotated:false}}};
 export const ConfirmOwnerDraftMobile:Story={...ConfirmOwnerDraft,globals:{viewport:{value:'mobile',isRotated:false}}};
 export const ConfirmOwnerSelectedRangeMobile:Story={...ConfirmOwnerSelectedRange,globals:{viewport:{value:'mobile',isRotated:false}},play:async(ctx)=>{await openConfirm(ctx);const c=within(ctx.canvasElement);await waitFor(()=>expect(c.getByRole('heading',{name:'Confirm a time'})).toBeVisible());const manual=c.queryByRole('button',{name:'Enter time manually'});if(manual)await userEvent.click(manual);}};
+
+// Round 2 (flows): Best times on Confirm, the "no longer works" review notice, schedule edit + delete in Settings.
+export const ConfirmOwnerBestTimes:Story={...ConfirmOwnerDraft,play:async ctx=>{await openConfirm(ctx);const c=within(ctx.canvasElement);const best=await waitFor(()=>c.getByRole('region',{name:'Best times'}));await expect(within(best).getByText('Everyone available')).toBeVisible();await expect(within(best).getByText('1/2 available · missing: Morgan Sample')).toBeVisible();await userEvent.click(within(best).getAllByRole('button')[0]);await waitFor(()=>expect(c.getAllByText('Wed, Sep 30 · 06:00–07:00')[0]).toBeVisible());await expect(within(best).getAllByRole('button')[0]).toHaveAttribute('aria-pressed','true');}};
+export const ConfirmOwnerBestTimesMobile:Story={...ConfirmOwnerBestTimes,globals:{viewport:{value:'mobile',isRotated:false}}};
+export const ConfirmOwnerBestTimesDark:Story={...ConfirmOwnerBestTimes,globals:{theme:'dark'}};
+const driftMembers:NonNullable<ConfirmationPanelProps['members']>=[{id:PERSON.id,name:'Alex Sample',email:'alex@example.test',response:'available'},{id:MORGAN,name:'Morgan Sample',email:'morgan@example.test',response:'available'}];
+function DriftDemo(){const [responses,setResponses]=useState(rows);return <Frame><main className="wwm wwm-room"><div className="wwm-shell"><Button type="button" variant="outline" onClick={()=>setResponses(current=>current.map(row=>row.userId===MORGAN?{...row,slots:row.slots.slice(0,1)}:row))}>Simulate Morgan removing 06:30</Button><ConfirmationPanel room={room} role="owner" members={driftMembers} slots={slots} responses={responses} currentUserId={PERSON.id} organizerEmail="alex@example.test" calendar="connected" status="draft" onConnectCalendar={()=>{}} onConfirm={()=>{}}/></div></main></Frame>}
+export const ConfirmTimeNoLongerWorks:Story={render:()=> <DriftDemo/>,play:async({canvasElement})=>{const c=within(canvasElement);const best=await waitFor(()=>c.getByRole('region',{name:'Best times'}));await userEvent.click(within(best).getAllByRole('button')[0]);await userEvent.click(c.getByRole('button',{name:'Simulate Morgan removing 06:30'}));await userEvent.click(c.getByRole('button',{name:'Review confirmation'}));await waitFor(()=>expect(within(document.body).getByText('This time no longer works for everyone')).toBeVisible());}};
+export const ConfirmSendFailedTryAgain:Story={...ConfirmSendFailed,play:async ctx=>{await ConfirmSendFailed.play?.(ctx);await waitFor(()=>expect(within(document.body).getByRole('button',{name:'Try again'})).toBeVisible());}};
+const settingsSchedule=async(ctx:Parameters<NonNullable<Story['play']>>[0])=>{await openSettings(ctx);await expect(within(document.body).getByRole('group',{name:'Dates and times'})).toBeVisible();};
+export const SettingsOwnerSchedule:Story={...RoomAvailability,play:settingsSchedule};
+export const SettingsOwnerScheduleMobile:Story={...SettingsOwnerSchedule,globals:{viewport:{value:'mobile',isRotated:false}}};
+export const SettingsOwnerScheduleWarning:Story={...RoomAvailability,play:async ctx=>{await settingsSchedule(ctx);const body=within(document.body);await userEvent.click(body.getByRole('checkbox',{name:'All day'}));await waitFor(()=>expect(body.getByText(/saved half-hours from Alex Sample, Morgan Sample fall outside the new times and will be removed/)).toBeVisible());}};
+export const SettingsOwnerScheduleWarningDark:Story={...SettingsOwnerScheduleWarning,globals:{theme:'dark'}};
+export const SettingsOwnerScheduleSaved:Story={...RoomAvailability,beforeEach:()=>{state.room=room;state.responses=rows;calendar.schedule='success';},play:async ctx=>{await SettingsOwnerScheduleWarning.play?.(ctx);await userEvent.click(within(document.body).getByRole('button',{name:'Save'}));await waitFor(()=>expect(within(document.body).getByText('Dates and times updated')).toBeVisible());}};
+const askDelete=async(ctx:Parameters<NonNullable<Story['play']>>[0])=>{await openSettings(ctx);await userEvent.click(within(document.body).getByRole('button',{name:'Delete meeting'}));await waitFor(()=>expect(within(document.body).getByRole('alertdialog',{name:'Delete Team coffee?'})).toBeVisible());};
+export const SettingsDeleteConfirm:Story={...RoomAvailability,play:askDelete};
+export const SettingsDeleteConfirmMobile:Story={...SettingsDeleteConfirm,globals:{viewport:{value:'mobile',isRotated:false}}};
+export const SettingsDeleteConfirmDark:Story={...SettingsDeleteConfirm,globals:{theme:'dark'}};
+export const SettingsDeleteConfirmedMeeting:Story={...ConfirmedRoom,play:async ctx=>{await ConfirmedRoom.play?.(ctx);await askDelete(ctx);await expect(within(document.body).getByText(/Google Calendar event isn’t cancelled/)).toBeVisible();}};
+export const SettingsDeleteFailed:Story={...RoomAvailability,beforeEach:()=>{calendar.remove='failure';},play:async ctx=>{await askDelete(ctx);await userEvent.click(within(document.body).getByRole('button',{name:'Delete'}));await waitFor(()=>expect(within(document.body).getByText('Could not delete the meeting.')).toBeVisible());}};
+export const PeopleOrganizerBadge:Story={...RoomPeople};

@@ -17,5 +17,5 @@ test('purposeful English tabs and a header invite without bottom sharing',()=>{
  assert.doesNotMatch(src,/<h2>공유<\/h2>/);
  const people=readFileSync(new URL('../src/features/when-we-meet/PeoplePanel.tsx',import.meta.url),'utf8');
  assert.match(people,/Could not load participants\. Please try again\./);
- assert.match(people,/role="alert"[^]*onClick=\{retry\}/);
+ assert.match(people,/<Notice tone="error"[^]*onClick=\{retry\}/);
 });

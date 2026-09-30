@@ -1,8 +1,24 @@
-.craft-page{min-height:100dvh;padding:clamp(28px,5vw,72px) clamp(24px,6vw,88px) 100px;background:var(--craft-canvas);color:#514e40;font-family:'SUIT','Pretendard',sans-serif}.craft-shell{max-width:960px;margin:0 auto}.craft-home{display:inline-block;color:#635f52;font-size:12px;letter-spacing:.08em;text-decoration:none}.craft-header{padding:clamp(36px,6vh,64px) 0 clamp(28px,5vh,48px)}.craft-eyebrow,.craft-project-number{color:#635f52;font-size:12px;letter-spacing:.12em}.craft-header h1{margin:14px 0;font-size:clamp(40px,4.5vw,60px);font-weight:450;letter-spacing:-.075em;line-height:1}.craft-header p,.craft-project-content>span{color:#635f52;font-size:clamp(14px,2vw,18px)}.craft-projects{border-top:1px solid #81775b30}.craft-project{display:grid;grid-template-columns:52px minmax(0,1fr) 32px;align-items:center;gap:12px;min-height:140px;border-bottom:1px solid #81775b30;color:inherit;text-decoration:none}.craft-project-content{display:grid;gap:8px}.craft-project-content strong{font-size:clamp(28px,5vw,54px);font-weight:450;letter-spacing:-.055em}.craft-project svg{opacity:.55;transition:transform .2s,opacity .2s}.craft-project:hover svg,.craft-project:focus-visible svg{opacity:1;transform:translate(3px,-3px)}.craft-page a:focus-visible{outline:1px solid currentColor;outline-offset:7px}:root[data-mode='dark'] .craft-page{background:var(--craft-canvas);color:#d6cdb3}:root[data-mode='dark'] .craft-home,:root[data-mode='dark'] .craft-eyebrow,:root[data-mode='dark'] .craft-project-number,:root[data-mode='dark'] .craft-header p,:root[data-mode='dark'] .craft-project-content>span{color:#beb6a1}@media(max-width:600px){.craft-project{grid-template-columns:32px minmax(0,1fr) 28px;min-height:120px}}
+/* Craft index + legal pages. Type from the Craft scale: page title 40 display, project name 28/600, descriptions 16 muted. */
+.craft-page{min-height:100dvh;padding:clamp(28px,5vw,72px) clamp(24px,6vw,88px) 100px;background:var(--craft-canvas);color:var(--craft-ink);font-family:var(--craft-font)}
+.craft-home{display:inline-block;color:var(--craft-muted);font-size:var(--craft-fs-12);letter-spacing:.08em;text-decoration:none}
+.craft-header{padding:var(--craft-space-12) 0 var(--craft-space-8)}
+.craft-eyebrow{color:var(--craft-muted);font-size:var(--craft-fs-12);letter-spacing:.12em}
+.craft-header h1{margin:0 0 var(--craft-space-3);font-size:var(--craft-fs-40);font-weight:var(--craft-fw-semibold);letter-spacing:-.03em;line-height:48px}
+.craft-eyebrow+h1{margin-top:var(--craft-space-3)}
+.craft-header p{margin:0;color:var(--craft-muted);font-size:var(--craft-fs-16);line-height:24px}
+.craft-projects{border-top:1px solid var(--craft-rule-soft)}
+.craft-project{display:grid;grid-template-columns:minmax(0,1fr) var(--craft-h-sm);align-items:center;gap:var(--craft-space-4);padding:var(--craft-space-8) 0;border-bottom:1px solid var(--craft-rule-soft);color:inherit;text-decoration:none}
+.craft-project-content{display:grid;gap:var(--craft-space-2)}
+.craft-project-content strong{font-size:var(--craft-fs-28);font-weight:var(--craft-fw-semibold);line-height:36px;letter-spacing:-.02em}
+.craft-project-content>span{color:var(--craft-muted);font-size:var(--craft-fs-16);line-height:24px}
+.craft-project svg{justify-self:end;width:24px;height:24px;opacity:.55;transition:transform .2s,opacity .2s}
+.craft-project:hover svg,.craft-project:focus-visible svg{opacity:1;transform:translate(3px,-3px)}
+@media(prefers-reduced-motion:reduce){.craft-project svg{transition:none}.craft-project:hover svg,.craft-project:focus-visible svg{transform:none}}
+.craft-page a:focus-visible{outline:2px solid var(--craft-focus);outline-offset:var(--craft-space-1)}
 
-.craft-shell,.craft-project,.craft-project-content{min-width:0}@media(max-width:600px){.craft-page{padding-inline:24px}.craft-header h1{font-size:clamp(34px,9vw,40px)}.craft-project-content strong{font-size:clamp(27px,8vw,40px)}.craft-project-content>span{line-height:1.5}.craft-project{gap:8px}}
+.craft-shell,.craft-project,.craft-project-content{min-width:0}@media(max-width:600px){.craft-page{padding-inline:var(--craft-space-6)}.craft-project{padding:var(--craft-space-6) 0}}
 
-.craft-account{position:absolute;z-index:40;--craft-control-radius:4px;right:clamp(24px,6vw,88px);top:clamp(24px,3vw,44px);font-family:'SUIT','Pretendard',sans-serif}.craft-account button{cursor:pointer;color:#514e40;font:inherit}.craft-account-avatar{width:42px;height:42px;border-radius:50%;border:1px solid #81775b70;background:#514e40;color:#fff9e7!important;display:grid;place-items:center;overflow:hidden;padding:0}.craft-account-avatar img{width:100%;height:100%;object-fit:cover}.craft-account-menu{position:absolute;top:calc(100% + 8px);right:0;min-width:156px;padding:5px;border:1px solid #81775b70;background:#f1eee2;box-shadow:0 8px 24px #332f231f}.craft-account-menu button{width:100%;padding:10px;border:0;background:transparent;text-align:left;white-space:nowrap}.craft-account-menu button:hover{background:#81775b30}.craft-account-login{width:auto;white-space:nowrap;min-height:42px;border:1px solid #81775b70;background:transparent;padding:8px 12px;font-size:13px!important}.craft-account-error{position:absolute;right:0;top:100%;min-width:220px;background:#f1eee2;padding:8px;font-size:12px}.craft-account button:focus-visible{outline:2px solid #514e40;outline-offset:3px}:root[data-mode='dark'] .craft-account-menu,:root[data-mode='dark'] .craft-account-error{background:#36372d;color:#d6cdb3}:root[data-mode='dark'] .craft-account-menu button,:root[data-mode='dark'] .craft-account-login{color:#d6cdb3;border-color:#d8ccaf55}
+.craft-account{position:absolute;z-index:40;--craft-control-radius:4px;right:clamp(24px,6vw,88px);top:clamp(24px,3vw,44px);font-family:'SUIT','Pretendard',sans-serif}.craft-account button{cursor:pointer;color:var(--craft-ink);font:inherit}.craft-account-avatar{width:42px;height:42px;border-radius:50%;border:1px solid var(--craft-rule);background:var(--craft-ink);color:var(--craft-on-ink)!important;display:grid;place-items:center;overflow:hidden;padding:0}.craft-account-avatar img{width:100%;height:100%;object-fit:cover}.craft-account-menu{position:absolute;top:calc(100% + 8px);right:0;min-width:156px;padding:var(--craft-space-1);border:1px solid var(--craft-rule);background:var(--craft-surface);color:var(--craft-ink);box-shadow:var(--craft-shadow-pop)}.craft-account-menu button{width:100%;min-height:var(--craft-h-md);padding:0 var(--craft-space-3);font-size:var(--craft-fs-14)!important;border:0;background:transparent;text-align:left;white-space:nowrap}.craft-account-menu button:hover{background:var(--craft-hover)}.craft-account-login{width:auto;white-space:nowrap;min-height:var(--craft-h-md);border:1px solid var(--craft-rule);background:transparent;padding:0 var(--craft-space-3);font-size:var(--craft-fs-14)!important;font-weight:var(--craft-fw-medium)}.craft-account-error{position:absolute;right:0;top:100%;min-width:220px;background:var(--craft-surface);color:var(--craft-ink);padding:var(--craft-space-2);font-size:var(--craft-fs-12)}.craft-account button:focus-visible{outline:2px solid var(--craft-focus);outline-offset:2px}
 .craft-account-menu,.craft-account-menu button,.craft-account-login,.craft-account-error{border-radius:var(--craft-control-radius)}
 
 .craft-avatar-face{display:grid;place-items:center;width:100%;height:100%;border-radius:inherit;overflow:hidden}
@@ -14,14 +30,14 @@
 .craft-chrome .wall-header-actions{align-items:center}
 .craft-chrome .craft-account{position:relative;inset:auto;z-index:auto}
 .craft-chrome .craft-page{padding-top:88px;background:var(--craft-canvas)}
-.craft-chrome .craft-header{padding-top:18px;padding-bottom:24px}
+.craft-chrome .craft-header{padding-top:var(--craft-space-4);padding-bottom:var(--craft-space-8)}
 .craft-chrome .wwm{padding-top:max(112px,calc(var(--wall-header-top) + 70px));padding-bottom:110px}
 .craft-chrome .wwm .wall-context-back{position:relative;left:0;margin-bottom:24px}
 @media(max-width:700px){
   .craft-chrome .wall-header-actions{gap:4px}
-  .craft-chrome .craft-account-login{font-size:11px!important;padding:6px;min-height:40px}
+  .craft-chrome .craft-account-login{padding:0 var(--craft-space-2);min-height:var(--craft-h-md)}
   .craft-chrome .craft-page{padding-top:86px}
-  .craft-chrome .craft-header{padding-top:12px;padding-bottom:22px}
+  .craft-chrome .craft-header{padding-top:var(--craft-space-3);padding-bottom:var(--craft-space-6)}
   .craft-chrome .wwm{padding-top:calc(var(--wall-header-top) + 52px)}
   .craft-chrome .wwm .wwm-topline{min-height:44px}
   .craft-chrome .wwm .wall-context-back{margin-bottom:6px}

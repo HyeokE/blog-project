@@ -7,8 +7,9 @@
  --craft-font:'SUIT','Pretendard',sans-serif;
  /* Colour */
  --craft-canvas:#eae6d8;--craft-surface:#f1eee2;--craft-ink:#514e40;--craft-muted:#635f52;
+ /* Placeholder: >=4.5:1 on canvas and surface, visibly lighter than a value (ink) and the muted secondary text. */
  --craft-rule:#81775b70;--craft-rule-soft:#81775b30;--craft-hover:#81775b1c;--craft-selected:#dcd6c4;
- --craft-on-ink:#fff9e7;--craft-focus:#514e40;--craft-danger:#b4232d;--craft-warning:#8b623d;--craft-accent:#a46e42;--craft-required:var(--craft-danger);
+ --craft-placeholder:#6b6659;--craft-on-ink:#fff9e7;--craft-focus:#514e40;--craft-danger:#b4232d;--craft-warning:#8b623d;--craft-accent:#a46e42;--craft-required:var(--craft-danger);
  /* Type: 12/14/16/20/28 (+40 display on /craft only); weights 400/500/600 */
  --craft-fs-12:12px;--craft-fs-14:14px;--craft-fs-16:16px;--craft-fs-20:20px;--craft-fs-28:28px;--craft-fs-40:40px;
  --craft-fw-regular:400;--craft-fw-medium:500;--craft-fw-semibold:600;
@@ -27,12 +28,14 @@
  color-scheme:dark;
  --craft-canvas:#292a23;--craft-surface:#36372d;--craft-ink:#d6cdb3;--craft-muted:#beb6a1;
  --craft-rule:#d8ccaf55;--craft-rule-soft:#d8ccaf29;--craft-hover:#d8ccaf1c;--craft-selected:#545348;
- --craft-on-ink:#20211c;--craft-focus:#d6cdb3;--craft-danger:#ff7379;--craft-warning:#e0b98f;--craft-accent:#e0b98f;
+ --craft-placeholder:#a8a18c;--craft-on-ink:#20211c;--craft-focus:#d6cdb3;--craft-danger:#ff7379;--craft-warning:#e0b98f;--craft-accent:#e0b98f;
  --craft-shadow-pop:0 8px 24px #0000004d;
  --craft-person-1:#d99178;--craft-person-2:#b5ae6a;--craft-person-3:#d6a95a;--craft-person-4:#8fb3a6;
  --craft-person-5:#c99aab;--craft-person-6:#b3a3d6;--craft-person-7:#8fc28a;--craft-person-8:#a7b4cf;--craft-person-you:#e6dcc2;
 }
 .craft-chrome,.craft-page,.wwm,.craft-account{font-family:var(--craft-font)}
+/* Text selection (including the autofocused link field) uses a warm accent tint, never the system blue. */
+:root[data-craft] ::selection,:root[data-craft]::selection{background:color-mix(in srgb,var(--craft-accent) 32%,transparent);color:var(--craft-ink)}
 
 /* Shared field label + required marker. */
 .craft-field-label{display:block;font:inherit;color:inherit}.craft-field-label-text{position:relative;display:inline-block;width:max-content;max-width:100%}.craft-required-dot{position:absolute;top:3px;right:-6px;width:4px;height:4px;border-radius:50%;background:var(--craft-required);pointer-events:none}
@@ -48,8 +51,8 @@
 :root[data-craft] :is([data-slot='field-trigger'],[data-slot='select-trigger']){display:flex;align-items:center;justify-content:space-between;gap:var(--craft-space-2);text-align:left;white-space:nowrap;cursor:pointer;font-variant-numeric:tabular-nums}
 :root[data-craft] :is([data-slot='field-trigger'],[data-slot='select-trigger'])>:is([data-slot='field-trigger-value'],[data-slot='select-value']){flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 :root[data-craft] :is([data-slot='field-trigger'],[data-slot='select-trigger'])>svg{flex:none;width:16px;height:16px;color:var(--craft-muted)}
-:root[data-craft] [data-slot='input']::placeholder{color:var(--craft-muted);opacity:1}
-:root[data-craft] :is([data-slot='field-trigger'][data-placeholder],[data-slot='select-trigger'][data-placeholder]) :is([data-slot='field-trigger-value'],[data-slot='select-value']){color:var(--craft-muted)}
+:root[data-craft] [data-slot='input']::placeholder{color:var(--craft-placeholder);opacity:1}
+:root[data-craft] :is([data-slot='field-trigger'][data-placeholder],[data-slot='select-trigger'][data-placeholder]) :is([data-slot='field-trigger-value'],[data-slot='select-value']){color:var(--craft-placeholder)}
 /* Hover darkens the border only: a filled field read as disabled (stage 2, create dialog "To"). Disabled = half opacity. */
 :root[data-craft] :is([data-slot='input'],[data-slot='field-trigger'],[data-slot='select-trigger']):hover:not(:disabled){border-color:var(--craft-ink)}
 :root[data-craft] :is([data-slot='input'],[data-slot='field-trigger'],[data-slot='select-trigger'])[readonly]:hover{border-color:var(--craft-rule)}
@@ -68,6 +71,9 @@
 :root[data-craft] [data-slot='button']:not(:where(.craft-google-sign-in,.craft-account-avatar)):is([data-size='icon'],[data-size='icon-lg']){width:var(--craft-h-md);padding:0}
 :root[data-craft] [data-slot='button']:not(:where(.craft-google-sign-in,.craft-account-avatar))[data-size='icon-sm']{width:var(--craft-h-sm);padding:0}
 :root[data-craft] [data-slot='button']:not(:where(.craft-google-sign-in,.craft-account-avatar)) svg:not([class*='size-']){width:16px;height:16px}
+/* Type is fixed per size variant: default/lg = 16/500 (sm/xs = 14/500 above). The doubled attribute outranks
+ * feature placement rules (e.g. the list's New meeting), which may move a button but not resize its label. */
+:root[data-craft] [data-slot='button'][data-slot='button']:is([data-size='default'],[data-size='lg']):not(:where(.craft-google-sign-in,.craft-account-avatar,[data-slot='calendar'] *)){font-size:var(--craft-fs-16);font-weight:var(--craft-fw-medium);line-height:22px}
 :root[data-craft] [data-slot='button']:not(:where(.craft-google-sign-in,.craft-account-avatar)):disabled{opacity:.5;cursor:not-allowed}
 
 /* Checkbox: 18px box inside a 44px label row. */
@@ -93,11 +99,28 @@
 :root[data-craft] [data-slot='command-input-wrapper']{display:flex;align-items:center;gap:var(--craft-space-2);flex:none}
 :root[data-craft] [data-slot='command-input-wrapper']>svg{flex:none;width:16px;height:16px;color:var(--craft-muted)}
 
-/* Dialogs: tokens come from :root, so every dialog is Craft without a per-dialog palette. */
-:root[data-craft] [data-slot='dialog-overlay']{z-index:var(--craft-z-dialog);background:#20211c8c}
-:root[data-craft] [data-slot='dialog-content']{z-index:var(--craft-z-dialog);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:var(--craft-surface);color:var(--craft-ink);font-family:var(--craft-font);box-shadow:var(--craft-shadow-pop)}
-:root[data-craft] [data-slot='dialog-title']{font-size:var(--craft-fs-20);line-height:28px;font-weight:var(--craft-fw-semibold);letter-spacing:-.02em}
-:root[data-craft] [data-slot='dialog-description']{font-size:var(--craft-fs-14);line-height:20px;color:var(--craft-muted)}
+/* Dialogs (Dialog and AlertDialog — `[data-slot$=…]` matches both): tokens come from :root, so every dialog is Craft without a per-dialog palette. */
+:root[data-craft] [data-slot$='dialog-overlay']{z-index:var(--craft-z-dialog);background:#20211c8c}
+:root[data-craft] [data-slot$='dialog-content']{z-index:var(--craft-z-dialog);gap:var(--craft-space-4);overflow-x:clip;border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:var(--craft-surface);color:var(--craft-ink);font-family:var(--craft-font);box-shadow:var(--craft-shadow-pop)}
+/*
+ * One dialog layout for every Craft dialog: header (title 20/600 + optional 14 muted description, left-aligned),
+ * body, footer. Dividers always: a full-bleed rule under the header and above the footer (pseudo-elements, so a
+ * dialog's own header/footer padding is kept). Footer order everywhere: secondary left, primary right; desktop
+ * aligns the row to the right, phones (sheets) stretch the buttons across the row. Spacing hooks use :where() so a
+ * dialog with its own padded header/footer (create) keeps it.
+ */
+:root[data-craft] [data-slot$='dialog-header']{position:relative;display:flex;flex-direction:column;gap:var(--craft-space-1);text-align:left;border-bottom:0}
+:where(:root[data-craft] [data-slot$='dialog-header']){padding-bottom:var(--craft-space-4)}
+:root[data-craft] [data-slot$='dialog-header']::after{content:'';position:absolute;left:calc(var(--craft-space-6) * -1);right:calc(var(--craft-space-6) * -1);bottom:0;height:1px;background:var(--craft-rule-soft);pointer-events:none}
+:root[data-craft] [data-slot$='dialog-footer']{position:relative;display:flex;flex-direction:row;justify-content:flex-end;align-items:center;gap:var(--craft-space-2);border-top:0}
+:where(:root[data-craft] [data-slot$='dialog-footer']){padding-top:var(--craft-space-4)}
+:root[data-craft] [data-slot$='dialog-footer']::before{content:'';position:absolute;left:calc(var(--craft-space-6) * -1);right:calc(var(--craft-space-6) * -1);top:0;height:1px;background:var(--craft-rule-soft);pointer-events:none}
+/* No body between them (a plain confirm): the header rule alone separates title and actions. */
+:root[data-craft] [data-slot$='dialog-header']+[data-slot$='dialog-footer']::before{display:none}
+@media(max-width:640px){:root[data-craft] :is([data-slot='dialog-content'][data-mobile-presentation='sheet'],[data-slot='alert-dialog-content']) [data-slot$='dialog-footer']>*{flex:1 1 0;min-width:0}}
+:root[data-craft] [data-slot='alert-dialog-content']{width:min(420px,calc(100vw - var(--craft-space-8)));max-width:none}
+:root[data-craft] [data-slot$='dialog-title']{margin:0;font-size:var(--craft-fs-20);line-height:28px;font-weight:var(--craft-fw-semibold);letter-spacing:-.02em}
+:root[data-craft] [data-slot$='dialog-description']{margin:0;font-size:var(--craft-fs-14);line-height:20px;color:var(--craft-muted)}
 :root[data-craft] [data-slot='dialog-close']{display:grid;place-items:center;width:var(--craft-h-sm);height:var(--craft-h-sm);border-radius:var(--craft-radius);color:var(--craft-ink)}
 :root[data-craft] [data-slot='dialog-close']:focus-visible{outline:2px solid var(--craft-focus);outline-offset:2px;box-shadow:none}
 :root[data-craft] [data-sonner-toaster]{z-index:var(--craft-z-toast)}
@@ -110,6 +133,41 @@
 :root[data-craft] [data-sonner-toaster] [data-sonner-toast].craft-toast{--toast-close-button-start:auto;--toast-close-button-end:var(--craft-space-2);--toast-close-button-transform:none}
 :root[data-craft] [data-sonner-toaster] [data-sonner-toast].craft-toast [data-close-button]{top:0;bottom:0;margin:auto 0;width:var(--craft-h-sm);height:var(--craft-h-sm);border:0;border-radius:var(--craft-radius);background:transparent;color:var(--craft-muted)}
 :root[data-craft] [data-sonner-toast].craft-toast [data-close-button]:hover{background:var(--craft-hover);color:var(--craft-ink)}
+/* Badge: one quiet status chip (Confirmed, Optional, Organizer, Offline). 20px tall, 12/500, 4px radius. */
+:root[data-craft] [data-slot='badge']{display:inline-flex;align-items:center;gap:var(--craft-space-1);width:auto;height:20px;padding:0 var(--craft-space-2);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:transparent;color:var(--craft-ink);font:var(--craft-fw-medium) var(--craft-fs-12)/18px var(--craft-font);font-variant-numeric:tabular-nums;white-space:nowrap;box-shadow:none}
+:root[data-craft] [data-slot='badge'][data-slot='badge'][data-variant='secondary']{color:var(--craft-muted)}
+:root[data-craft] [data-slot='badge'][data-variant='default']{background:var(--craft-ink);border-color:var(--craft-ink);color:var(--craft-on-ink)}
+:root[data-craft] [data-slot='badge'][data-variant='destructive']{border-color:var(--craft-danger);color:var(--craft-danger);background:transparent}
+:root[data-craft] [data-slot='badge']>svg{width:12px;height:12px;flex:none}
+/* Alert: icon + text notice on the surface (never bare red text); destructive only tints the border and icon. */
+:root[data-craft] [data-slot='alert']{display:grid;grid-template-columns:16px minmax(0,1fr);column-gap:var(--craft-space-3);row-gap:var(--craft-space-1);align-items:start;padding:var(--craft-space-3) var(--craft-space-4);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:var(--craft-surface);color:var(--craft-ink);font:var(--craft-fw-regular) var(--craft-fs-14)/20px var(--craft-font)}
+:root[data-craft] [data-slot='alert']:not(:has(>svg)){grid-template-columns:minmax(0,1fr)}
+:root[data-craft] [data-slot='alert']>svg{width:16px;height:16px;margin-top:2px;color:var(--craft-ink)}
+:root[data-craft] [data-slot='alert'][data-variant='destructive']{border-color:var(--craft-danger)}
+:root[data-craft] [data-slot='alert'][data-variant='destructive']>svg{color:var(--craft-danger)}
+:root[data-craft] [data-slot='alert-title']{grid-column:-2;font-weight:var(--craft-fw-medium)}
+:root[data-craft] [data-slot='alert-description']{grid-column:-2;color:var(--craft-muted)}
+/* Separator, Skeleton, Card, Tooltip, Toggle / ToggleGroup. */
+:root[data-craft] [data-slot='separator']{flex:none;background:var(--craft-rule-soft)}
+:root[data-craft] [data-slot='separator'][data-orientation='horizontal']{height:1px;width:100%}
+:root[data-craft] [data-slot='separator'][data-orientation='vertical']{width:1px;align-self:stretch}
+:root[data-craft] [data-slot='skeleton']{border-radius:var(--craft-radius);background:var(--craft-hover)}
+@media(prefers-reduced-motion:reduce){:root[data-craft] [data-slot='skeleton']{animation:none}}
+:root[data-craft] [data-slot='card']{display:flex;flex-direction:column;gap:var(--craft-space-4);padding:var(--craft-space-6);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:var(--craft-surface);color:var(--craft-ink);box-shadow:none}
+:root[data-craft] [data-slot='card-title']{font-size:var(--craft-fs-20);font-weight:var(--craft-fw-semibold);line-height:28px}
+:root[data-craft] [data-slot='card-description']{font-size:var(--craft-fs-14);line-height:20px;color:var(--craft-muted)}
+:root[data-craft] [data-slot='card']>:is([data-slot='card-header'],[data-slot='card-content'],[data-slot='card-footer']){padding-inline:0}
+:root[data-craft] [data-slot='tooltip-content']{z-index:var(--craft-z-toast);max-width:280px;padding:var(--craft-space-1) var(--craft-space-2);border-radius:var(--craft-radius);background:var(--craft-ink);color:var(--craft-on-ink);font:var(--craft-fw-medium) var(--craft-fs-12)/16px var(--craft-font)}
+:root[data-craft] [data-slot='tooltip-content'] svg{display:none}
+/* Toggle / ToggleGroup (segmented, e.g. Detailed | Compact): 32px items, 4px radius, 14 type. Unselected muted 500 on the
+ * page; selected = ink 600 on the raised surface with a rule border, so it is the higher-contrast option in both themes
+ * (light 7.2:1 vs 5.1:1, dark 7.6:1 vs 7.2:1). Ring on :focus-visible only. */
+:root[data-craft] [data-slot='toggle-group']{display:inline-flex;align-items:center;gap:var(--craft-space-1);padding:0;border:0;border-radius:var(--craft-radius);background:transparent;box-shadow:none}
+:root[data-craft] :is([data-slot='toggle'],[data-slot='toggle-group-item']){box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:var(--craft-space-1);height:var(--craft-h-sm);min-height:var(--craft-h-sm);min-width:var(--craft-h-sm);padding:0 var(--craft-space-3);border:1px solid transparent;border-radius:var(--craft-radius);background:transparent;color:var(--craft-muted);font:var(--craft-fw-medium) var(--craft-fs-14)/20px var(--craft-font);box-shadow:none;outline:none;cursor:pointer}
+:root[data-craft] :is([data-slot='toggle'],[data-slot='toggle-group-item']):hover:not(:disabled){background:var(--craft-hover);color:var(--craft-ink)}
+:root[data-craft] :is([data-slot='toggle'],[data-slot='toggle-group-item'])[data-state='on']{background:var(--craft-surface);border-color:var(--craft-rule);color:var(--craft-ink);font-weight:var(--craft-fw-semibold)}
+:root[data-craft] :is([data-slot='toggle'],[data-slot='toggle-group-item']):focus-visible{outline:2px solid var(--craft-focus);outline-offset:2px;box-shadow:none}
+:root[data-craft] :is([data-slot='toggle'],[data-slot='toggle-group-item']):disabled{opacity:.5;cursor:not-allowed}
 /* Programmatic focus targets (tabIndex=-1 headings, status regions) get focus without a ring. */
 :root[data-craft] [tabindex='-1']:focus{outline:none}
 

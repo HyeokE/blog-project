@@ -59,3 +59,17 @@ test('every participant hue is clearly distinct from You and from each other in 
  }
  assert.ok(colorDistance('#000000','#ffffff')>99);
 });
+import {assignParticipantColors} from '../src/features/when-we-meet/participant-palette.mjs';
+test('up to eight others get eight different hues; beyond that repeats carry a mark',()=>{
+ const ids=Array.from({length:8},(_,i)=>`user-${i}`);
+ const eight=assignParticipantColors(ids,'me');
+ assert.equal(new Set(ids.map(id=>eight.get(id).color)).size,8);
+ assert.ok(ids.every(id=>eight.get(id).mark===0));
+ const many=Array.from({length:17},(_,i)=>`person-${i}`);
+ const all=assignParticipantColors([...many,'me'],'me');
+ assert.equal(all.get('me').color,'var(--craft-person-you)');
+ const pairs=many.map(id=>`${all.get(id).color}|${all.get(id).mark}`);
+ assert.equal(new Set(pairs).size,17,'colour + mark is unique per person');
+ assert.ok(many.every(id=>/^var\(--craft-person-[1-8]\)$/.test(all.get(id).color)));
+ assert.deepEqual(assignParticipantColors([...ids].reverse(),'me').get('user-3'),eight.get('user-3'),'independent of input order');
+});

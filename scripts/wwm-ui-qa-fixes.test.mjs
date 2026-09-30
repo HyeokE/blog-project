@@ -29,7 +29,7 @@ test('P1-2 closing a controlled dialog returns focus to its opener',()=>{
  assert.match(panel,/onCloseAutoFocus=\{event=>\{event\.preventDefault\(\);reviewTrigger\.current\?\.focus\(\)\}\}/);
  // Settings opens from the ⋯ menu: focus returns to the menu trigger.
  assert.match(readFileSync(new URL('../src/features/when-we-meet/RoomChrome.tsx',import.meta.url),'utf8'),/<Button ref=\{menuTrigger\}[^>]*MEETING_MENU/);
- assert.match(wwm,/className="wwm-settings-dialog" onCloseAutoFocus=\{event=>\{event\.preventDefault\(\);menuTrigger\.current\?\.focus\(\)\}\}/);
+ assert.match(wwm,/className="wwm-settings-dialog" onCloseAutoFocus=\{event=>\{event\.preventDefault\(\);if\(!deleteOpen\)menuTrigger\.current\?\.focus\(\)\}\}/);
 });
 
 test('P2-1 Everyone bar times ellipsize, then drop out on narrow bars',()=>{
@@ -57,7 +57,7 @@ test('P2-8 Create stories seed dates relative to today',()=>{
 
 test('P2-10 read-only calendars do not describe editing',()=>{
  const weekly=read('src/features/when-we-meet/WeeklyAvailability.tsx');
- assert.match(weekly,/\{readOnly\|\|selection\?'Read-only view of saved availability\.[^']*':'Click or drag to edit your availability\./);
+ assert.match(weekly,/:readOnly\?'Read-only view of saved availability\.[^']*'\n\s*:'Click or drag to edit your availability\./);
 });
 
 test('P2-11 fill picker names its popover from the label; Undo toast stays ~10s',()=>{

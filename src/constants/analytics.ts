@@ -122,6 +122,7 @@ export const ANALYTICS_ELEMENTS = {
   AVAILABILITY_CELL: 'availability_cell',
   AVAILABILITY_BLOCK: 'availability_block',
   CALENDAR_COMPACT: 'calendar_compact',
+  CALENDAR_DAY_PAGER: 'calendar_day_pager',
   CALENDAR_FILL: 'calendar_fill',
   CALENDAR_FILL_APPLY: 'calendar_fill_apply',
   CALENDAR_FILL_DISMISS: 'calendar_fill_dismiss',

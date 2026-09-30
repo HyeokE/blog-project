@@ -1,0 +1,14 @@
+/* When We Meet notice = Craft Alert (design-system.css) + an optional action column and a warning tone. No motion. */
+[data-slot='alert'].wwm-notice{margin:var(--craft-space-3) 0;box-sizing:border-box;text-align:left}
+[data-slot='alert'].wwm-notice:has(>.wwm-notice-action){grid-template-columns:16px minmax(0,1fr) auto}
+[data-slot='alert'].wwm-notice>[data-slot='alert-title'],[data-slot='alert'].wwm-notice>[data-slot='alert-description']{grid-column:2}
+[data-slot='alert'].wwm-notice>[data-slot='alert-description']{color:var(--craft-ink)}
+[data-slot='alert'].wwm-notice>[data-slot='alert-title']+[data-slot='alert-description']{color:var(--craft-muted)}
+[data-slot='alert'].wwm-notice>.wwm-notice-action{grid-column:3;grid-row:1 / span 2;align-self:center}
+[data-slot='alert'].wwm-notice[data-tone='pending']>svg{color:var(--craft-muted)}
+[data-slot='alert'].wwm-notice[data-tone='warning']{border-color:var(--craft-warning)}
+[data-slot='alert'].wwm-notice[data-tone='warning']>svg{color:var(--craft-warning)}
+@media(max-width:480px){
+ [data-slot='alert'].wwm-notice:has(>.wwm-notice-action){grid-template-columns:16px minmax(0,1fr)}
+ [data-slot='alert'].wwm-notice>.wwm-notice-action{grid-column:2;grid-row:auto;justify-self:start;margin-top:var(--craft-space-2)}
+}

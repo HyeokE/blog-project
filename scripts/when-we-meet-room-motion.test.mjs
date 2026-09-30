@@ -16,7 +16,7 @@ test('room title owns metadata and header actions without redundant headings',()
  const chrome=readFileSync(new URL('../src/features/when-we-meet/RoomChrome.tsx',import.meta.url),'utf8');
  assert.match(chrome,/<h1>\{title\}<\/h1>/);
  // Meta: date range · timezone (the only timezone in the view); no "Live updates" text, only an Offline dot.
- assert.match(chrome,/<p className="wwm-room-meta"><span>\{compactRange\(startDate,endDate\)\}<span aria-hidden="true"> · <\/span>\{timezone\}<\/span>\{confirmed&&confirmation&&<span className="wwm-room-chip">[^\n]*\{offline&&/);
+ assert.match(chrome,/<p className="wwm-room-meta"><span>\{compactRange\(startDate,endDate\)\}<span aria-hidden="true"> · <\/span>\{timezone\}<\/span>\{confirmed&&confirmation&&<Badge variant="outline" className="wwm-room-chip">[^\n]*\{offline&&/);
  assert.doesNotMatch(component+chrome,/Live updates|Connecting…/);
  assert.doesNotMatch(component,/<div className="wwm-heading"><div><h2>시간표<\/h2>/);
 });
@@ -26,10 +26,12 @@ test('room uses the continuous scrolling availability calendar instead of the su
  assert.doesNotMatch(component,/calendarOpen&&<motion\.div/);
  // Previous/Next week paging was replaced by one horizontally scrolling calendar containing every room date.
  assert.doesNotMatch(weekly,/aria-label="(?:Previous|Next) week"/);
- assert.match(weekly,/<div className="wwm-week-scroll" role="region" aria-label=\{`Availability calendar · \$\{timezone\}`\} tabIndex=\{0\}/);
- assert.match(weekly,/\{dates\.map\(date=><div className="wwm-calendar-day"/);
+ // The scroller is not a Tab stop of its own: the ARIA grid inside it is the one Tab stop and focus scrolls it.
+ assert.match(weekly,/<div className="wwm-week-scroll" ref=\{scroller\} onScroll=\{onScroll\}/);
+ assert.match(weekly,/role="grid" aria-label=\{label\}/);
+ assert.match(weekly,/\{dates\.map\(\(date,column\)=><div className="wwm-calendar-day"/);
  // Scrolling dismisses any open detail popover.
- assert.match(weekly,/onScroll=\{event=>\{[^}]*setDetail\(null\)\}/);
+ assert.match(weekly,/const onScroll=\(event:React\.UIEvent<HTMLDivElement>\)=>\{[^\n]*setDetail\(null\)\};/);
 });
 test('room tabs present a visible yet restrained transition',()=>{
  // Radix zeroes animation-duration on TabsContent mount, so the fade lives on an inner wrapper keyed by the tab.
@@ -63,7 +65,9 @@ test('room tab underline slides horizontally (one indicator, transform/width onl
  assert.doesNotMatch(component,/translateY/);
  assert.match(toolbar,/\.wwm-tab-indicator\[data-animate\]\{transition:transform \.2s ease-out,width \.2s ease-out\}/);
  assert.match(toolbar,/@media\(prefers-reduced-motion:reduce\)\{\.wwm\.wwm-room \.wwm-view-switch \.wwm-tab-indicator\[data-animate\]\{transition:none\}\}/);
- assert.match(toolbar,/\[data-slot='tabs-trigger'\]\[data-state='active'\]\{background:transparent;color:inherit;border-bottom-color:transparent/);
+ assert.match(toolbar,/\[data-slot='tabs-trigger'\]\[data-state='active'\]\{background:transparent;color:var\(--craft-ink\);border-bottom-color:transparent;font-weight:var\(--craft-fw-semibold\)\}/);
+ assert.match(toolbar,/\[data-slot='tabs-trigger'\]\{[^}]*height:var\(--craft-h-md\);[^}]*color:var\(--craft-muted\);[^}]*font-weight:var\(--craft-fw-medium\)/);
+ assert.doesNotMatch(toolbar,/font-weight:650/);
 });
 test('tabs keep Radix ids so aria-controls / aria-labelledby resolve',()=>{
  assert.doesNotMatch(component,/<TabsTrigger[^>]*\sid=/);

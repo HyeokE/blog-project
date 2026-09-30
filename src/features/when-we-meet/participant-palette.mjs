@@ -27,6 +27,21 @@ export function participantColor(userId,currentUserId){
  return userId===currentUserId?'var(--craft-person-you)':`var(--craft-person-${hashId(userId)%PARTICIPANT_HUES.length+1})`;
 }
 
+/** Colours for one room: the current user gets You; everyone else starts at their hashed hue and takes the
+ * least-used hue from there, so up to eight others never share a hue and larger rooms spread evenly. `mark`
+ * counts earlier holders of the same hue (0 = plain, 1+ = patterned rail) so colour + mark stays unique.
+ * Ids are processed in sorted order, so the result does not depend on response order. */
+export function assignParticipantColors(userIds,currentUserId){
+ const result=new Map(),used=new Array(PARTICIPANT_HUES.length).fill(0);
+ for(const id of [...new Set(userIds)].sort()){
+  if(id===currentUserId){result.set(id,{color:'var(--craft-person-you)',mark:0});continue}
+  const start=hashId(id)%used.length,least=Math.min(...used);
+  let index=start;for(let step=0;step<used.length;step++){const candidate=(start+step)%used.length;if(used[candidate]===least){index=candidate;break}}
+  result.set(id,{color:`var(--craft-person-${index+1})`,mark:used[index]});used[index]++;
+ }
+ return result;
+}
+
 const linear=value=>{const c=value/255;return c<=0.04045?c/12.92:((c+0.055)/1.055)**2.4};
 const lab=hex=>{const h=hex.replace('#','');const [r,g,b]=[0,2,4].map(i=>linear(parseInt(h.slice(i,i+2),16)));const f=t=>t>0.008856?Math.cbrt(t):7.787*t+16/116;const x=f((r*0.4124+g*0.3576+b*0.1805)/0.95047),y=f(r*0.2126+g*0.7152+b*0.0722),z=f((r*0.0193+g*0.1192+b*0.9505)/1.08883);return [116*y-16,500*(x-y),200*(y-z)]};
 /** CIE76 colour difference between two #rrggbb colours (≈2 is just noticeable; ≥15 reads as a different colour at a glance). */

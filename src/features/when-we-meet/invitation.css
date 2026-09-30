@@ -5,3 +5,11 @@
 .wwm .wwm-invitation .wwm-invitation-error{display:flex;align-items:flex-start;gap:var(--craft-space-2);margin:var(--craft-space-3) 0;padding:var(--craft-space-3) var(--craft-space-4);border:1px solid var(--craft-danger);border-radius:var(--craft-radius);color:var(--craft-ink);font-size:var(--craft-fs-14);line-height:20px}
 :root[data-mode=dark] .wwm .wwm-invitation .wwm-invitation-error{color:var(--craft-ink)}
 .wwm .wwm-invitation .wwm-invitation-error svg{flex:none;width:16px;height:16px;margin-top:2px;color:var(--craft-danger)}
+/* Round 2: the invitation names the meeting before sign-in (title, dates · timezone, organizer). */
+.wwm .wwm-invitation .wwm-invitation-eyebrow{margin:0 0 var(--craft-space-2);font-size:var(--craft-fs-12);font-weight:var(--craft-fw-medium);color:var(--craft-muted)}
+.wwm .wwm-invitation-context{display:grid;gap:var(--craft-space-1);margin:0 0 var(--craft-space-4)}
+.wwm .wwm-invitation-context h2{margin:0;font-size:var(--craft-fs-28);line-height:36px;font-weight:var(--craft-fw-semibold);color:var(--craft-ink);overflow-wrap:anywhere}
+.wwm .wwm-invitation .wwm-invitation-meta{margin:0;font-size:var(--craft-fs-14);line-height:20px;color:var(--craft-muted);font-variant-numeric:tabular-nums}
+.wwm .wwm-invitation-title-skeleton{height:36px;width:60%}
+.wwm .wwm-invitation-meta-skeleton{height:20px;width:40%}
+@media(max-width:600px){.wwm .wwm-invitation-context h2{font-size:var(--craft-fs-20);line-height:28px}}

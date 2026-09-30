@@ -4,35 +4,37 @@
 .wwm.wwm-room .wwm-header-actions{grid-area:actions;display:flex;flex:none;align-items:center;gap:var(--craft-space-2);width:auto}
 .wwm.wwm-room .wwm-header-actions [data-slot='button']:not([data-size='icon']){width:auto}
 .wwm.wwm-room .wwm-room-meta{grid-area:meta;display:flex;flex-wrap:wrap;align-items:center;gap:var(--craft-space-1) var(--craft-space-3);min-width:0;margin:0;font-size:var(--craft-fs-14);line-height:20px;color:var(--craft-muted)}
-/* Compact confirmed status: the same quiet tag as the meetings list, day only (the card on Confirm carries the time). */
-.wwm.wwm-room .wwm-room-chip{display:inline-flex;align-items:center;gap:var(--craft-space-1);padding:0 var(--craft-space-2);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);font-size:var(--craft-fs-12);font-weight:var(--craft-fw-medium);line-height:18px;color:var(--craft-ink);font-variant-numeric:tabular-nums;white-space:nowrap}
-.wwm.wwm-room .wwm-room-chip svg{width:12px;height:12px}
+/* Confirmed status is the shared Badge (ui/badge, design-system.css); day only, the card on Confirm carries the time. */
 .wwm.wwm-room .wwm-offline{display:inline-flex;align-items:center;gap:var(--craft-space-1);margin:0;color:var(--craft-warning)}
 .wwm.wwm-room .wwm-offline i{width:8px;height:8px;border-radius:50%;background:currentColor}
 [data-slot='dropdown-menu-content'].wwm-room-menu{z-index:var(--craft-z-popover);min-width:200px;padding:var(--craft-space-1);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:var(--craft-surface);color:var(--craft-ink);font-family:var(--craft-font);box-shadow:var(--craft-shadow-pop)}
 .wwm-room-menu [data-slot='dropdown-menu-item']{min-height:var(--craft-h-md);padding:0 var(--craft-space-3);border-radius:var(--craft-radius);font-size:var(--craft-fs-14)}
 .wwm-room-menu [data-slot='dropdown-menu-item'][data-highlighted]{background:var(--craft-hover);color:var(--craft-ink)}
 
-/* Tabs share one row with the compact save status; the rule under the row is the tabs' baseline. */
-.wwm.wwm-room .wwm-tabs-row{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--craft-space-2) var(--craft-space-4);flex-wrap:wrap;margin:0 0 var(--craft-space-4);border-bottom:1px solid var(--craft-rule)}
-.wwm.wwm-room .wwm-tabs-row .wwm-view-switch{width:auto;flex:0 1 auto;margin:0;border-bottom:0}
-.wwm.wwm-room .wwm-save-state{display:flex;align-items:center;gap:var(--craft-space-2);min-height:var(--craft-h-sm);margin:0 0 var(--craft-space-1);font-size:var(--craft-fs-12);color:var(--craft-muted);font-variant-numeric:tabular-nums}
-.wwm.wwm-room .wwm-save-state[data-tone='error']{color:var(--craft-danger)}
-.wwm.wwm-room .wwm-save-state [data-slot='button']{color:inherit;text-decoration:underline;text-underline-offset:3px;padding-inline:var(--craft-space-2)}
+/* Tabs share one row with the compact save status (desktop and phone); the rule under the row is the tabs' baseline. */
+.wwm.wwm-room .wwm-tabs-row{display:flex;align-items:center;justify-content:space-between;gap:var(--craft-space-3);margin:0 0 var(--craft-space-4);border-bottom:1px solid var(--craft-rule)}
+.wwm.wwm-room .wwm-tabs-row .wwm-view-switch{width:auto;min-width:0;flex:0 1 auto;margin:0;border-bottom:0;align-self:flex-end}
+.wwm.wwm-room .wwm-save-state{display:flex;flex:none;align-items:center;gap:var(--craft-space-2);min-height:var(--craft-h-sm);margin:0;font-size:var(--craft-fs-12);font-weight:var(--craft-fw-medium);line-height:16px;color:var(--craft-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+/* Status icon (CSS mask, so the markup stays one text line for the live region): ✓ saved, ! not saved. */
+.wwm.wwm-room .wwm-save-state:is([data-tone='saved'],[data-tone='error'])::before{content:'';flex:none;width:16px;height:16px;background:currentColor;-webkit-mask:var(--wwm-save-icon) center/16px no-repeat;mask:var(--wwm-save-icon) center/16px no-repeat}
+.wwm.wwm-room .wwm-save-state[data-tone='saved']{--wwm-save-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E")}
+/* Not saved is calm: ink text + a warning-tone icon; the toast carries the primary Retry, the 32px ghost Retry here is the fallback. */
+.wwm.wwm-room .wwm-save-state[data-tone='error']{color:var(--craft-ink);--wwm-save-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 8v4M12 16h.01'/%3E%3C/svg%3E")}
+.wwm.wwm-room .wwm-save-state[data-tone='error']::before{background:var(--craft-warning)}
+:root[data-craft] .wwm.wwm-room .wwm-save-state [data-slot='button']{height:var(--craft-h-sm);min-height:var(--craft-h-sm);padding:0 var(--craft-space-2);color:var(--craft-ink);font-size:var(--craft-fs-14);font-weight:var(--craft-fw-medium);text-decoration:none}
 
 /* Created / invite dialogs: one link field with an inline Copy. */
 .wwm-ready-dialog{max-width:min(480px,calc(100vw - 32px))}
-.wwm-ready-dialog [data-slot='dialog-header']{text-align:left}
 .wwm-ready-dialog .wwm-ready-name{font-weight:var(--craft-fw-semibold)}
-.wwm-ready-footer{gap:var(--craft-space-2)}
 .wwm-link-field{position:relative;display:flex;align-items:center}
-:root[data-craft] .wwm-link-field [data-slot='input']{padding-right:88px;font-size:var(--craft-fs-14);color:var(--craft-muted);text-overflow:ellipsis}
-.wwm-link-field .wwm-link-copy{position:absolute;right:6px;min-width:72px}
+:root[data-craft] .wwm-link-field [data-slot='input']{padding-right:calc(72px + var(--craft-space-4));font-size:var(--craft-fs-14);color:var(--craft-muted);text-overflow:ellipsis}
+.wwm-link-field .wwm-link-copy{position:absolute;right:calc((var(--craft-h-md) - var(--craft-h-sm)) / 2);min-width:72px}
 .wwm-resend-dialog{max-width:min(420px,calc(100vw - 32px))}
-.wwm-resend-dialog [data-slot='dialog-header']{text-align:left}
 
 /* Meetings list: a quiet Confirmed tag and a one-time highlight for a row just created. */
-.wwm .wwm-meeting-title-row .wwm-meeting-tag{flex:none;margin-right:auto;padding:0 var(--craft-space-2);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);font-size:var(--craft-fs-12);font-weight:var(--craft-fw-medium);line-height:20px;color:var(--craft-muted)}
+.wwm .wwm-meeting-title-row .wwm-meeting-tag{flex:none;margin-right:auto}
+/* Story fixture copy of the list still renders a plain span: same look as Badge secondary. */
+.wwm .wwm-meeting-title-row .wwm-meeting-tag:not([data-slot]){padding:0 var(--craft-space-2);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);font-size:var(--craft-fs-12);font-weight:var(--craft-fw-medium);line-height:18px;color:var(--craft-muted)}
 .wwm .wwm-meetings li[data-fresh='true']{animation:wwm-fresh-row 2.4s ease-out 1}
 @keyframes wwm-fresh-row{from{background:var(--craft-selected)}to{background:transparent}}
 @media(prefers-reduced-motion:reduce){.wwm .wwm-meetings li[data-fresh='true']{animation:none;background:var(--craft-hover)}}
@@ -43,7 +45,20 @@
  /* Invite becomes icon-only beside ⋯; its label stays for assistive tech. */
  .wwm.wwm-room .wwm-header-actions [data-slot='button']:not([data-size='icon']){width:var(--craft-h-md);padding:0}
  .wwm.wwm-room .wwm-invite-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
- .wwm.wwm-room .wwm-tabs-row{flex-direction:column;align-items:stretch;border-bottom:0}
- .wwm.wwm-room .wwm-tabs-row .wwm-view-switch{border-bottom:1px solid var(--craft-rule)}
- .wwm.wwm-room .wwm-save-state{order:-1;margin:0}
+ /* Phones keep the status on the tab row: tabs pack tighter, the status shrinks to icon + count (the live region
+  * still reads the full sentence) and Retry becomes a 32px icon button. If the row is still short, the tab list scrolls. */
+ .wwm.wwm-room .wwm-tabs-row{gap:var(--craft-space-2)}
+ :root[data-craft] .wwm.wwm-room .wwm-tabs-row .wwm-view-switch{gap:var(--craft-space-3);overflow-x:auto;scrollbar-width:none}
+ .wwm.wwm-room .wwm-tabs-row .wwm-view-switch::-webkit-scrollbar{display:none}
+ .wwm.wwm-room .wwm-save-state{gap:0}
+ .wwm.wwm-room .wwm-save-state>[aria-hidden='true']{font-size:0}
+ .wwm.wwm-room .wwm-save-state>[aria-hidden='true'] .craft-rolling{font-size:var(--craft-fs-12)}
+ .wwm.wwm-room .wwm-save-state>[aria-hidden='true']{display:inline-flex;align-items:center}
+ /* Before a save (idle) or while saving, the count carries the "You" legend dot; saved/not saved show their icon instead. */
+ .wwm.wwm-room .wwm-save-state:is([data-tone='idle'],[data-tone='saving'])>[aria-hidden='true']::before{content:'';width:8px;height:8px;border-radius:50%;margin-right:var(--craft-space-1);background:var(--craft-person-you)}
+ .wwm.wwm-room .wwm-save-state[data-tone='saving']>[aria-hidden='true']{opacity:.6}
+ .wwm.wwm-room .wwm-save-state[data-tone='error']>[aria-hidden='true']{display:none}
+ :root[data-craft] .wwm.wwm-room .wwm-save-state [data-slot='button']{width:var(--craft-h-sm);padding:0;font-size:0}
+ :root[data-craft] .wwm.wwm-room .wwm-save-state [data-slot='button']::before{content:'';width:16px;height:16px;background:currentColor;-webkit-mask:var(--wwm-retry-icon) center/16px no-repeat;mask:var(--wwm-retry-icon) center/16px no-repeat}
+ .wwm.wwm-room .wwm-save-state{--wwm-retry-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8'/%3E%3Cpath d='M3 3v5h5'/%3E%3C/svg%3E")}
 }

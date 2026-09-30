@@ -41,7 +41,7 @@ test('Apply goes through the shared draft path and the action is available to ev
  assert.match(fill,/<PopoverAnchor asChild>\{button\}<\/PopoverAnchor>/);
  assert.match(fill,/if\(phone\)return <>\{button\}<Dialog /);
  assert.match(fill,/fillButtonLabel\(summary\.freeCount\)/);
- assert.match(fill,/toast\.success\(fillToast\(summary\.freeCount\),\{duration:UNDO_TOAST_MS,action:\{label:'Undo'/);
+ assert.match(fill,/toast\.success\(fillToast\(summary\.freeCount,changes\.removed\.length\),\{duration:UNDO_TOAST_MS,action:\{label:'Undo'/);
  assert.match(fill,/Connect Google Calendar/);
  assert.doesNotMatch(fill,/saveResponse|skeleton/i);
  const room=read('src/features/when-we-meet/WhenWeMeet.tsx');

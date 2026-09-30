@@ -28,7 +28,7 @@ test('saveStatus is compact: nothing before the first edit, Saving… while in f
  assert.deepEqual(saveStatus({state:'saving',dirty:true,edited:true}),{tone:'saving',text:'Saving…'});
  assert.deepEqual(saveStatus({state:'saved',dirty:true,edited:true}),{tone:'saving',text:'Saving…'});
  assert.deepEqual(saveStatus({state:'saved',dirty:false,edited:true}),{tone:'saved',text:'Saved'});
- assert.deepEqual(saveStatus({state:'error',dirty:true,edited:true}),{tone:'error',text:'Couldn’t save'});
+ assert.deepEqual(saveStatus({state:'error',dirty:true,edited:true}),{tone:'error',text:'Not saved'});
 });
 
 test('fill copy counts half-hours with correct plurals',()=>{

@@ -1,17 +1,23 @@
 /* Quiet room chrome; calendar remains the primary working surface. */
-.wwm.wwm-room .wwm-shell>header{margin-bottom:12px}
+.wwm.wwm-room .wwm-shell>header{margin-bottom:var(--craft-space-3)}
 .wwm.wwm-room .wwm-availability{border:0;padding-top:0;margin-top:0}
-.wwm.wwm-room .wwm-view-switch{display:flex;justify-content:flex-start;gap:20px;border:0;border-bottom:1px solid var(--craft-rule);border-radius:0;background:transparent;margin:0 0 16px;padding:0;height:auto}
-.wwm.wwm-room .wwm-view-switch [data-slot='tabs-trigger']{width:auto;flex:0 0 auto;height:36px;min-height:36px;padding:0 2px;background:transparent;color:var(--craft-muted);border:0;border-bottom:2px solid transparent;border-radius:0;font-size:14px;box-shadow:none}
-.wwm.wwm-room .wwm-view-switch [data-slot='tabs-trigger'][data-state='active']{background:transparent;color:inherit;border-bottom-color:transparent;font-weight:650}
+/* Tabs: 44px hit area, 14px labels. Unselected = muted 500, selected = ink 600 + the sliding indicator, so the
+ * selected tab always has the highest contrast (light 6.7:1 vs 5.1:1, dark 9.1:1 vs 7.2:1 on the canvas).
+ * :root[data-craft] keeps these above the legacy dark `.wwm .wwm-view-switch button` colour. */
+.wwm.wwm-room .wwm-view-switch{display:flex;justify-content:flex-start;gap:var(--craft-space-6);border:0;border-bottom:1px solid var(--craft-rule);border-radius:0;background:transparent;margin:0 0 var(--craft-space-4);padding:0;height:auto}
+:root[data-craft] .wwm.wwm-room .wwm-view-switch [data-slot='tabs-trigger']{width:auto;flex:0 0 auto;height:var(--craft-h-md);min-height:var(--craft-h-md);padding:0 var(--craft-space-1);background:transparent;color:var(--craft-muted);border:0;border-bottom:2px solid transparent;border-radius:0;font-size:var(--craft-fs-14);font-weight:var(--craft-fw-medium);line-height:20px;box-shadow:none}
+:root[data-craft] .wwm.wwm-room .wwm-view-switch [data-slot='tabs-trigger']:hover{color:var(--craft-ink)}
+:root[data-craft] .wwm.wwm-room .wwm-view-switch [data-slot='tabs-trigger'][data-state='active']{background:transparent;color:var(--craft-ink);border-bottom-color:transparent;font-weight:var(--craft-fw-semibold)}
 /* One underline that slides horizontally between tabs (never vertical). Hidden until measured. */
 .wwm.wwm-room .wwm-view-switch{position:relative}
-.wwm.wwm-room .wwm-view-switch .wwm-tab-indicator{position:absolute;left:0;right:auto;bottom:0;width:0;height:2px;border-radius:0;background:currentColor;color:inherit;pointer-events:none;opacity:0}
+.wwm.wwm-room .wwm-view-switch .wwm-tab-indicator{position:absolute;left:0;right:auto;bottom:0;width:0;height:2px;border-radius:0;background:var(--craft-ink);pointer-events:none;opacity:0}
 .wwm.wwm-room .wwm-view-switch .wwm-tab-indicator[data-ready]{opacity:1}
 .wwm.wwm-room .wwm-view-switch .wwm-tab-indicator[data-animate]{transition:transform .2s ease-out,width .2s ease-out}
 @media(prefers-reduced-motion:reduce){.wwm.wwm-room .wwm-view-switch .wwm-tab-indicator[data-animate]{transition:none}}
-/* Settings dialog: tokens, controls and focus come from the shared Craft primitives. */
+/* Settings dialog: tokens, controls, header/footer layout and focus come from the shared Craft primitives. */
 .wwm-settings-dialog{max-width:min(420px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow-y:auto;animation:none!important;translate:0 0!important;transform:translate(-50%,-50%)}
 /* The form is the sheet's scroller on phones; 4px of inner room (margin cancels it) keeps the 2px focus ring + 2px offset unclipped. */
 .wwm-settings-dialog form{display:grid;gap:var(--craft-space-6);padding:var(--craft-space-1);margin:calc(var(--craft-space-1) * -1)}
 .wwm-settings-dialog [data-slot='dialog-header']{text-align:left}
+/* Sheet (phones): the form is the scroller, so it spans the sheet edge to edge and the footer rule stays full-bleed like the header's. */
+@media(max-width:640px){.wwm-settings-dialog form{margin-inline:calc(var(--craft-space-6) * -1);padding-inline:var(--craft-space-6)}}

@@ -15,18 +15,16 @@ export default function CraftPage() {
     <main className="craft-page">
       <div className="craft-shell">
         <header className="craft-header">
-          <span className="craft-eyebrow">HYEOK.DEV / CRAFT</span>
           <h1>Craft</h1>
           <p>Small things made to be useful.</p>
         </header>
         <section aria-label="Projects" className="craft-projects" data-analytics-section={ANALYTICS_SECTIONS.CRAFT_PROJECTS}>
           <Link className="craft-project" href="/craft/when-we-meet" data-analytics-label={ANALYTICS_ELEMENTS.CRAFT_PROJECT}>
-            <span className="craft-project-number" aria-hidden="true">01</span>
             <span className="craft-project-content">
               <strong>When We Meet</strong>
               <span>Find a time that works for everyone.</span>
             </span>
-            <ArrowUpRight aria-hidden="true" size={28} strokeWidth={1.2} />
+            <ArrowUpRight aria-hidden="true" size={24} strokeWidth={1.5} />
           </Link>
         </section>
         <nav className="craft-legal-links" aria-label="Craft information">

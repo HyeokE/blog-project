@@ -70,3 +70,10 @@ export function selectionAvailability(members,responses,slots,range){
   return {...rest,response:'partial',availability:label};
  });
 }
+
+/** True when a member who was fully available for the chosen time (at selection) no longer is (saved availability changed). */
+export function selectionDrift(previous,current){
+ if(!previous||!current)return false;
+ const now=new Map(current.map(member=>[member.id,member.response]));
+ return previous.some(member=>member.response==='available'&&now.has(member.id)&&now.get(member.id)!=='available');
+}

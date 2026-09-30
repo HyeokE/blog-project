@@ -29,3 +29,9 @@ export function normalizeConfirmationDetail(row){
 }
 export function normalizeCreatedRoom(value){return {id:value.id,inviteToken:value.invite_token}}
 export function normalizeCredential(row){return row?{googleSubject:row.google_subject,googleEmail:row.google_email,credentialCiphertext:row.credential_ciphertext}:null}
+/** `wwm_invitation_preview` result (first row) → the pre-sign-in invitation context; null when the token did not match. */
+export function normalizeInvitationPreview(value){
+ const row=Array.isArray(value)?value[0]:value;
+ if(!row||typeof row.title!=='string'||typeof row.start_date!=='string'||typeof row.end_date!=='string'||typeof row.timezone!=='string')return null;
+ return {title:row.title,startDate:row.start_date,endDate:row.end_date,timezone:row.timezone,organizerName:typeof row.organizer_name==='string'&&row.organizer_name?row.organizer_name:null};
+}

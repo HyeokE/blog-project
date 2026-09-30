@@ -20,3 +20,5 @@ export function normalizeRecipientFlag(value:unknown):boolean|null;
 export function normalizeConfirmationDetail(row:{revision:number;recipient_ids:string[]|null;excluded_ids:string[]|null;optional_ids:string[]|null;open_revision:number|null;open_status:string|null;open_title:string|null;open_starts_at:string|null;open_ends_at:string|null;open_recipient_ids:string[]|null;open_excluded_ids:string[]|null;open_optional_ids:string[]|null;last_resent_at:string|null}|null|undefined):NormalizedConfirmationDetail|null;
 export function normalizeCreatedRoom(value:{id:string;invite_token:string}):{id:string;inviteToken:string};
 export function normalizeCredential(row:{google_subject:string;google_email:string;credential_ciphertext:string}|null|undefined):NormalizedCredential|null;
+export type NormalizedInvitationPreview={title:string;startDate:string;endDate:string;timezone:string;organizerName:string|null};
+export function normalizeInvitationPreview(value:unknown):NormalizedInvitationPreview|null;

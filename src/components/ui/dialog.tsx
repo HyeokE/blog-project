@@ -196,11 +196,18 @@ function DialogContent({
   )
 }
 
+/*
+ * One layout for every Craft dialog (look in src/app/craft/design-system.css):
+ *   DialogHeader  — DialogTitle (20/600) + optional DialogDescription (14 muted), left-aligned, rule below.
+ *   body          — any content between header and footer.
+ *   DialogFooter  — rule above; children in order secondary → primary. Desktop: right-aligned row
+ *                   (secondary left, primary right). Phones (sheet): the same row, buttons share the width.
+ */
 function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex flex-col gap-2 text-center sm:text-left", className)}
+      className={cn("flex flex-col gap-1 text-left", className)}
       {...props}
     />
   )
@@ -218,7 +225,7 @@ function DialogFooter({
     <div
       data-slot="dialog-footer"
       className={cn(
-        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+        "flex flex-row justify-end gap-2",
         className
       )}
       {...props}

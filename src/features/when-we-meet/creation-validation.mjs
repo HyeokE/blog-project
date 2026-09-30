@@ -1,4 +1,5 @@
 import {validateRoom} from './domain.mjs';
+import {MEETING_COPY} from './meeting-copy.mjs';
 
 export function todayInTimezone(zone,clock=new Date()){
  if(typeof zone!=='string'||!zone.trim())return null;
@@ -10,7 +11,7 @@ export function todayInTimezone(zone,clock=new Date()){
 
 export function creationErrors(values,clock=new Date()){
  const errors={};
- if(typeof values.title!=='string'||!values.title.trim()||values.title.trim().length>100)errors.title='Enter a title (up to 100 characters).';
+ if(typeof values.title!=='string'||!values.title.trim()||values.title.trim().length>100)errors.title=MEETING_COPY.titleError;
  const today=todayInTimezone(values.timezone,clock);
  if(!today)errors.timezone='Choose a valid timezone.';
  const {startDate,endDate}=values;

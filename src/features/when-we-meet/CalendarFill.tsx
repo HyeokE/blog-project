@@ -7,8 +7,9 @@ import {Button} from '@/components/ui/button';
 import {Popover,PopoverAnchor,PopoverContent} from '@/components/ui/popover';
 import {Dialog,DialogContent,DialogDescription,DialogHeader,DialogTitle} from '@/components/ui/dialog';
 import {loadCalendarBusy} from './api';
-import {fillPreview,fillFailure,fillSummaryInRange,applyFillInRange,type FillPreview,type FillRange} from './calendar-fill.mjs';
-import {fillButtonLabel,fillToast} from './meeting-copy.mjs';
+import {fillPreview,fillFailure,fillSummaryInRange,applyFillInRange,fillChanges,type FillPreview,type FillRange} from './calendar-fill.mjs';
+import {fillButtonLabel,fillToast,MEETING_COPY} from './meeting-copy.mjs';
+import {publishFillHighlight} from './fill-highlight.mjs';
 import {DateRangePicker} from './DateRangePicker';
 import {useMediaQuery} from './use-media-query';
 import './calendar-fill.css';
@@ -22,8 +23,10 @@ type State={kind:'idle'}|{kind:'pending'}|{kind:'preview';preview:FillPreview}|{
 /**
  * Quiet toolbar action: preview free half-hours from the member's own Google Calendar in a small panel
  * anchored to the button (a bottom sheet on phones). Nothing changes until the explicit Fill.
+ * After Fill (and Undo) the changed slot ids are published to `fill-highlight.mjs` and passed to `onApplied`,
+ * so the grid can scroll the first changed half-hour into view and mark the change.
  */
-export function CalendarFill({roomId,slots,selected,onApply,onReconnect}:{roomId:string;slots:Slot[];selected:string[];onApply:(slotIds:string[])=>void;onReconnect:()=>void}){
+export function CalendarFill({roomId,slots,selected,onApply,onApplied,onReconnect}:{roomId:string;slots:Slot[];selected:string[];onApply:(slotIds:string[])=>void;onApplied?:(changedSlotIds:string[])=>void;onReconnect:()=>void}){
  const [state,setState]=useState<State>({kind:'idle'});
  const dates=slots.map(slot=>slot.date).sort(),roomRange:FillRange={start:dates[0]??'',end:dates.at(-1)??''};
  const [range,setRange]=useState<FillRange>(roomRange);
@@ -37,8 +40,10 @@ export function CalendarFill({roomId,slots,selected,onApply,onReconnect}:{roomId
  function dismiss(){attempt.current++;setState({kind:'idle'})}
  function apply(preview:FillPreview){
   const previous=[...selected],summary=fillSummaryInRange(preview,slots,range);
-  onApply(applyFillInRange(selected,preview.slotIds,slots,range));setState({kind:'idle'});
-  toast.success(fillToast(summary.freeCount),{duration:UNDO_TOAST_MS,action:{label:'Undo',onClick:()=>onApply(previous)}});
+  const next=applyFillInRange(selected,preview.slotIds,slots,range),changes=fillChanges(previous,next);
+  onApply(next);setState({kind:'idle'});
+  publishFillHighlight(changes.changed);onApplied?.(changes.changed);
+  toast.success(fillToast(summary.freeCount,changes.removed.length),{duration:UNDO_TOAST_MS,action:{label:'Undo',onClick:()=>{onApply(previous);publishFillHighlight(changes.changed);onApplied?.(changes.changed)}}});
  }
  const pending=state.kind==='pending',open=state.kind==='preview'||state.kind==='reconnect'||state.kind==='error';
  const cancel=<Button type="button" variant="ghost" data-analytics-label={ANALYTICS_ELEMENTS.CALENDAR_FILL_DISMISS} onClick={dismiss}>Cancel</Button>;
@@ -48,7 +53,7 @@ export function CalendarFill({roomId,slots,selected,onApply,onReconnect}:{roomId
    <div className="wwm-fill-summary" role="status">{summary.canApply?<><p><strong>{summary.freeCount}</strong> free half-hours</p><p className="wwm-fill-muted">Only these dates change</p></>:<p>No free half-hours on these dates</p>}</div>
    <div className="wwm-fill-actions">{cancel}{summary.canApply&&<Button type="button" data-analytics-label={ANALYTICS_ELEMENTS.CALENDAR_FILL_APPLY} onClick={()=>apply(state.preview)}>{fillButtonLabel(summary.freeCount)}</Button>}</div>
   </>})()}
-  {state.kind==='reconnect'&&<><p className="wwm-fill-summary" role="status">Connect Google Calendar to see when you’re free.</p><div className="wwm-fill-actions">{cancel}<Button type="button" data-analytics-label={ANALYTICS_ELEMENTS.CALENDAR_CONNECT} onClick={onReconnect}>Connect Google Calendar</Button></div></>}
+  {state.kind==='reconnect'&&<><p className="wwm-fill-summary" role="status">{MEETING_COPY.reconnectPrompt}</p><div className="wwm-fill-actions" data-stack="true">{cancel}<Button type="button" data-analytics-label={ANALYTICS_ELEMENTS.CALENDAR_CONNECT} aria-label="Connect Google Calendar" onClick={onReconnect}>{MEETING_COPY.reconnect}</Button></div></>}
   {state.kind==='error'&&<><p className="wwm-fill-summary" role="alert">{state.message}</p><div className="wwm-fill-actions">{cancel}<Button type="button" data-analytics-label={ANALYTICS_ELEMENTS.RETRY} onClick={()=>void check()}>Retry</Button></div></>}
  </div>;
  const button=<Button ref={trigger} type="button" variant="outline" size="sm" className="wwm-calendar-fill-trigger" data-analytics-label={ANALYTICS_ELEMENTS.CALENDAR_FILL} disabled={pending} aria-busy={pending||undefined} aria-expanded={open} aria-haspopup="dialog" onClick={()=>void check()}><CalendarDays aria-hidden="true"/>{pending?'Checking calendar…':TITLE}</Button>;

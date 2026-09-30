@@ -26,8 +26,8 @@ try{
  const next=await p.locator('.wwm-range-calendar').innerText();
  await p.getByRole('button',{name:'Go to the Previous Month'}).click();
  if(next===await p.locator('.wwm-range-calendar').innerText())failures.push('month navigation stalled');
- await p.getByRole('textbox',{name:'What are we planning?'}).fill('Motion regression draft');
+ await p.getByRole('textbox',{name:'Title'}).fill('Motion regression draft');
  await p.keyboard.press('Escape');await trigger.click();
- if(await p.getByRole('textbox',{name:'What are we planning?'}).inputValue()!=='Motion regression draft')failures.push('draft lost');
+ if(await p.getByRole('textbox',{name:'Title'}).inputValue()!=='Motion regression draft')failures.push('draft lost');
  console.log('MOTION_RESULT '+JSON.stringify({cycles:3,entry:visible[0].name,frameCounts:frames.map(x=>x.length),frames,failures}));
 }finally{await closeTab(p)}

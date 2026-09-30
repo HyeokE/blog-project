@@ -6,3 +6,4 @@ export type FillRange={start:string;end:string};
 export function applyFillInRange(selected:string[],freeIds:string[],slots:Array<{id:string;date:string}>,range:FillRange):string[];
 export function fillSummaryInRange(preview:FillPreview,slots:Array<{id:string;date:string}>,range:FillRange):{freeCount:number;slotCount:number;canApply:boolean;text:string};
 export function calendarReturnNotice(outcome:string|null):{tone:'success'|'info'|'error';text:string}|null;
+export function fillChanges(before:string[],after:string[]):{added:string[];removed:string[];changed:string[];firstChanged:string|null};

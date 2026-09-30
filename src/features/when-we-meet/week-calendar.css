@@ -4,17 +4,17 @@
 .wwm-calendar-frame{min-width:0;position:relative}
 .wwm-calendar-header-scroll{position:sticky;top:0;z-index:var(--craft-z-sticky);overflow:hidden;max-width:100%;background:var(--calendar-surface);border:1px solid var(--calendar-line);border-bottom:0;border-radius:4px 4px 0 0}
 .wwm-calendar-frame .wwm-week-scroll{border-top:0;border-radius:0 0 4px 4px}
-.wwm-week-scroll{max-width:100%;overflow:auto;max-height:none;touch-action:pan-x pan-y;scrollbar-width:thin;border:1px solid var(--calendar-line);border-radius:4px;position:relative;background:var(--calendar-surface)}
+.wwm-week-scroll{max-width:100%;overflow:auto;max-height:clamp(320px,calc(100dvh - 220px),720px);overscroll-behavior:contain;scroll-padding-left:64px;touch-action:pan-x pan-y;scrollbar-width:thin;border:1px solid var(--calendar-line);border-radius:4px;position:relative;background:var(--calendar-surface)}
 .wwm-week-grid{display:grid;grid-template-columns:64px repeat(var(--wwm-day-count),minmax(var(--day-width,144px),1fr));width:max(100%,calc(64px + var(--wwm-day-count)*var(--day-width,144px)));align-items:start}
-.wwm-week-corner,.wwm-week-date{position:sticky;top:0;z-index:5;height:88px;box-sizing:border-box;background:var(--calendar-surface);border-bottom:1px solid var(--calendar-line)}.wwm-week-corner{left:0;z-index:7;display:flex;align-items:center;justify-content:center;font-size:11px;opacity:1}.wwm-week-date{border-left:1px solid var(--calendar-line);padding:10px 8px 0;display:flex;flex-direction:column;align-items:center;gap:2px}.wwm-week-date>span{font-size:12px;opacity:.65}.wwm-week-date strong{font-size:23px;font-weight:500;line-height:28px}.wwm-week-date small{display:flex;align-self:stretch;gap:10px;justify-content:space-between;font-size:10px;opacity:.6;margin-top:auto;padding-bottom:5px}.wwm-week-date small>span{flex:1;text-align:center}
-.wwm-calendar-time-rail{position:sticky;left:0;z-index:4;background:var(--calendar-surface)}.wwm-week-time{height:var(--row-height,24px);box-sizing:border-box;display:flex;align-items:flex-start;justify-content:center;flex-direction:column;padding-left:10px;font-size:11px;font-variant-numeric:tabular-nums;opacity:1;border-top:1px solid var(--calendar-faint)}.wwm-week-time>span{opacity:.65;white-space:nowrap}.wwm-week-time.is-hour{border-top-color:var(--calendar-line)}.wwm-week-time.is-hour>span{opacity:.8}.wwm-week-time small{font-size:9px}
+.wwm-week-corner,.wwm-week-date{position:sticky;top:0;z-index:5;height:88px;box-sizing:border-box;background:var(--calendar-surface);border-bottom:1px solid var(--calendar-line)}.wwm-week-corner{left:0;z-index:7;display:flex;align-items:center;justify-content:center;font-size:12px;opacity:1}.wwm-week-date{border-left:1px solid var(--calendar-line);padding:10px 8px 0;display:flex;flex-direction:column;align-items:center;gap:2px}.wwm-week-date>span{font-size:12px;opacity:.65}.wwm-week-date strong{font-size:var(--craft-fs-20);font-weight:500;line-height:28px}.wwm-week-date small{display:flex;align-self:stretch;gap:10px;justify-content:space-between;font-size:10px;opacity:.6;margin-top:auto;padding-bottom:5px}.wwm-week-date small>span{flex:1;text-align:center}
+.wwm-calendar-time-rail{position:sticky;left:0;z-index:4;background:var(--calendar-surface)}.wwm-week-time{height:var(--row-height,24px);box-sizing:border-box;display:flex;align-items:flex-start;justify-content:center;flex-direction:column;padding-left:10px;font-size:12px;font-variant-numeric:tabular-nums;opacity:1;border-top:1px solid var(--calendar-faint)}.wwm-week-time>span{opacity:.65;white-space:nowrap}.wwm-week-time.is-hour{border-top-color:var(--calendar-line)}.wwm-week-time.is-hour>span{opacity:.8}
 .wwm-calendar-day{position:relative;border-left:1px solid var(--calendar-line);box-sizing:border-box;background:repeating-linear-gradient(to bottom,var(--calendar-line) 0,var(--calendar-line) 1px,transparent 1px,transparent var(--row-height,24px),var(--calendar-faint) var(--row-height,24px),var(--calendar-faint) calc(var(--row-height,24px) + 1px),transparent calc(var(--row-height,24px) + 1px),transparent calc(var(--row-height,24px)*2))}
 .wwm-calendar-selection{position:absolute;top:0;bottom:0;left:calc(var(--participant-gutter) + 8px);right:3px}.wwm-calendar-events{position:absolute;top:0;bottom:0;left:4px;width:var(--participant-gutter)}
-.wwm .wwm-weekly .wwm-calendar-selection .wwm-week-edit{display:block;position:relative;box-sizing:border-box;width:100%;height:var(--row-height,24px);min-height:var(--row-height,24px);padding:0;margin:0;border:0;border-radius:0;background:transparent;color:inherit;touch-action:pan-x pan-y;cursor:crosshair}.wwm .wwm-weekly .wwm-calendar-selection .wwm-week-edit:hover{background:var(--calendar-faint)}.wwm .wwm-weekly .wwm-calendar-selection .wwm-week-edit:focus-visible{outline:2px solid var(--craft-focus);outline-offset:-3px;z-index:3}.wwm-calendar-gap{height:var(--row-height,24px);background:var(--calendar-faint)}
+
 .wwm-calendar-own-event{position:absolute;left:3px;right:3px;box-sizing:border-box;pointer-events:none;border-radius:4px;border-left:3px solid var(--craft-person-you);background:color-mix(in srgb,var(--craft-person-you) 20%,var(--calendar-surface));display:flex;flex-direction:column;gap:2px;padding:4px 6px;overflow:hidden;color:inherit;line-height:16px}.wwm-calendar-own-event[data-density='single'],.wwm-calendar-own-event[data-density='double']{justify-content:center}
 .wwm-calendar-own-event[data-density='single']{padding-block:0}
-.wwm-calendar-own-event strong{display:block;font-size:11px;font-weight:600;line-height:16px;flex-shrink:0}.wwm-calendar-own-event small{display:block;font-size:11px;line-height:16px;margin-top:0;flex-shrink:0;white-space:nowrap;font-variant-numeric:tabular-nums}
-.wwm .wwm-weekly .wwm-calendar-events .wwm-calendar-event{position:absolute;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;box-sizing:border-box;min-height:0;min-width:0;margin:0;padding:0;border:1px solid var(--event-color);border-radius:4px;--rail-color:color-mix(in srgb,var(--event-color) 55%,var(--calendar-surface));background:var(--rail-color);color:inherit;font-family:inherit;line-height:1.25;text-align:left;overflow:hidden;cursor:pointer;transition:background-color 120ms ease}.wwm-calendar-event strong{display:block;max-width:100%;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.wwm-calendar-event>span{font-size:10px;opacity:.7;line-height:1.4;overflow-wrap:anywhere}.wwm .wwm-calendar-event:hover{filter:brightness(.97)}.wwm .wwm-calendar-event:focus-visible{outline:2px solid currentColor;outline-offset:-2px}
+.wwm-calendar-own-event strong{display:block;font-size:12px;font-weight:600;line-height:16px;flex-shrink:0}.wwm-calendar-own-event small{display:block;font-size:12px;line-height:16px;margin-top:0;flex-shrink:0;white-space:nowrap;font-variant-numeric:tabular-nums}
+.wwm .wwm-weekly .wwm-calendar-events .wwm-calendar-event{position:absolute;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;box-sizing:border-box;min-height:0;min-width:0;margin:0;padding:0;border:1px solid var(--event-color);border-radius:4px;--rail-color:color-mix(in srgb,var(--event-color) 55%,var(--calendar-surface));background:var(--rail-color);color:inherit;font-family:inherit;line-height:1.25;text-align:left;overflow:hidden;cursor:pointer;transition:background-color 120ms ease}.wwm-calendar-event strong{display:block;max-width:100%;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.wwm-calendar-event>span{font-size:12px;opacity:.7;line-height:1.4;overflow-wrap:anywhere}.wwm .wwm-calendar-event:hover{filter:brightness(.97)}.wwm .wwm-calendar-event:focus-visible{outline:2px solid currentColor;outline-offset:-2px}
 /* Surface, border, radius, shadow and layer come from the shared popover primitive. */
 .wwm-week-detail{display:flex;flex-direction:column;gap:0;box-sizing:border-box;width:240px;max-width:calc(100vw - 24px);max-height:var(--radix-popover-content-available-height);overflow-y:auto;padding:16px;font-size:var(--craft-fs-14);animation:none!important}
 .wwm-week-detail .wwm-detail-person{display:flex;align-items:center;gap:8px;margin-bottom:12px;min-width:0}
@@ -25,7 +25,7 @@
 .wwm-week-detail .wwm-detail-time>span{font-size:16px;font-weight:400;color:var(--craft-muted)}
 .wwm-week-detail .wwm-detail-zone{margin-top:10px;font-size:11px;line-height:16px;color:var(--craft-muted)}
 .wwm-weekly .wwm-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-@media(max-width:600px){.wwm-calendar-heading h3{font-size:21px}.wwm-calendar-response-count{margin-left:0}.wwm-week-scroll{max-height:none}.wwm-week-grid{grid-template-columns:54px repeat(var(--wwm-day-count),minmax(var(--day-width,144px),1fr));width:max(100%,calc(54px + var(--wwm-day-count)*var(--day-width,144px)))}.wwm-week-time{padding-left:6px;font-size:10px}}
+@media(max-width:600px){.wwm-calendar-heading h3{font-size:21px}.wwm-calendar-response-count{margin-left:0}.wwm-week-grid{grid-template-columns:54px repeat(var(--wwm-day-count),minmax(var(--day-width,144px),1fr));width:max(100%,calc(54px + var(--wwm-day-count)*var(--day-width,144px)))}.wwm-week-time{padding-left:6px}}
 .wwm-everyone .wwm-calendar-day{background:repeating-linear-gradient(to bottom,var(--calendar-line) 0,var(--calendar-line) 1px,transparent 1px,transparent var(--row-height,24px),var(--calendar-faint) var(--row-height,24px),var(--calendar-faint) calc(var(--row-height,24px) + 1px),transparent calc(var(--row-height,24px) + 1px),transparent calc(var(--row-height,24px)*2))}
 .wwm-weekly .wwm-week-corner,.wwm-weekly .wwm-week-date{height:76px}
 .wwm-weekly .wwm-week-date{padding:6px 8px 0;gap:0}
@@ -36,7 +36,7 @@
 .wwm-everyone .wwm-calendar-events{left:4px;right:4px;width:auto}
 .wwm .wwm-weekly.wwm-everyone .wwm-calendar-events .wwm-calendar-event{padding:3px 5px;gap:1px;background:color-mix(in srgb,var(--event-color) 18%,var(--calendar-surface));border:1px solid var(--rail-color);border-left:3px solid var(--event-color);color:inherit}
 .wwm .wwm-weekly.wwm-everyone .wwm-calendar-event strong{font-size:12px;line-height:16px;white-space:nowrap}
-.wwm .wwm-weekly.wwm-everyone .wwm-calendar-event .wwm-event-time{font-size:11px;line-height:14px;white-space:nowrap;overflow-wrap:normal;opacity:.85;flex-shrink:0}
+.wwm .wwm-weekly.wwm-everyone .wwm-calendar-event .wwm-event-time{font-size:12px;line-height:14px;white-space:nowrap;overflow-wrap:normal;opacity:.85;flex-shrink:0}
 /* Narrow bars: the time never clips mid-character. It ellipsizes, and when even that cannot show a useful range the bar
    drops the time (name stays; the full range is in the accessible name and the detail popover). */
 .wwm .wwm-weekly.wwm-everyone .wwm-calendar-events .wwm-calendar-event{container-type:inline-size}
@@ -53,15 +53,10 @@
 
 /* Confirm mode: the compact Everyone calendar plus a transparent half-hour selection layer. */
 .wwm-confirm-mode{--confirm-accent:var(--craft-accent);--confirm-fill:color-mix(in srgb,var(--craft-accent) 28%,transparent)}
-.wwm-confirm-layer{position:absolute;inset:0;z-index:2}
+.wwm-confirm-layer{position:absolute;inset:0;z-index:2;pointer-events:none}
 .wwm-confirm-mode.is-selecting .wwm-calendar-events{pointer-events:none}
-.wwm-confirm-gap{height:var(--row-height,24px)}
-.wwm .wwm-weekly .wwm-confirm-layer .wwm-confirm-slot{display:block;box-sizing:border-box;width:100%;height:var(--row-height,24px);min-height:var(--row-height,24px);padding:0;margin:0;border:0;border-radius:0;background:transparent;color:inherit;touch-action:pan-x pan-y;cursor:crosshair}
-.wwm .wwm-weekly .wwm-confirm-layer .wwm-confirm-slot:hover{background:var(--calendar-faint)}
-.wwm .wwm-weekly .wwm-confirm-layer .wwm-confirm-slot:focus-visible{position:relative;z-index:4;outline:2px solid var(--confirm-accent);outline-offset:-2px}
-.wwm .wwm-weekly .wwm-confirm-layer .wwm-confirm-slot.is-anchor{box-shadow:inset 0 2px 0 var(--confirm-accent)}
 .wwm-confirm-range{position:absolute;left:2px;right:2px;z-index:3;box-sizing:border-box;pointer-events:none;border:2px solid var(--confirm-accent);border-radius:4px;background:var(--confirm-fill);display:flex;flex-direction:column;align-items:flex-end;padding:1px 5px;overflow:hidden;line-height:14px;color:inherit}
-.wwm-confirm-range strong,.wwm-confirm-range small{font-size:11px;white-space:nowrap}
+.wwm-confirm-range strong,.wwm-confirm-range small{font-size:12px;white-space:nowrap}
 .wwm-confirm-range strong{font-weight:650}
 .wwm-confirm-range small{font-variant-numeric:tabular-nums}
 .wwm-confirm-range[data-density='single']{flex-direction:row;align-items:center;justify-content:flex-end;gap:6px;padding-block:0}
@@ -74,8 +69,34 @@
 .wwm .wwm-weekly .wwm-week-legend{margin:0 0 var(--craft-space-3);font-size:var(--craft-fs-12);color:var(--craft-muted)}
 .wwm .wwm-weekly .wwm-week-legend>span{color:var(--craft-ink)}
 .wwm .wwm-weekly .wwm-week-legend .wwm-calendar-response-count{margin-left:auto;color:var(--craft-muted)}
-/* Quiet two-option segmented control (not a filled primary). */
-.wwm .wwm-segmented{display:inline-flex;padding:2px;gap:2px;border:1px solid var(--craft-rule);border-radius:var(--craft-radius)}
-:root[data-craft] .wwm .wwm-segmented [data-slot='button']{height:calc(var(--craft-h-sm) - 6px);min-height:calc(var(--craft-h-sm) - 6px);padding:0 var(--craft-space-3);border:0;border-radius:2px;color:var(--craft-muted);font-size:var(--craft-fs-12)}
-:root[data-craft] .wwm .wwm-segmented [data-slot='button'][aria-pressed='true']{background:var(--craft-selected);color:var(--craft-ink)}
+/* Detailed | Compact is the shared shadcn ToggleGroup (Craft look in design-system.css). */
 @media(max-width:600px){.wwm .wwm-weekly .wwm-calendar-tools{width:100%;margin-left:0}.wwm .wwm-weekly .wwm-calendar-tools>[data-slot='button']{flex:1 1 auto}}
+
+/* One ARIA grid over the day columns. Rows are subgrids of the calendar's columns, so each cell sits exactly on its
+   day; the time rail (sticky, z 4) stays above it. Keyboard focus is drawn here, above saved blocks and the range. */
+.wwm-week-scroll .wwm-week-grid>.wwm-calendar-time-rail{grid-row:1;grid-column:1}
+.wwm-week-scroll .wwm-week-grid>.wwm-calendar-day{grid-row:1}
+.wwm-cell-grid{grid-row:1;grid-column:1/-1;display:grid;grid-template-columns:subgrid;grid-auto-rows:var(--row-height,24px);position:relative;z-index:2;pointer-events:none}
+.wwm-cell-row{display:grid;grid-column:1/-1;grid-template-columns:subgrid;height:var(--row-height,24px)}
+.wwm-grid-cell{box-sizing:border-box;min-width:0;height:var(--row-height,24px);outline:none;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
+.wwm-weekly:not(.wwm-everyone) .wwm-grid-cell{margin-left:calc(var(--participant-gutter) + 8px);margin-right:3px}
+.wwm-cell-grid.is-interactive .wwm-grid-cell{pointer-events:auto;cursor:crosshair;touch-action:pan-x pan-y}
+.wwm-cell-grid.is-interactive .wwm-grid-cell:hover{background:var(--calendar-faint)}
+.wwm-grid-cell:focus-visible{outline:2px solid var(--craft-focus);outline-offset:-2px}
+.wwm-confirm-mode .wwm-grid-cell{margin:0 2px}
+.wwm-confirm-mode .wwm-grid-cell:focus-visible{outline-color:var(--confirm-accent)}
+/* Inside the chosen range the range border is the only outline; the focused half-hour gets an inner bar instead. */
+.wwm-confirm-mode .wwm-grid-cell.is-selected:focus-visible{outline:none;box-shadow:inset 4px 0 0 var(--confirm-accent);background:var(--confirm-fill)}
+.wwm-confirm-mode .wwm-grid-cell.is-anchor{box-shadow:inset 0 2px 0 var(--confirm-accent)}
+@media(max-width:600px){.wwm-week-scroll{scroll-padding-left:54px}}
+
+/* Phones: a two-day pager (whole columns, no clipped third day). */
+.wwm .wwm-weekly .wwm-day-pager{display:flex;align-items:center;justify-content:space-between;gap:var(--craft-space-2);margin:0 0 var(--craft-space-2)}
+.wwm .wwm-weekly .wwm-day-pager>span{font-size:var(--craft-fs-14);font-weight:var(--craft-fw-semibold);font-variant-numeric:tabular-nums}
+
+/* More than eight people: a repeated hue carries a stripe pattern on its rail and legend swatch (border stays solid). */
+.wwm-week-legend i{background-color:var(--event-color,var(--craft-person-you))}
+.wwm .wwm-weekly .wwm-week-legend i[data-mark]{width:10px;height:10px}
+:is(.wwm-calendar-event,.wwm-week-legend i)[data-mark='1']{background-image:repeating-linear-gradient(135deg,transparent 0 2px,color-mix(in srgb,var(--calendar-surface,var(--craft-surface)) 75%,transparent) 2px 4px)}
+:is(.wwm-calendar-event,.wwm-week-legend i)[data-mark='2']{background-image:repeating-linear-gradient(45deg,transparent 0 2px,color-mix(in srgb,var(--calendar-surface,var(--craft-surface)) 75%,transparent) 2px 4px)}
+:is(.wwm-calendar-event,.wwm-week-legend i):is([data-mark='3'],[data-mark='4'],[data-mark='5']){background-image:repeating-linear-gradient(0deg,transparent 0 2px,color-mix(in srgb,var(--calendar-surface,var(--craft-surface)) 75%,transparent) 2px 4px)}

@@ -2,7 +2,7 @@
 import {ANALYTICS_ELEMENTS,ANALYTICS_SECTIONS} from '@/constants/analytics';
 import {useCallback,useEffect,useState} from 'react';
 import {useCraftAccount} from '@/app/craft/CraftAccount';
-import {AlertCircle} from 'lucide-react';
+import {Notice} from './Notice';
 import {Button} from '@/components/ui/button';
 import {ConfirmationPanel} from './ConfirmationPanel';
 import {toast} from 'sonner';
@@ -91,7 +91,7 @@ export function ConfirmTab({roomId,room,slots,responses,onConfirmation}:{roomId:
  function checkEdit(){const body=data&&openEditBody(data,slots);if(body)void sendEdit(body);else{setEditLocal(null);reload()}}
  function connectCalendar(){storage.write(confirmReturnKey(roomId),'confirm');void connectGoogleCalendar(roomId,window.location.pathname+window.location.search).catch(()=>{storage.write(confirmReturnKey(roomId),null);setLocal({status:'failed',error:'Google Calendar connection is unavailable. Please try again.',calendar:'disconnected'})})}
 
- if(loadError)return <div className="wwm-confirm-load-error" role="alert" data-analytics-section={ANALYTICS_SECTIONS.WWM_CONFIRM}><AlertCircle aria-hidden="true"/><div><p>{loadError}</p><Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.RETRY} onClick={reload}>Retry</Button></div></div>;
+ if(loadError)return <div data-analytics-section={ANALYTICS_SECTIONS.WWM_CONFIRM}><Notice tone="error" className="wwm-confirm-load-error" action={<Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.RETRY} onClick={reload}>Retry</Button>}>{loadError}</Notice></div>;
  if(!data)return <div className="wwm-confirm wwm-confirm-skeleton" role="status" aria-label="Loading confirmation"><span className="wwm-confirm-skeleton-title"/><span className="wwm-confirm-skeleton-line"/><span className="wwm-confirm-skeleton-grid"/></div>;
  const state=confirmPanelState({data,slots,organizerName:ownerName,recipientIds});
  const status=local?.status??state.status;

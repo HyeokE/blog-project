@@ -40,3 +40,10 @@ export function calendarReturnNotice(outcome){
  if(outcome==='error')return {tone:'error',text:'Could not connect Google Calendar. Please try again.'};
  return null;
 }
+/** What an Apply (or Undo) changed: added/removed ids and every changed id in time order. */
+export function fillChanges(before,after){
+ const was=new Set(before),now=new Set(after),byTime=(a,b)=>Date.parse(a)-Date.parse(b);
+ const added=[...now].filter(id=>!was.has(id)).sort(byTime),removed=[...was].filter(id=>!now.has(id)).sort(byTime);
+ const changed=[...added,...removed].sort(byTime);
+ return {added,removed,changed,firstChanged:changed[0]??null};
+}

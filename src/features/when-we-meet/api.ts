@@ -28,3 +28,11 @@ export async function postConfirmationUpdate(roomId:string,body:ConfirmUpdateBod
 export async function resendConfirmation(roomId:string){return request<{status:'sent'}>(`${base}/${encodeURIComponent(roomId)}/confirmation/resend`,{});}
 /** Owner only: renames the meeting. Returns the stored (trimmed) title. */
 export async function renameRoom(roomId:string,title:string){return request<{title:string}>(`${base}/${encodeURIComponent(roomId)}`,{action:'rename',title});}
+export type RoomSchedule=Pick<Room,'startDate'|'endDate'|'startTime'|'endTime'|'timezone'>;
+/** Owner only: changes the dates/hours/timezone. The server removes saved availability outside the new window; a confirmed meeting is untouched. */
+export async function updateRoomSchedule(roomId:string,schedule:RoomSchedule){return request<{schedule:RoomSchedule;removedSlots:number}>(`${base}/${encodeURIComponent(roomId)}`,{action:'schedule',...schedule});}
+/** Owner only: deletes the meeting for everyone (the Google Calendar event, if any, is not cancelled). */
+export async function deleteRoom(roomId:string){return request<{deleted:true}>(`${base}/${encodeURIComponent(roomId)}`,{action:'delete'});}
+export type InvitationPreview={title:string;startDate:string;endDate:string;timezone:string;organizerName:string|null};
+/** Token-gated invitation context shown before sign-in; null when the link does not match a meeting. */
+export async function loadInvitationPreview(roomId:string,token:string,signal?:AbortSignal){try{return (await request<{preview:InvitationPreview}>(`${base}/${encodeURIComponent(roomId)}/invitation`,{token},{signal})).preview}catch(error){if(error instanceof ApiError&&error.status===404)return null;throw error}}

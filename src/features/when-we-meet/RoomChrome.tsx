@@ -7,6 +7,8 @@ import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,DialogTitle} from '@/components/ui/dialog';
 import {DropdownMenu,DropdownMenuContent,DropdownMenuItem,DropdownMenuTrigger} from '@/components/ui/dropdown-menu';
+import {AlertDialog,AlertDialogAction,AlertDialogCancel,AlertDialogContent,AlertDialogDescription,AlertDialogFooter,AlertDialogHeader,AlertDialogTitle} from '@/components/ui/alert-dialog';
+import {Badge} from '@/components/ui/badge';
 import {compactRange,confirmedChip,MEETING_TOASTS,resendQuestion} from './meeting-copy.mjs';
 import {resendFailure,type ConfirmationRecordData} from './confirm-tab.mjs';
 import './room-chrome.css';
@@ -73,14 +75,14 @@ export function RoomHeader({title,startDate,endDate,timezone,confirmation,offlin
   <h1>{title}</h1>
    <div className="wwm-header-actions">
     <Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.INVITE_LINK_COPY} onClick={onInvite}><Link2 aria-hidden="true"/><span className="wwm-invite-label">Invite</span></Button>
-    <DropdownMenu modal={false}><DropdownMenuTrigger asChild><Button ref={menuTrigger} type="button" variant="ghost" size="icon" className="wwm-room-menu-trigger" aria-label="Meeting options" data-analytics-label={ANALYTICS_ELEMENTS.MEETING_MENU}><MoreHorizontal aria-hidden="true"/></Button></DropdownMenuTrigger>
+    <DropdownMenu modal={false}><DropdownMenuTrigger asChild><Button ref={menuTrigger} type="button" variant="outline" size="icon" className="wwm-room-menu-trigger" aria-label="Meeting options" data-analytics-label={ANALYTICS_ELEMENTS.MEETING_MENU}><MoreHorizontal aria-hidden="true"/></Button></DropdownMenuTrigger>
      <DropdownMenuContent align="end" className="wwm-room-menu">
       <DropdownMenuItem disabled={settingsDisabled} data-analytics-label={ANALYTICS_ELEMENTS.MEETING_SETTINGS} onSelect={onSettings}>Settings</DropdownMenuItem>
       {resend&&confirmed&&<DropdownMenuItem data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_RESEND} onSelect={askResend}>Resend invitations…</DropdownMenuItem>}
      </DropdownMenuContent>
     </DropdownMenu>
    </div>
-  <p className="wwm-room-meta"><span>{compactRange(startDate,endDate)}<span aria-hidden="true"> · </span>{timezone}</span>{confirmed&&confirmation&&<span className="wwm-room-chip"><Check aria-hidden="true"/>{confirmedChip(confirmation)}</span>}{offline&&<span className="wwm-offline" role="status"><i aria-hidden="true"/>Offline</span>}</p>
-  <Dialog open={asking} onOpenChange={open=>{if(!sending)setAsking(open)}}><DialogContent className="wwm-resend-dialog" showCloseButton={!sending} onCloseAutoFocus={event=>{event.preventDefault();menuTrigger.current?.focus()}}><DialogHeader><DialogTitle>{resendQuestion(count)}</DialogTitle><DialogDescription>Google Calendar sends the same invitation again.</DialogDescription></DialogHeader><DialogFooter><Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.DIALOG_CANCEL} disabled={sending} onClick={()=>setAsking(false)}>Cancel</Button><Button type="button" data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_RESEND_SEND} disabled={sending} aria-busy={sending||undefined} onClick={()=>void sendResend()}>{sending?'Resending…':'Resend'}</Button></DialogFooter></DialogContent></Dialog>
+  <p className="wwm-room-meta"><span>{compactRange(startDate,endDate)}<span aria-hidden="true"> · </span>{timezone}</span>{confirmed&&confirmation&&<Badge variant="outline" className="wwm-room-chip"><Check aria-hidden="true"/>{confirmedChip(confirmation)}</Badge>}{offline&&<span className="wwm-offline" role="status"><i aria-hidden="true"/>Offline</span>}</p>
+  <AlertDialog open={asking} onOpenChange={open=>{if(!sending)setAsking(open)}}><AlertDialogContent className="wwm-resend-dialog" onCloseAutoFocus={event=>{event.preventDefault();menuTrigger.current?.focus()}}><AlertDialogHeader><AlertDialogTitle>{resendQuestion(count)}</AlertDialogTitle><AlertDialogDescription>Google Calendar sends the same invitation again.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel data-analytics-label={ANALYTICS_ELEMENTS.DIALOG_CANCEL} disabled={sending}>Cancel</AlertDialogCancel><AlertDialogAction data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_RESEND_SEND} disabled={sending} aria-busy={sending||undefined} onClick={event=>{event.preventDefault();void sendResend()}}>{sending?'Resending…':'Resend'}</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
  </header>;
 }

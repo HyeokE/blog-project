@@ -1,8 +1,10 @@
 // Read-only projection of persisted responses. This module never reads editor state.
-import {participantColor} from './participant-palette.mjs';
+import {assignParticipantColors} from './participant-palette.mjs';
 const halfHour=30*60*1000;
 const endOf=slot=>new Date(Date.parse(slot.id)+halfHour).toISOString();
 const compare=(a,b)=>a<b?-1:a>b?1:0;
+// Natural, case-insensitive name order: Participant 2 sorts before Participant 10.
+const names=new Intl.Collator('en',{numeric:true,sensitivity:'base'});
 
 /** Room-start anchored weeks; dates are inclusive room dates, not locale weeks. */
 export function weekWindow(dates,requestedWeek=0,selectedDay=null){
@@ -39,17 +41,18 @@ export function projectWeeklyTimeline({slots,responses,currentUserId}){
     if(seen.has(response.userId))throw new Error(`Duplicate response user ID: ${response.userId}`);
     seen.add(response.userId);
   }
-  const sorted=[...responses].sort((a,b)=>compare(a.displayName.toLocaleLowerCase(),b.displayName.toLocaleLowerCase())||compare(a.userId,b.userId));
+  const sorted=[...responses].sort((a,b)=>names.compare(a.displayName,b.displayName)||compare(a.userId,b.userId));
   const nameCounts=new Map();
   for(const response of sorted){const key=response.displayName.toLocaleLowerCase();nameCounts.set(key,(nameCounts.get(key)||0)+1)}
   const nameOrdinals=new Map();
+  const palette=assignParticipantColors(sorted.map(response=>response.userId),currentUserId);
   const rows=sorted.map(response=>{
     const key=response.displayName.toLocaleLowerCase();
     const ordinal=(nameOrdinals.get(key)||0)+1;nameOrdinals.set(key,ordinal);
     const isCurrentUser=response.userId===currentUserId;
     const label=nameCounts.get(key)>1?`${response.displayName} (${isCurrentUser?'You':ordinal})`:isCurrentUser?`${response.displayName} (You)`:response.displayName;
     const selected=new Set(response.slots);
-    return {userId:response.userId,displayName:response.displayName,label,isCurrentUser,color:participantColor(response.userId,currentUserId),slotIds:ordered.filter(slot=>selected.has(slot.id)).map(slot=>slot.id),runs:runsFor(ordered,selected)};
+    return {userId:response.userId,displayName:response.displayName,label,isCurrentUser,color:palette.get(response.userId).color,mark:palette.get(response.userId).mark,slotIds:ordered.filter(slot=>selected.has(slot.id)).map(slot=>slot.id),runs:runsFor(ordered,selected)};
   });
   const selectedByRow=sorted.map(response=>new Set(response.slots));
   const countById={};

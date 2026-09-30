@@ -9,7 +9,7 @@ test('today is calendar date in selected zone, not device or UTC date',()=>{
  assert.equal(todayInTimezone('Mars/Olympus',now),null);
 });
 test('required whitespace and missing dates identify individual fields',()=>{
- assert.deepEqual(creationErrors({...valid,title:' ',name:' ',startDate:'',endDate:''},now),{title:'Enter a title (up to 100 characters).',dates:'Choose a start and end date.',name:'Enter your name (up to 50 characters).'});
+ assert.deepEqual(creationErrors({...valid,title:' ',name:' ',startDate:'',endDate:''},now),{title:'Enter a title',dates:'Choose a start and end date.',name:'Enter your name (up to 50 characters).'});
 });
 test('length limits and invalid timezone are field-specific',()=>{
  const errors=creationErrors({...valid,title:'x'.repeat(101),name:'x'.repeat(51),timezone:'Mars/Olympus'},now);

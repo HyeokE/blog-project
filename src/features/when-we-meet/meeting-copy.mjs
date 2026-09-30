@@ -46,14 +46,15 @@ export function rsvpSummary(counts){
 
 /** Compact autosave status shown beside the tabs. */
 export function saveStatus({state,dirty,edited}){
- if(state==='error')return {tone:'error',text:'Couldn’t save'};
+ if(state==='error')return {tone:'error',text:'Not saved'};
  if(state==='pending'||state==='saving'||dirty)return {tone:'saving',text:'Saving…'};
  if(!edited)return {tone:'idle',text:''};
  return {tone:'saved',text:'Saved'};
 }
 
 export const fillButtonLabel=count=>`Fill ${plural(count,'slot')}`;
-export const fillToast=count=>`Filled ${plural(count,'half-hour')}`;
+/** `Filled 15 half-hours`; with removals `Filled 15 · removed 3`. */
+export const fillToast=(count,removed=0)=>removed>0?`Filled ${count} · removed ${removed}`:`Filled ${plural(count,'half-hour')}`;
 /** Member line on the confirmed card. isRecipient: true / false / null (unknown: the server could not tell). "Organizer" is the placeholder name. */
 export function memberInvitedLine(isRecipient,organizer){
  const name=organizer&&organizer!=='Organizer'?organizer:null;
@@ -72,4 +73,47 @@ export const MEETING_TOASTS=Object.freeze({
  editSaved:'Changes saved · attendees notified',
  resent:'Invitations re-sent',
  saveFailed:'Couldn’t save your times',
+ scheduleSaved:'Dates and times updated',
+ deleted:'Meeting deleted',
+});
+
+/** Best-times row: `4/5 available · missing: Taylor`, or `Everyone available`. */
+export function bestTimeLine({count,total,missing}){return count===total?'Everyone available':`${count}/${total} available · missing: ${missing.join(', ')}`}
+/** `Wed, Sep 30 · 10:00–11:00` — the one date+time format for Review, Edit and the confirmed card. */
+export function dayTime({date,start,end}){return [shortDay(date),start&&end?`${start}–${end}`:''].filter(Boolean).join(' · ')}
+
+const CONFIRMED_STAYS='The confirmed time and its invitations stay as they are.';
+/** Settings warning before saving a narrower schedule. Rule: availability outside the window is removed; a confirmed meeting is untouched. */
+export function scheduleWarning({removedSlots,people},confirmed){
+ const lost=removedSlots>0?`${plural(removedSlots,'saved half-hour')} from ${people.join(', ')} ${removedSlots===1?'falls':'fall'} outside the new times and will be removed.`:'';
+ return [lost,confirmed?CONFIRMED_STAYS:''].filter(Boolean).join(' ');
+}
+export function deleteMeetingCopy(title,confirmed){
+ return {title:`Delete ${title}?`,description:`Everyone loses access to this meeting and its saved availability. This can’t be undone.${confirmed?' The Google Calendar event isn’t cancelled; cancel it in Google Calendar if needed.':''}`};
+}
+/** Room load error: `Couldn’t load Team coffee` (or `this meeting` before the title is known). */
+export const loadErrorTitle=title=>`Couldn’t load ${title||'this meeting'}`;
+/** Invitation landing: `Organized by Alex`. */
+export const organizedBy=name=>name?`Organized by ${name}`:'';
+
+export const MEETING_COPY=Object.freeze({
+ titleLabel:'Title',
+ titlePlaceholder:'e.g. Team coffee',
+ titleError:'Enter a title',
+ peopleHeading:'People',
+ organizerBadge:'Organizer',
+ reviewDescription:'Check the exact time and recipients before sending invitations.',
+ send:'Confirm & send invitations',
+ sendRetry:'Try again',
+ noLongerWorks:'This time no longer works for everyone',
+ bestTimes:'Best times',
+ scheduleHeading:'Dates and times',
+ deleteMeeting:'Delete meeting',
+ deleteHint:'Removes the meeting and everyone’s availability.',
+ deleteConfirm:'Delete',
+ deleting:'Deleting…',
+ invitationHeading:'Meeting invitation',
+ loadErrorDetail:'Check your connection and try again.',
+ reconnect:'Connect',
+ reconnectPrompt:'Connect Google Calendar to see when you’re free.',
 });
