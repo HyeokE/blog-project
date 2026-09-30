@@ -1,6 +1,12 @@
 .wwm-people{min-height:180px;padding:24px 0}.wwm-people h2{margin:0 0 20px;font-size:20px}.wwm-people ul{list-style:none;margin:0;padding:0}.wwm-people li{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 0;border-top:1px solid var(--craft-rule)}.wwm-people li strong{font-weight:600}.wwm-people-self{margin-left:8px;opacity:.65;font-size:13px}.wwm-people-labels{display:flex;gap:12px;flex-wrap:wrap;font-size:13px;opacity:.75}.wwm-people-skeleton{display:grid;gap:12px}.wwm-people-skeleton span{display:block;width:100%;height:36px;border-radius:4px;background:currentColor;opacity:.12;animation:wwm-people-pulse 1.2s ease-in-out infinite alternate}@keyframes wwm-people-pulse{to{opacity:.05}}@media(max-width:600px){.wwm-people li{align-items:flex-start;flex-direction:column;gap:6px}}@media(prefers-reduced-motion:reduce){.wwm-people-skeleton span{animation:none}}
-/* Round 2: Organizer / You are Craft badges; the status text stays muted. */
-.wwm .wwm-people-labels{opacity:1;align-items:center}
-.wwm .wwm-people-self{opacity:1;margin-left:var(--craft-space-2);font-size:var(--craft-fs-12)}
-.wwm .wwm-people-status{color:var(--craft-muted)}
+/* Status is an icon (label via aria-label/title); "(you)" is muted text; Organizer is the only badge. */
+.wwm .wwm-people{padding-top:var(--craft-space-2)}
+.wwm .wwm-people li{flex-direction:row;align-items:center;gap:var(--craft-space-4);min-height:56px;padding:var(--craft-space-3) 0}
+.wwm .wwm-people li:first-child{border-top:0}
+.wwm .wwm-people-name{display:flex;align-items:center;flex-wrap:wrap;gap:var(--craft-space-2);min-width:0}
+.wwm .wwm-people-name strong{font-size:var(--craft-fs-16);overflow-wrap:anywhere}
+.wwm .wwm-people-self{margin:0;opacity:1;font-size:var(--craft-fs-14);color:var(--craft-muted)}
+.wwm .wwm-people-status{display:inline-flex;flex:none;color:var(--craft-muted)}
+.wwm .wwm-people-status[data-done]{color:var(--craft-ink)}
+.wwm .wwm-people-status svg{width:20px;height:20px}
 .wwm .wwm-people-skeleton [data-slot='skeleton']{display:block;width:100%;height:36px;margin-bottom:var(--craft-space-2)}

@@ -133,8 +133,9 @@
 :root[data-craft] [data-sonner-toaster] [data-sonner-toast].craft-toast{--toast-close-button-start:auto;--toast-close-button-end:var(--craft-space-2);--toast-close-button-transform:none}
 :root[data-craft] [data-sonner-toaster] [data-sonner-toast].craft-toast [data-close-button]{top:0;bottom:0;margin:auto 0;width:var(--craft-h-sm);height:var(--craft-h-sm);border:0;border-radius:var(--craft-radius);background:transparent;color:var(--craft-muted)}
 :root[data-craft] [data-sonner-toast].craft-toast [data-close-button]:hover{background:var(--craft-hover);color:var(--craft-ink)}
-/* Badge: one quiet status chip (Confirmed, Optional, Organizer, Offline). 24px tall, 12px side padding, 12/500, 4px radius. */
+/* Badge: one quiet status chip, 12/500, 4px radius. md (default) = standalone status chip, 24px tall, 12px sides (room header Confirmed). sm = inline tag beside a name or title, 20px tall, 8px sides (Optional, You, list Confirmed). */
 :root[data-craft] [data-slot='badge']{display:inline-flex;align-items:center;gap:var(--craft-space-1);width:auto;height:24px;padding:0 var(--craft-space-3);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:transparent;color:var(--craft-ink);font:var(--craft-fw-medium) var(--craft-fs-12)/18px var(--craft-font);font-variant-numeric:tabular-nums;white-space:nowrap;box-shadow:none}
+:root[data-craft] [data-slot='badge'][data-size='sm']{height:20px;padding:0 var(--craft-space-2)}
 :root[data-craft] [data-slot='badge'][data-slot='badge'][data-variant='secondary']{color:var(--craft-muted)}
 :root[data-craft] [data-slot='badge'][data-variant='default']{background:var(--craft-ink);border-color:var(--craft-ink);color:var(--craft-on-ink)}
 :root[data-craft] [data-slot='badge'][data-variant='destructive']{border-color:var(--craft-danger);color:var(--craft-danger);background:transparent}

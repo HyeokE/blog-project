@@ -1,6 +1,7 @@
 'use client';
 import {ANALYTICS_ELEMENTS,ANALYTICS_SECTIONS} from '@/constants/analytics';
 import {useCallback,useEffect,useState} from 'react';
+import {CircleCheck,CircleDashed} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import './people-panel.css';
 import {useWwmCopy} from './i18n/WwmI18nProvider';
@@ -28,5 +29,5 @@ export function PeoplePanel({roomId,userId}:{roomId:string;userId?:string}){
   })();
   return()=>controller.abort();
  },[roomId,attempt]);
- return <div className="wwm-people" data-analytics-section={ANALYTICS_SECTIONS.WWM_PEOPLE}><h2>{t('people.heading')}</h2>{error?<Notice tone="error" action={<Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.RETRY} onClick={retry}>{t('common.retry')}</Button>}>{t('people.loadFailed')}</Notice>:people===null?<div aria-label={t('people.loading')} role="status" className="wwm-people-skeleton"><Skeleton/><Skeleton/><Skeleton/></div>:people.length===0?<p>{t('people.empty')}</p>:<ul>{people.map(person=><li key={person.userId}><div><strong>{person.displayName}</strong>{person.userId===userId&&<Badge variant="secondary" className="wwm-people-self">{t('common.you')}</Badge>}</div><div className="wwm-people-labels">{person.isAdmin&&<Badge variant="outline">{t('common.organizer')}</Badge>}<span className="wwm-people-status">{person.hasAvailability?t('people.availabilityAdded'):t('people.noAvailability')}</span></div></li>)}</ul>}</div>;
+ return <div className="wwm-people" data-analytics-section={ANALYTICS_SECTIONS.WWM_PEOPLE}><h2 className="wwm-sr-only">{t('people.heading')}</h2>{error?<Notice tone="error" action={<Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.RETRY} onClick={retry}>{t('common.retry')}</Button>}>{t('people.loadFailed')}</Notice>:people===null?<div aria-label={t('people.loading')} role="status" className="wwm-people-skeleton"><Skeleton/><Skeleton/><Skeleton/></div>:people.length===0?<p>{t('people.empty')}</p>:<ul>{people.map(person=>{const status=person.hasAvailability?t('people.availabilityAdded'):t('people.noAvailability');const Icon=person.hasAvailability?CircleCheck:CircleDashed;return <li key={person.userId}><div className="wwm-people-name"><strong>{person.displayName}</strong>{person.userId===userId&&<span className="wwm-people-self">({t('common.you')})</span>}{person.isAdmin&&<Badge variant="outline" size="sm">{t('common.organizer')}</Badge>}</div><span className="wwm-people-status" data-done={person.hasAvailability||undefined} role="img" aria-label={status} title={status}><Icon aria-hidden="true"/></span></li>})}</ul>}</div>;
 }

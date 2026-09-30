@@ -102,7 +102,7 @@ export function ConfirmationPanel({room,role,members=[],slots,responses,currentU
   {owner&&edit&&!editMode&&edit.status==='failed'&&edit.error&&<Notice tone="error">{edit.error}</Notice>}
   {owner&&roster.length>0&&<section className="wwm-confirmed-people" aria-labelledby="wwm-confirmed-people-title">
    <div className="wwm-confirmed-people-head"><h3 id="wwm-confirmed-people-title">{t('confirmed.attendees')}</h3>{replies&&<p>{rsvpSummary(replies)}</p>}</div>
-   <ul>{roster.map(row=><li key={row.id}><span className="wwm-confirmed-name">{row.name}{row.optional&&<Badge variant="outline" className="wwm-confirmed-tag">{t('common.optional')}</Badge>}</span>{row.rsvp&&<span className="wwm-confirmed-rsvp" data-rsvp={row.rsvp}>{RSVP_LABELS[row.rsvp]}</span>}</li>)}</ul>
+   <ul>{roster.map(row=><li key={row.id}><span className="wwm-confirmed-name">{row.name}{row.optional&&<Badge variant="outline" size="sm" className="wwm-confirmed-tag">{t('common.optional')}</Badge>}</span>{row.rsvp&&<span className="wwm-confirmed-rsvp" data-rsvp={row.rsvp}>{RSVP_LABELS[row.rsvp]}</span>}</li>)}</ul>
   </section>}
  </Card>;
  // Under a confirmed meeting the grid is reference only: folded away until asked for.

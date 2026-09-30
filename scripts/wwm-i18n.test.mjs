@@ -35,7 +35,7 @@ test('translator interpolates, pluralises and falls back to English for unknown 
  assert.equal(t('create.readyTitle',{title:'Team coffee'}),'Team coffee is ready');
  assert.equal(t('fill.button',{count:1}),'Fill 1 slot');
  assert.equal(t('fill.button',{count:3}),'Fill 3 slots');
- assert.equal(k('fill.button',{count:3}),'3칸 채우기');
+ assert.equal(k('fill.button',{count:3}),'3칸 불러오기');
  assert.equal(t('grid.savedResponses',{count:1}),'1 saved response');
  assert.equal(createWwmTranslator('fr')('common.cancel'),'Cancel');
  assert.throws(()=>t('missing.key'),/missing\.key/);

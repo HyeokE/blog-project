@@ -79,7 +79,7 @@
   "picker": {
     "chooseDates": "날짜 고르기",
     "chooseMeetingDates": "모임 날짜 고르기",
-    "chooseDatesToFill": "채울 날짜 고르기",
+    "chooseDatesToFill": "불러올 날짜 고르기",
     "dateRange": "모임 기간",
     "rangeGuidance": "시작 날짜를 고르고, 14일 안에서 끝 날짜를 골라주세요. 시작보다 앞 날짜를 누르면 처음부터 다시 골라요. 끝 날짜를 고르면 바로 저장되고, Esc를 누르면 이전 기간이 그대로 남아요.",
     "chooseStart": "시작 날짜를 골라주세요.",
@@ -141,10 +141,10 @@
     "previousDays": "이전 날짜",
     "nextDays": "다음 날짜",
     "legend": "참여자 색",
-    "noResponses": "아직 시간을 알려준 사람이 없어요",
+    "noResponses": "아직 입력한 사람이 없어요",
     "savedResponses": {
-      "one": "{count}명이 알려줬어요",
-      "other": "{count}명이 알려줬어요"
+      "one": "{count}명이 입력했어요",
+      "other": "{count}명이 입력했어요"
     },
     "dragHint": "하루 안에서 끌어서 시간을 골라주세요",
     "selected": "고름",
@@ -172,26 +172,26 @@
     "showEarlier": "{from}–{to} 펼치기"
   },
   "fill": {
-    "trigger": "Google 캘린더로 채우기",
+    "trigger": "Google 캘린더에서 빈 일정 불러오기",
     "checking": "캘린더를 보고 있어요",
     "intro": "캘린더에서 비어 있는 시간을 먼저 보여드릴게요.",
     "onlyTheseDates": "고른 날짜만 바뀌어요",
     "none": "이 날짜에는 비어 있는 시간이 없어요",
     "button": {
-      "one": "{count}칸 채우기",
-      "other": "{count}칸 채우기"
+      "one": "{count}칸 불러오기",
+      "other": "{count}칸 불러오기"
     },
     "toast": {
-      "one": "{count}칸을 채웠어요",
-      "other": "{count}칸을 채웠어요"
+      "one": "{count}칸을 불러왔어요",
+      "other": "{count}칸을 불러왔어요"
     },
-    "toastWithRemoved": "{count}칸을 채우고 {removed}칸을 뺐어요",
+    "toastWithRemoved": "{count}칸을 불러오고 {removed}칸을 뺐어요",
     "undo": "되돌리기",
     "connect": "연결하기",
     "connectGoogleCalendar": "Google 캘린더 연결하기",
     "connectPrompt": "Google 캘린더를 연결하면 비어 있는 시간을 바로 볼 수 있어요.",
     "calendarError": "캘린더를 읽지 못했어요. 다시 시도해주세요.",
-    "connected": "Google 캘린더를 연결했어요. 이제 캘린더로 채울 수 있어요.",
+    "connected": "Google 캘린더를 연결했어요. 이제 빈 일정을 불러올 수 있어요.",
     "denied": "Google 캘린더를 연결하지 않았어요. 고른 시간은 그대로예요.",
     "permissionMissing": "Google 캘린더 권한에 체크하고 다시 연결해주세요",
     "connectFailed": "Google 캘린더를 연결하지 못했어요. 다시 시도해주세요.",
