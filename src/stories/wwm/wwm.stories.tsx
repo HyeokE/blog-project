@@ -8,16 +8,17 @@ import {InvitationLanding} from '@/features/when-we-meet/InvitationLanding';
 import {WeeklyAvailability} from '@/features/when-we-meet/WeeklyAvailability';
 import {makeSlots} from '@/features/when-we-meet/domain.mjs';
 import {MockAccountProvider,PERSON} from './mock-account';
-import {state,type Room,type Response} from './mock-api';
+import {state,calendar,type Room,type Response,type ConfirmationPayload} from './mock-api';
 import {MeetingRowsSkeleton,RoomSkeleton} from '@/features/when-we-meet/ServerSkeletons';
 import ServerSectionBoundary from '@/features/when-we-meet/ServerSectionBoundary';
 import SiteError from '@/components/site-error/SiteError';
 import {saveDraft} from '@/features/when-we-meet/draft.mjs';
+import {todayInTimezone} from '@/features/when-we-meet/creation-validation.mjs';
 import {expect,waitFor} from 'storybook/test';
 const id='22222222-2222-4222-8222-222222222222';
-const room:Room={id,title:'Team coffee',owner_id:PERSON.id,role:'ADMIN',start_date:'2026-09-30',end_date:'2026-10-02',start_time:'00:00',end_time:'24:00',timezone:'Asia/Seoul',invite_token:'storybook-only'};
-const slots=makeSlots({title:room.title,startDate:room.start_date,endDate:room.end_date,startTime:room.start_time,endTime:room.end_time,timezone:room.timezone}) as {id:string;utc:string;date:string;time:string}[];
-const rows:Response[]=[{user_id:PERSON.id,display_name:'Alex Sample',slots:slots.slice(12,15).map(x=>x.id)},{user_id:'33333333-3333-4333-8333-333333333333',display_name:'Morgan Sample',slots:slots.slice(12,14).map(x=>x.id)}];
+const room:Room={id,title:'Team coffee',ownerId:PERSON.id,role:'ADMIN',startDate:'2026-09-30',endDate:'2026-10-02',startTime:'00:00',endTime:'24:00',timezone:'Asia/Seoul',inviteToken:'storybook-only'};
+const slots=makeSlots({title:room.title,startDate:room.startDate,endDate:room.endDate,startTime:room.startTime,endTime:room.endTime,timezone:room.timezone}) as {id:string;utc:string;date:string;time:string}[];
+const rows:Response[]=[{userId:PERSON.id,displayName:'Alex Sample',slots:slots.slice(12,15).map(x=>x.id)},{userId:'33333333-3333-4333-8333-333333333333',displayName:'Morgan Sample',slots:slots.slice(12,14).map(x=>x.id)}];
 const meta={title:'When We Meet/Actual screens',component:WhenWeMeet,parameters:{nextjs:{appDirectory:true}}} satisfies Meta<typeof WhenWeMeet>;
 export default meta;
 type Story=StoryObj<typeof meta>;
@@ -38,7 +39,7 @@ export const RoomEveryone:Story={...RoomAvailability,play:async({canvasElement})
 export const RoomPeople:Story={...RoomAvailability,play:async({canvasElement})=>{const c=within(canvasElement);await userEvent.click(c.getByRole('tab',{name:'People'}));await waitFor(()=>expect(c.getByText('Taylor Sample')).toBeVisible());await expect(c.getByText('No availability yet')).toBeVisible();}};
 export const RoomSettings:Story={...RoomAvailability,play:async({canvasElement})=>{await userEvent.click(within(canvasElement).getByRole('button',{name:'Settings'}));}};
 export const RoomNoResponses:Story={render:()=> <Frame><WhenWeMeet roomId={id} initialRoom={{room,responses:[],userId:PERSON.id}}/></Frame>};
-function Calendar({density,readOnly=false}:{density:'empty'|'single'|'double'|'many';readOnly?:boolean}){const [mine,setMine]=useState<string[]>(density==='empty'?[]:slots.slice(density==='many'?0:12,density==='many'?48:12+(density==='single'?1:2)).map(s=>s.id));return <div className="wwm wwm-room"><div className="wwm-shell"><section className="wwm-card wwm-availability"><WeeklyAvailability startDate={room.start_date} endDate={room.end_date} timezone={room.timezone} slots={slots} responses={density==='empty'?[]:density==='many'?Array.from({length:15},(_,i)=>({user_id:`person-${i}`,display_name:`Participant ${i+1}`,slots:slots.slice(12,18).map(s=>s.id)})):rows} currentUserId={PERSON.id} mine={mine} dirty={false} onToggle={slot=>setMine(old=>old.includes(slot)?old.filter(x=>x!==slot):[...old,slot])} readOnly={readOnly}/></section></div></div>}
+function Calendar({density,readOnly=false}:{density:'empty'|'single'|'double'|'many';readOnly?:boolean}){const [mine,setMine]=useState<string[]>(density==='empty'?[]:slots.slice(density==='many'?0:12,density==='many'?48:12+(density==='single'?1:2)).map(s=>s.id));return <div className="wwm wwm-room"><div className="wwm-shell"><section className="wwm-card wwm-availability"><WeeklyAvailability startDate={room.startDate} endDate={room.endDate} timezone={room.timezone} slots={slots} responses={density==='empty'?[]:density==='many'?Array.from({length:15},(_,i)=>({userId:`person-${i}`,displayName:`Participant ${i+1}`,slots:slots.slice(12,18).map(s=>s.id)})):rows} currentUserId={PERSON.id} mine={mine} dirty={false} onToggle={slot=>setMine(old=>old.includes(slot)?old.filter(x=>x!==slot):[...old,slot])} readOnly={readOnly}/></section></div></div>}
 export const EmptyCalendar:Story={render:()=> <Frame><Calendar density="empty"/></Frame>};
 export const SingleHalfHour:Story={render:()=> <Frame><Calendar density="single"/></Frame>};
 export const DoubleHalfHour:Story={render:()=> <Frame><Calendar density="double"/></Frame>};
@@ -59,7 +60,10 @@ export const ListLoadError:Story={render:()=> <Frame><WhenWeMeet meetingsSection
 export const RoomLoadError:Story={render:()=> <Frame><main className="wwm"><ServerSectionBoundary><BrokenSection/></ServerSectionBoundary></main></Frame>};
 export const RouteNotFound:Story={render:()=> <Frame><SiteError status="404"/></Frame>};
 export const RouteServerError:Story={render:()=> <Frame><SiteError status="500" retry={<button onClick={()=>{}}>다시 시도</button>}/></Frame>};
-const seeded=()=>saveDraft(sessionStorage,{form:{title:'Team coffee',startDate:'2026-09-30',endDate:'2026-10-02',startTime:'00:00',endTime:'24:00',timezone:'Asia/Seoul'},name:'Alex Sample'});
+// Draft dates are relative to today in the room timezone, so Create stories never hit "dates in the past".
+const plusDays=(iso:string,days:number)=>new Date(Date.parse(`${iso}T00:00:00Z`)+days*86_400_000).toISOString().slice(0,10);
+const draftDates=()=>{const start=plusDays(todayInTimezone('Asia/Seoul')||new Date().toISOString().slice(0,10),1);return {startDate:start,endDate:plusDays(start,2)}};
+const seeded=()=>saveDraft(sessionStorage,{form:{title:'Team coffee',...draftDates(),startTime:'00:00',endTime:'24:00',timezone:'Asia/Seoul'},name:'Alex Sample'});
 const submitCreate=async(ctx:Parameters<NonNullable<Story['play']>>[0])=>{await CreateDialog.play?.(ctx);await userEvent.click(within(document.body).getByRole('button',{name:'Create room'}));};
 export const RestoredDraft:Story={...CreateDialog,beforeEach:seeded};
 export const CreateSubmitting:Story={...EmptyMeetings,beforeEach:()=>{seeded();state.create='pending';},play:submitCreate};
@@ -80,3 +84,36 @@ export const NameRequiredToJoin:Story={render:()=> <Invite signedIn/>};
 export const CalendarMobile:Story={...RoomAvailability,globals:{viewport:{value:'mobile',isRotated:false}}};
 export const CalendarDark:Story={...RoomAvailability,globals:{theme:'dark'}};
 
+// Calendar autofill (Availability tab). Synthetic busy previews; Apply only edits the local draft + mock autosave.
+const openFill=async({canvasElement}:Parameters<NonNullable<Story['play']>>[0])=>{const c=within(canvasElement);await userEvent.click(c.getByRole('button',{name:'Fill from Google Calendar'}));};
+const freeIds=slots.filter(s=>['10:00','10:30','11:00','14:00','14:30'].includes(s.time)).map(s=>s.id);
+export const AutofillPreview:Story={...RoomAvailability,beforeEach:()=>{calendar.busyIds=freeIds;calendar.slotCount=slots.length;},play:async(ctx)=>{await openFill(ctx);await waitFor(()=>expect(within(ctx.canvasElement).getByText(/15 of 144 half-hours free/)).toBeVisible());}};
+export const AutofillApplied:Story={...AutofillPreview,play:async(ctx)=>{await AutofillPreview.play?.(ctx);await userEvent.click(within(ctx.canvasElement).getByRole('button',{name:'Apply'}));await waitFor(()=>expect(within(ctx.canvasElement).getByText(/All changes saved/)).toBeVisible());await expect(within(ctx.canvasElement).queryByRole('button',{name:'Apply'})).not.toBeInTheDocument();}};
+export const AutofillZero:Story={...RoomAvailability,beforeEach:()=>{calendar.busyIds=[];calendar.slotCount=slots.length;},play:async(ctx)=>{await openFill(ctx);await waitFor(()=>expect(within(ctx.canvasElement).getByText(/No free half-hours/)).toBeVisible());await expect(within(ctx.canvasElement).queryByRole('button',{name:'Apply'})).not.toBeInTheDocument();}};
+export const AutofillReconnect:Story={...RoomAvailability,beforeEach:()=>{calendar.busy='reconnect';},play:async(ctx)=>{await openFill(ctx);await waitFor(()=>expect(within(ctx.canvasElement).getByRole('button',{name:'Connect Google Calendar'})).toBeVisible());}};
+export const AutofillError:Story={...RoomAvailability,beforeEach:()=>{calendar.busy='error';},play:async(ctx)=>{await openFill(ctx);await waitFor(()=>expect(within(ctx.canvasElement).getByRole('button',{name:'Retry'})).toBeVisible());}};
+export const AutofillPending:Story={...RoomAvailability,beforeEach:()=>{calendar.busy='pending';},play:async(ctx)=>{await openFill(ctx);await waitFor(()=>expect(within(ctx.canvasElement).getByRole('button',{name:'Checking calendar…'})).toBeDisabled());}};
+export const AutofillPreviewMobile:Story={...AutofillPreview,globals:{viewport:{value:'mobile',isRotated:false}}};
+export const AutofillPreviewDark:Story={...AutofillPreview,globals:{theme:'dark'}};
+// Confirm tab. Synthetic GET/POST fixtures; the mock POST never creates events or email.
+const MORGAN='33333333-3333-4333-8333-333333333333';
+const review:NonNullable<ConfirmationPayload['review']>={calendarConnected:true,organizerEmail:'alex@example.test',attendees:[{userId:PERSON.id,name:'Alex Sample',email:'alex@example.test',hasAvailability:true,isOrganizer:true},{userId:MORGAN,name:'Morgan Sample',email:'morgan@example.test',hasAvailability:true,isOrganizer:false}]};
+const confirmed=(status:string)=>({status,title:'Team coffee',startsAt:slots[12].id,endsAt:new Date(Date.parse(slots[13].id)+1800000).toISOString(),timezone:'Asia/Seoul',googleEventUrl:status==='confirmed'?'https://calendar.google.com/calendar/event?eid=storybook':null});
+const openConfirm=async({canvasElement}:Parameters<NonNullable<Story['play']>>[0])=>{const c=within(canvasElement);await userEvent.click(c.getByRole('tab',{name:'Confirm'}));};
+const pickAndReview=async(ctx:Parameters<NonNullable<Story['play']>>[0])=>{await openConfirm(ctx);const c=within(ctx.canvasElement);const cell=await waitFor(()=>c.getByRole('button',{name:/^2026\.09\.30 06:00–06:30/}));await userEvent.click(cell);await userEvent.click(c.getByRole('button',{name:'Review confirmation'}));await waitFor(()=>expect(within(document.body).getByRole('dialog')).toBeVisible());};
+export const ConfirmOwnerDraft:Story={...RoomAvailability,beforeEach:()=>{calendar.confirmation={confirmation:null,review};},play:async(ctx)=>{await openConfirm(ctx);await waitFor(()=>expect(within(ctx.canvasElement).getByRole('heading',{name:'Confirm a time'})).toBeVisible());}};
+export const ConfirmOwnerReview:Story={...ConfirmOwnerDraft,play:pickAndReview};
+// Keyboard path: Enter on a half-hour sets the start, Enter on another sets the end; the fields and action bar follow.
+const selectRange=async(ctx:Parameters<NonNullable<Story['play']>>[0])=>{await openConfirm(ctx);const c=within(ctx.canvasElement);const from=await waitFor(()=>c.getByRole('button',{name:/^2026\.09\.30 06:00–06:30/}));from.focus();await userEvent.keyboard('{Enter}');c.getByRole('button',{name:/^2026\.09\.30 07:00–07:30/}).focus();await userEvent.keyboard('{Enter}');await waitFor(()=>expect(c.getByText('2026.09.30 · 06:00–07:30')).toBeVisible());await expect(c.getByRole('button',{name:'Start, 06:00'})).toBeVisible();};
+export const ConfirmOwnerSelectedRange:Story={...ConfirmOwnerDraft,play:selectRange};
+export const ConfirmOwnerSelectedRangeDark:Story={...ConfirmOwnerSelectedRange,globals:{theme:'dark'}};
+export const ConfirmCalendarDisconnected:Story={...RoomAvailability,beforeEach:()=>{calendar.confirmation={confirmation:null,review:{...review,calendarConnected:false}};},play:pickAndReview};
+export const ConfirmReconciling:Story={...ConfirmOwnerDraft,beforeEach:()=>{calendar.confirmation={confirmation:null,review};calendar.post='reconciling';},play:async(ctx)=>{await pickAndReview(ctx);await userEvent.click(within(document.body).getByRole('button',{name:'Confirm & send invitations'}));await waitFor(()=>expect(within(document.body).getAllByRole('button',{name:'Check again'})[0]).toBeVisible());}};
+export const ConfirmSendFailed:Story={...ConfirmOwnerDraft,beforeEach:()=>{calendar.confirmation={confirmation:null,review};calendar.post='google';},play:async(ctx)=>{await pickAndReview(ctx);await userEvent.click(within(document.body).getByRole('button',{name:'Confirm & send invitations'}));await waitFor(()=>expect(within(document.body).getAllByText(/Nothing was sent/)[0]).toBeVisible());}};
+export const ConfirmConfirmed:Story={...RoomAvailability,beforeEach:()=>{calendar.confirmation={confirmation:confirmed('confirmed'),review};},play:async(ctx)=>{await openConfirm(ctx);await waitFor(()=>expect(within(ctx.canvasElement).getByRole('heading',{name:'Confirmed meeting'})).toBeVisible());}};
+export const ConfirmMemberPending:Story={render:()=> <Frame><WhenWeMeet roomId={id} initialRoom={{room:{...room,ownerId:MORGAN,role:'MEMBER'},responses:rows,userId:PERSON.id}}/></Frame>,beforeEach:()=>{calendar.confirmation={confirmation:confirmed('pending'),review:null};},play:async(ctx)=>{await openConfirm(ctx);await waitFor(()=>expect(within(ctx.canvasElement).getByText(/organizer is sending invitations/)).toBeVisible());}};
+export const ConfirmLoading:Story={...RoomAvailability,beforeEach:()=>{calendar.confirmationLoad='pending';},play:openConfirm};
+export const ConfirmLoadError:Story={...RoomAvailability,beforeEach:()=>{calendar.confirmationLoad='failure';},play:async(ctx)=>{await openConfirm(ctx);await waitFor(()=>expect(within(ctx.canvasElement).getByRole('button',{name:'Retry'})).toBeVisible());}};
+export const ConfirmOwnerReviewMobile:Story={...ConfirmOwnerReview,globals:{viewport:{value:'mobile',isRotated:false}}};
+export const ConfirmOwnerDraftDark:Story={...ConfirmOwnerDraft,globals:{theme:'dark'}};
+export const ConfirmOwnerReviewDark:Story={...ConfirmOwnerReview,globals:{theme:'dark'}};

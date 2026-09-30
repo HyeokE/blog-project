@@ -14,3 +14,23 @@ test('calendar payload never exposes guest addresses to guests',()=>{const valid
 test('stable bounded event IDs and claims never authorize duplicate sends',()=>{const valid=validateConfirmation(input,room,members),hash=confirmationFingerprint(valid),id=confirmationEventId(room.id,1);assert.match(id,/^[0-9a-v]{5,1024}$/);assert.equal(confirmationEventId(room.id,1),id);assert.notEqual(confirmationEventId(room.id,2),id);assert.notEqual(confirmationFingerprint({...valid,title:'Other'}),hash);assert.equal(claimDecision(null,hash),'reserve');assert.equal(claimDecision({status:'pending',payloadHash:hash},hash),'reconcile');assert.equal(claimDecision({status:'failed',payloadHash:hash},hash),'reconcile');assert.equal(claimDecision({status:'confirmed',payloadHash:hash},hash),'existing');assert.equal(claimDecision({status:'pending',payloadHash:'other'},hash),'conflict');});
 test('migration gates owner email resolver and durable reservations',()=>{const sql=readFileSync(new URL('../supabase/migrations/20260930000200_wwm_confirmation.sql',import.meta.url),'utf8');assert.match(sql,/auth\.users/);assert.match(sql,/owner_id\s*=\s*auth\.uid\(\)/);assert.match(sql,/room_id uuid primary key/i);assert.match(sql,/google_event_id text not null unique/i);assert.match(sql,/row level security/i);assert.doesNotMatch(sql,/grant\s+select\s+on\s+auth\.users/i);});
 test('reservation and sanitized read RPCs enforce ownership and immutable claim',()=>{const sql=readFileSync(new URL('../supabase/migrations/20260930000200_wwm_confirmation.sql',import.meta.url),'utf8');assert.match(sql,/create function public\.wwm_reserve_confirmation\(/i);assert.match(sql,/create function public\.wwm_confirmation_status\(/i);assert.match(sql,/for update/i);assert.match(sql,/owner_id\s*=\s*auth\.uid\(\)/i);assert.match(sql,/payload_hash\s*=\s*p_payload_hash/i);assert.match(sql,/attendee_snapshot/i);assert.match(sql,/excluded_snapshot/i);assert.match(sql,/grant execute on function public\.wwm_reserve_confirmation\(/i);assert.doesNotMatch(sql,/grant\s+(?:insert|update|select)\s+on\s+public\.wwm_confirmations/i);assert.doesNotMatch(sql,/create function public\.wwm_(?:confirm|finalize)_confirmation\(/i);});
+test('optional attendees are marked optional in the Google payload and change the fingerprint',()=>{
+ const [a,b]=members.map(m=>m.userId);
+ const required=validateConfirmation(input,room,members);
+ const withOptional=validateConfirmation({...input,optional:[b]},room,members);
+ assert.deepEqual(buildCalendarInsert(withOptional).attendees,[{email:'a@example.com'},{email:'b@example.com',optional:true}]);
+ assert.deepEqual(buildCalendarInsert(required).attendees,[{email:'a@example.com'},{email:'b@example.com'}]);
+ assert.notEqual(confirmationFingerprint(required),confirmationFingerprint(withOptional));
+ assert.equal(withOptional.recipients.find(r=>r.userId===a).optional,false);
+});
+test('optional attendees must be recipients, without duplicates',()=>{
+ const [a,b]=members.map(m=>m.userId);
+ assert.throws(()=>validateConfirmation({...input,recipients:[a],excluded:[b],optional:[b]},room,members));
+ assert.throws(()=>validateConfirmation({...input,optional:[a,a]},room,members));
+ assert.throws(()=>validateConfirmation({...input,optional:'x'},room,members));
+});
+test('a renamed event title is trimmed and bounded',()=>{
+ assert.equal(validateConfirmation({...input,title:'  Kickoff lunch  '},room,members).title,'Kickoff lunch');
+ assert.throws(()=>validateConfirmation({...input,title:'x'.repeat(101)},room,members));
+ assert.throws(()=>validateConfirmation({...input,title:'   '},room,members));
+});

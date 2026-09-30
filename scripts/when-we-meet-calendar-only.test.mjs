@@ -10,7 +10,11 @@ test('popup auto-commits completed range without action footer or visible guidan
  assert.match(source,/setOpen\(false\)/);
  assert.doesNotMatch(source,/wwm-range-summary|wwm-range-feedback|Dates · up to 14 days| · \$\{rangeDays\(start,end\)\} days/);
  assert.match(source,/className="sr-only"/);
- assert.match(source,/isRangeEndDisabled\(draft/);
+ assert.match(source,/disabled=\{day=>isRangeDateDisabled\(draft,toISO\(day\),minDate,maxDate\)\}/);
+ assert.match(source,/className="sr-only"[^>]*role="status"[^>]*aria-live="polite"/);
+ assert.match(source,/phase:'start'/,'reopening a committed range awaits a replacement start');
+ const visible=source.replace(/<p className="sr-only"[\s\S]*?<\/p>/g,'');
+ assert.doesNotMatch(visible,/Choose start date|Choose end date|Up to 14 consecutive days|up to 14 days/i);
 });
 test('only end phase disables beyond 14 inclusive days, never earlier restart dates',()=>{
  const pending={start:'2026-09-29',end:'',phase:'end',error:''};

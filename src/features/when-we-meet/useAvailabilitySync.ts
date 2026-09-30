@@ -32,8 +32,8 @@ export function useAvailabilitySync(options:Options){
      const payload=JSON.parse((event as MessageEvent).data) as {userId:string;responses:Response[]};
      if(payload.userId!==userId||!Array.isArray(payload.responses)){events?.close();setConnected(false);return}
      current.current.onResponses(payload.responses);setConnected(true);
-     const self=payload.responses.find(row=>row.user_id===userId);
-     if(self)controller.remote({name:self.display_name,slots:self.slots,version:self.updated_at});
+     const self=payload.responses.find(row=>row.userId===userId);
+     if(self)controller.remote({name:self.displayName,slots:self.slots,version:self.updatedAt});
     }catch{setConnected(false)}
    });
    events.onerror=()=>{if(!disposed)setConnected(false)};
@@ -46,5 +46,7 @@ export function useAvailabilitySync(options:Options){
  const update=useCallback((value:AvailabilitySnapshot)=>{draft.current=value;current.current.onDraft(value);queue.current?.update(value)},[]);
  const toggle=useCallback((id:string)=>{update({...draft.current,slots:toggleSlot(draft.current.slots,id)})},[update]);
  const rename=useCallback((name:string)=>{update({...draft.current,name})},[update]);
- return {state,connected,message,toggle,rename,retry:()=>queue.current?.retry()};
+ // Whole-selection replacement (e.g. an applied calendar preview); same draft/autosave path as toggles.
+ const replace=useCallback((slots:string[])=>{update({...draft.current,slots:[...new Set(slots)].sort()})},[update]);
+ return {state,connected,message,toggle,rename,replace,retry:()=>queue.current?.retry()};
 }

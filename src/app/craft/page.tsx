@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import './craft.css';
+import {ANALYTICS_ELEMENTS,ANALYTICS_SECTIONS} from '@/constants/analytics';
 
 export const metadata: Metadata = {
   title: 'Craft | HYEOK.DEV',
@@ -17,8 +18,8 @@ export default function CraftPage() {
           <h1>Craft</h1>
           <p>Small things made to be useful.</p>
         </header>
-        <section aria-label="Projects" className="craft-projects">
-          <Link className="craft-project" href="/craft/when-we-meet">
+        <section aria-label="Projects" className="craft-projects" data-analytics-section={ANALYTICS_SECTIONS.CRAFT_PROJECTS}>
+          <Link className="craft-project" href="/craft/when-we-meet" data-analytics-label={ANALYTICS_ELEMENTS.CRAFT_PROJECT}>
             <span className="craft-project-number" aria-hidden="true">01</span>
             <span className="craft-project-content">
               <strong>When We Meet</strong>

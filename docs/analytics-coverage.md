@@ -1,6 +1,6 @@
 # Analytics coverage
 
-Source audit baseline: 2026-09-29. This report describes authored instrumentation and the static coverage check, not production deployment, successful GA ingestion, or complete browser QA.
+Source audit baseline: 2026-09-29; Craft/When We Meet added 2026-09-30. This report describes authored instrumentation and the static coverage check, not production deployment, successful GA ingestion, or complete browser QA.
 
 ## Route families
 
@@ -19,6 +19,12 @@ The inventory comes from `src/app/**/page.tsx`. The global tracker supplies page
 | `/about-design` | Sweet-home design story and design-picker link; wall controls. |
 | `/2025/about-design`, `/2026/about-design` | Both routes currently export the Cloud design-story component: home and design-archive links. |
 | `/resume`, `/2025/resume`, `/2026/resume` | Server redirects to `/about`, `/2025/about`, `/2026/about` respectively. The destination page is tracked; the redirect has no clickable UI of its own. |
+| `/craft` | Craft project link (`craft_projects` section); Craft account sign-in and account-check retry (`craft_account`). |
+| `/craft/when-we-meet` | Back link, guest sign-in and create entry, owned-meeting links without room IDs (`wwm_meetings`); create dialog form, title/name inputs, date range, time range/all-day, timezone picker/search/options, cancel/submit (`wwm_create`); invitation-link copy/done. |
+| `/craft/when-we-meet/[roomId]` | Invitation landing name/join/sign-in (`wwm_invitation`); share, settings form, room tabs with the constant tab key as ID, availability cells and saved-response bars, compact toggle, calendar fill/apply/dismiss/connect, save and section retries (`wwm_room`); people retry (`wwm_people`); confirmation cells, date/time pickers, review, recipient checkboxes, calendar connect, back/send, check-again and event link (`wwm_confirm`). |
+| `/craft/when-we-meet/auth/callback` | OAuth return link after a failed exchange (`wwm_auth`). |
+
+Craft labels are fixed UI names from `ANALYTICS_ELEMENTS`; names, emails, meeting titles and room IDs are never attached as labels or `data-analytics-id`. Explicit labels also stop the tracker from falling back to `aria-label`/text content, which in When We Meet contains participant names and meeting titles. Link URLs and `page_location` still carry the room path, as for every route. The error boundaries (`src/app/error.tsx`, `src/app/global-error.tsx`) and the 404 page render `SiteError`; their retry and home controls are labelled in the `error` section.
 
 Additional retained components are instrumented even where no current route directly renders them: the standalone resume component, portfolio hero/contact/selected-work sections and legacy design archive. Their labels are checked by the same source scan.
 
@@ -38,6 +44,8 @@ The finite exceptions are deliberately narrow:
 
 - `ThemedLink` forwards data attributes through `...props` to Next Link. Its call sites still require labels. `ThumbnailTransition` labels its own rendered ThemedLink and attaches the post ID, so post-card callers do not need duplicate listeners.
 - The Dock's nested `MenuIcon` has an exact instrumented menu-button ancestor, and its underlying DOM implementation is scanned separately. Menu/Search icon labels may be absent only when the icon is decorative and the enclosing control owns the action.
+- Shared primitives that spread caller props carry a constant default that call sites override: `WallBackLink` (`back_link`, overridden by `post_back` on articles) and the shadcn `Input` (`text_input`, overridden by field-specific labels).
+- Storybook stories and fixtures under `src/stories/` (and any `*.stories.*`) are excluded. They are development scaffolding, not shipped product UI; the product components they render are scanned in their own files.
 - A nonsemantic handler containing only `event.stopPropagation()` is a propagation blocker, not a distinct action. Adding any other statement removes that exception.
 - The command search root has one capture handler that only reports result counts when an already labeled result is clicked. Its exact conditional/report-only AST shape is checked; it does not represent an additional clickable control.
 

@@ -5,7 +5,14 @@ import {weekWindow,projectWeeklyTimeline} from '../src/features/when-we-meet/wee
 const root=new URL('../src/features/when-we-meet/',import.meta.url);
 const component=()=>readFileSync(new URL('WeeklyAvailability.tsx',root),'utf8');
 const room=()=>readFileSync(new URL('WhenWeMeet.tsx',root),'utf8');
-test('unified availability is wired into the three room tabs',()=>{assert.match(room(),/view==='availability'\?<WeeklyAvailability/);assert.doesNotMatch(room(),/view==='overlap'/);assert.match(room(),/recommendations:'Suggestions',people:'People'/)});
+test('unified availability is wired into the three room tabs',()=>{
+ // Availability (editable) and Everyone (read-only) share one WeeklyAvailability; People renders the roster.
+ const s=room();
+ assert.match(s,/view==='people'\?<PeoplePanel [^>]*\/>:<WeeklyAvailability [^>]*readOnly=\{view==='everyone'\}\/>/);
+ assert.equal((s.match(/<WeeklyAvailability\b/g)||[]).length,1);
+ assert.doesNotMatch(s,/view==='overlap'|Suggestions/);
+ assert.match(s,/availability:'Availability',everyone:'Everyone',people:'People'/);
+});
 test('weekly component separates saved response projection from draft editor',()=>{const s=component();assert.match(s,/projectWeeklyTimeline\(\{slots,responses,currentUserId\}\)/);assert.match(s,/aria-pressed=\{!!selected\}/);assert.match(s,/onToggle\(slot\.id\)/);assert.match(s,/createGesture\(/);assert.match(s,/PopoverContent/)});
 test('seven-day windows and final date remain reachable without dropping empty dates',()=>{const dates=Array.from({length:14},(_,i)=>new Date(Date.UTC(2026,8,30+i)).toISOString().slice(0,10));assert.equal(weekWindow(dates,0).dates.length,7);assert.equal(weekWindow(dates,1).selectedDay,dates[7]);assert.equal(weekWindow(dates,1,dates[13]).selectedDay,dates[13])});
-test('draft cannot change persisted respondent totals',()=>{const slots=[{id:'2026-09-30T00:00:00.000Z',utc:'2026-09-30T00:00:00.000Z',date:'2026-09-30',time:'09:00'}];const result=projectWeeklyTimeline({slots,responses:[{user_id:'other',display_name:'Alex',slots:[slots[0].id]}],currentUserId:'me'});assert.equal(result.responseCount,1);assert.equal(result.countById[slots[0].id],1)});
+test('draft cannot change persisted respondent totals',()=>{const slots=[{id:'2026-09-30T00:00:00.000Z',utc:'2026-09-30T00:00:00.000Z',date:'2026-09-30',time:'09:00'}];const result=projectWeeklyTimeline({slots,responses:[{userId:'other',displayName:'Alex',slots:[slots[0].id]}],currentUserId:'me'});assert.equal(result.responseCount,1);assert.equal(result.countById[slots[0].id],1)});

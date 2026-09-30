@@ -15,12 +15,22 @@ test('shared label composes shadcn Label and decorates only required fields',()=
  assert.match(css,/--craft-required:/);
 });
 test('create and join fields use shared label while retaining input required',()=>{
- for(const id of ['wwm-create-title-input','wwm-create-timezone','wwm-create-name','wwm-join-name','wwm-join-token','wwm-room-name']) assert.match(form,new RegExp(`htmlFor="${id}"`));
- assert.match(form,/<Input id="wwm-create-title-input" required/);
- assert.match(form,/<Input id="wwm-join-token" required/);
+ // Create fields and the room-name settings field live in WhenWeMeet; the join name field moved to InvitationLanding.
+ // The invite token now comes from the URL (?invite=), so there is no token input any more.
+ for(const id of ['wwm-create-title-input','wwm-create-timezone','wwm-create-name','wwm-settings-name']) assert.match(form,new RegExp(`<RequiredFieldLabel required htmlFor="${id}"`));
+ assert.match(form,/<Input id="wwm-create-title-input"[^>]*required/);
+ assert.match(form,/<Input id="wwm-create-name"[^>]*required/);
+ assert.match(form,/<Input id="wwm-settings-name"[^>]*required/);
+ assert.doesNotMatch(form,/wwm-join-token/);
+ const join=read('../src/features/when-we-meet/InvitationLanding.tsx');
+ assert.match(join,/<Input id="wwm-join-name"[^>]*required/);
+ assert.match(join,/<RequiredFieldLabel required htmlFor="wwm-join-name"/,'join name must use the shared RequiredFieldLabel like the create fields');
 });
 test('custom range and time triggers expose required semantics',()=>{
- assert.match(range,/aria-required="true"/);
+ // Required by default (create form); optional pickers such as "Dates to fill" pass required={false}.
+ assert.match(range,/required=true/);
+ assert.match(range,/aria-required=\{required\|\|undefined\}/);
+ assert.match(range,/<RequiredFieldLabel required=\{required\}/);
  assert.match(time,/aria-required="true"/);
  assert.match(range,/RequiredFieldLabel/);
  assert.match(time,/RequiredFieldLabel/);

@@ -3,26 +3,39 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const css=readFileSync(new URL('../src/features/when-we-meet/when-we-meet.css',import.meta.url),'utf8');
 const component=readFileSync(new URL('../src/features/when-we-meet/WhenWeMeet.tsx',import.meta.url),'utf8');
-test('room title owns date metadata and save action without redundant headings',()=>{
+test('room title owns metadata and header actions without redundant headings',()=>{
  assert.doesNotMatch(component,/wwm-eyebrow/);
- assert.match(component,/Save availability<\/Button>/);
- assert.match(component,/\{room\?<p>\{formatCraftDate\(room.start_date\)\}/);
+ // Availability autosaves (useAvailabilitySync); the explicit Save button is superseded. Status sits outside the tabs.
+ assert.doesNotMatch(component,/Save availability<\/Button>/);
+ assert.match(component,/<div className="wwm-save-state"><span className="wwm-sr-only" role="status">[^\n]*<\/div>\n\s*<Tabs /);
+ // One live sentence; the visible line with the rolling count is hidden from AT so the number is not announced twice.
+ assert.match(component,/<span aria-hidden="true">\{saveLabel\} · <RollingNumber value=\{mine\.length\}\/> selected<\/span>/);
+ assert.match(component,/role="status">\{`\$\{saveLabel\} · \$\{mine\.length\} selected/);
+ // Metadata line sits directly under the room title (h1).
+ assert.match(component,/<h1>\{room\?\.title\|\|'When We Meet'\}<\/h1>/);
+ assert.match(component,/\{room\?<p className="wwm-room-meta">\{room\.timezone\}/);
  assert.doesNotMatch(component,/<div className="wwm-heading"><div><h2>시간표<\/h2>/);
 });
-test('room uses weekly navigation instead of the superseded standalone calendar',()=>{
+test('room uses the continuous scrolling availability calendar instead of the superseded standalone calendar',()=>{
  const weekly=readFileSync(new URL('../src/features/when-we-meet/WeeklyAvailability.tsx',import.meta.url),'utf8');
  assert.match(component,/<WeeklyAvailability\b/);
  assert.doesNotMatch(component,/calendarOpen&&<motion\.div/);
- assert.match(weekly,/aria-label="Previous week"/);
- assert.match(weekly,/aria-label="Next week"/);
- assert.match(weekly,/aria-label="Select a day"/);
- assert.match(weekly,/setDetail\(null\)/);
+ // Previous/Next week paging was replaced by one horizontally scrolling calendar containing every room date.
+ assert.doesNotMatch(weekly,/aria-label="(?:Previous|Next) week"/);
+ assert.match(weekly,/<div className="wwm-week-scroll" role="region" aria-label=\{`Availability calendar · \$\{timezone\}`\} tabIndex=\{0\}/);
+ assert.match(weekly,/\{dates\.map\(date=><div className="wwm-calendar-day"/);
+ // Scrolling dismisses any open detail popover.
+ assert.match(weekly,/onScroll=\{event=>\{[^}]*setDetail\(null\)\}/);
 });
 test('room tabs present a visible yet restrained transition',()=>{
- assert.match(css,/\.wwm-tab-panel\{animation:wwm-tab-reveal \.22s/);
+ // Radix zeroes animation-duration on TabsContent mount, so the fade lives on an inner wrapper keyed by the tab.
+ assert.match(css,/\.wwm-tab-reveal\{animation:wwm-tab-reveal \.22s/);
+ assert.doesNotMatch(css,/\.wwm-tab-panel\{animation/);
+ assert.match(component,/<TabsContent value=\{view\} className="wwm-tab-panel"><div className="wwm-tab-reveal" key=\{view\}>/);
+ assert.doesNotMatch(component,/<TabsContent[^>]*key=/);
  assert.match(css,/@keyframes wwm-tab-reveal\{from\{opacity:\.35\}to\{opacity:1\}\}/);
  assert.doesNotMatch(css,/@keyframes wwm-tab-reveal\{[^}]*translateY/);
- assert.match(css,/@media\(prefers-reduced-motion:reduce\)\{\.wwm-tab-panel\{animation:none!important\}\}/);
+ assert.match(css,/@media\(prefers-reduced-motion:reduce\)\{\.wwm-tab-reveal\{animation:none!important\}\}/);
  assert.doesNotMatch(component,/wwm-active-tab/);
  assert.match(css,/\.wwm \.wwm-view-switch \[data-slot='tabs-trigger'\]::after\{display:none/);
 });
@@ -37,4 +50,18 @@ test('Craft and WWM bounded surfaces use a scoped four-pixel token',()=>{
  const craft=readFileSync(new URL('../src/app/craft/craft.css',import.meta.url),'utf8');
  assert.match(craft,/--craft-control-radius:4px/);
  assert.match(craft,/\.craft-account-avatar\{width:42px;height:42px;border-radius:50%/);
+});
+
+test('room tab underline slides horizontally (one indicator, transform/width only, reduced-motion aware)',()=>{
+ const toolbar=readFileSync(new URL('../src/features/when-we-meet/room-toolbar.css',import.meta.url),'utf8');
+ assert.match(component,/<TabIndicator value=\{view\}\/><\/TabsList>/);
+ assert.match(component,/bar\.style\.transform=`translateX\(\$\{active\.offsetLeft\}px\)`/);
+ assert.doesNotMatch(component,/translateY/);
+ assert.match(toolbar,/\.wwm-tab-indicator\[data-animate\]\{transition:transform \.2s ease-out,width \.2s ease-out\}/);
+ assert.match(toolbar,/@media\(prefers-reduced-motion:reduce\)\{\.wwm\.wwm-room \.wwm-view-switch \.wwm-tab-indicator\[data-animate\]\{transition:none\}\}/);
+ assert.match(toolbar,/\[data-slot='tabs-trigger'\]\[data-state='active'\]\{background:transparent;color:inherit;border-bottom-color:transparent/);
+});
+test('tabs keep Radix ids so aria-controls / aria-labelledby resolve',()=>{
+ assert.doesNotMatch(component,/<TabsTrigger[^>]*\sid=/);
+ assert.doesNotMatch(component,/<TabsContent[^>]*\sid=/);
 });

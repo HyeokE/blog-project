@@ -1,4 +1,5 @@
 'use client';
+import {ANALYTICS_ELEMENTS,ANALYTICS_SECTIONS} from '@/constants/analytics';
 import {useEffect,useRef,useState} from 'react';
 import {request} from '@/features/when-we-meet/api';
 import {safeReturnPath} from '@/features/when-we-meet/return-path.mjs';
@@ -26,5 +27,5 @@ export default function CallbackPage(){
       window.location.replace(destination);
     }).catch(()=>{if(!finished){finished=true;window.clearTimeout(timeout);setError('Could not complete Google sign-in. Please try again.');}});
   },[]);
-  return <main className="craft-auth-return" aria-busy={!error}><h1>{error?'Google sign-in could not finish':'Finishing Google sign-in'}</h1>{error?<><p role="alert">{error}</p><a href="/craft/when-we-meet">Return to meetings and try again</a></>:<><p role="status">Restoring your session and returning to your meeting. Your draft will remain in this tab.</p><div className="craft-auth-placeholder" aria-hidden="true"/></>}</main>;
+  return <main className="craft-auth-return" aria-busy={!error} data-analytics-section={ANALYTICS_SECTIONS.WWM_AUTH}><h1>{error?'Google sign-in could not finish':'Finishing Google sign-in'}</h1>{error?<><p role="alert">{error}</p><a href="/craft/when-we-meet" data-analytics-label={ANALYTICS_ELEMENTS.AUTH_RETURN}>Return to meetings and try again</a></>:<><p role="status">Restoring your session and returning to your meeting. Your draft will remain in this tab.</p><div className="craft-auth-placeholder" aria-hidden="true"/></>}</main>;
 }

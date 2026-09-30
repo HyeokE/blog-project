@@ -1,0 +1,14 @@
+/* Calendar autofill: a quiet secondary action above the editable calendar. No motion. */
+.wwm-calendar-fill{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px 12px;margin:0 0 4px}
+.wwm .wwm-calendar-fill button{min-height:36px;padding:6px 12px;border-radius:var(--craft-control-radius,4px);font-size:13px;font-weight:500;box-shadow:none;gap:6px}
+.wwm .wwm-calendar-fill button[data-variant='outline']{background:transparent;color:var(--craft-ink);border:1px solid var(--craft-rule)}
+.wwm .wwm-calendar-fill button[data-variant='outline']:hover:not(:disabled){background:color-mix(in srgb,var(--craft-rule) 35%,transparent)}
+.wwm .wwm-calendar-fill button[data-variant='ghost']{background:transparent;color:var(--craft-muted);border:1px solid transparent}
+.wwm .wwm-calendar-fill button[data-variant='ghost']:hover{color:var(--craft-ink)}
+.wwm .wwm-calendar-fill .wwm-calendar-fill-primary{background:var(--craft-ink);color:var(--craft-surface);border:1px solid var(--craft-ink)}
+.wwm .wwm-calendar-fill button:focus-visible{outline:2px solid var(--craft-focus);outline-offset:2px}
+.wwm .wwm-calendar-fill button svg{width:16px;height:16px}
+.wwm-calendar-fill-result{flex:1 1 100%;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;padding:10px 12px;border:1px solid var(--craft-rule);border-radius:var(--craft-control-radius,4px);background:var(--craft-surface)}
+.wwm .wwm-calendar-fill-result p{margin:0;font-size:13px;line-height:1.45;color:var(--craft-ink)}
+.wwm-calendar-fill-actions{display:flex;gap:6px;flex-shrink:0}
+@media(max-width:600px){.wwm-calendar-fill{justify-content:stretch}.wwm-calendar-fill-trigger{flex:1 1 auto}.wwm-calendar-fill-actions{width:100%;justify-content:flex-end}}

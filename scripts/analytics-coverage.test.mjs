@@ -8,9 +8,15 @@ import ts from 'typescript';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const relative = (file) => path.relative(root, file).split(path.sep).join('/');
 
+// Storybook stories and their synthetic fixtures are development scaffolding, never shipped
+// product UI: they render authored components (which are scanned) inside story-only frames.
+const storybookOnly = (file) =>
+  relative(file).startsWith('src/stories/') || /\.stories\.[jt]sx?$/.test(file);
+
 function sourceFiles(directory) {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const file = path.join(directory, entry.name);
+    if (storybookOnly(file)) return [];
     if (entry.isDirectory()) return sourceFiles(file);
     return /\.[cm]?[jt]sx?$/.test(entry.name) && !entry.name.endsWith('.d.ts') ? [file] : [];
   });

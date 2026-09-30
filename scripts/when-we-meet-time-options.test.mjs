@@ -8,9 +8,12 @@ test('all half-hours remain available for a start time', () => {
   assert.deepEqual([options[0], options.at(-1)], ['00:00', '23:30']);
 });
 test('end choices are strictly later than start and obey inclusive bounds', () => {
-  assert.deepEqual(validTimeOptions({ minTime: '22:30' }), ['23:00', '23:30']);
+  // End choices include the end-of-day boundary 24:00; start choices (no minTime) never do.
+  assert.deepEqual(validTimeOptions({ minTime: '22:30' }), ['23:00', '23:30', '24:00']);
   assert.deepEqual(validTimeOptions({ min: '09:00', max: '10:00' }), ['09:00', '09:30', '10:00']);
-  assert.deepEqual(validTimeOptions({ minTime: '23:30' }), []);
+  assert.deepEqual(validTimeOptions({ minTime: '23:30' }), ['24:00']);
+  assert.ok(!validTimeOptions().includes('24:00'));
+  assert.ok(validTimeOptions({ minTime: '12:00' }).every(time => time > '12:00'));
 });
 test('opening focuses selected valid time or first available, without fabricating a selection', () => {
   const choices = validTimeOptions({ minTime: '09:00' });

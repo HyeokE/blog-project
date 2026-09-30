@@ -2,7 +2,9 @@ import {readFileSync} from 'node:fs';
 import test from 'node:test';
 test('calendar uses continuous labeled event blocks instead of per-cell plus and counts',()=>{
  const source=readFileSync(new URL('../src/features/when-we-meet/WeeklyAvailability.tsx',import.meta.url),'utf8');
- assert.match(source,/className="wwm-calendar-event"/);
+ // Saved-response blocks are wwm-calendar-event buttons (now also styled as participant rails) with a duration label.
+ assert.match(source,/className="wwm-calendar-event(?: [^"]*)?"/);
+ assert.match(source,/aria-label=\{`\$\{block\.label\}, \$\{formatCraftDate\(date\)\}, \$\{timeAt\(block\.startUtc,timezone\)\} to \$\{timeAt\(block\.endUtc,timezone\)\}`\}/);
  assert.doesNotMatch(source,/selected\?'✓':'\+'/);
  assert.doesNotMatch(source,/className="wwm-week-count"/);
 });

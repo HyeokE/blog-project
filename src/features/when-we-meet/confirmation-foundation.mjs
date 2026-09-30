@@ -19,11 +19,13 @@ export function validateConfirmation(proposal,room,members){
  if(`${endLocal.year}-${endLocal.month}-${endLocal.day}`===day&&minutes(endClock)<=minutes(startClock))fail();
  const ids=members.map(m=>m.userId),recipients=proposal.recipients,excluded=proposal.excluded??[];
  if(new Set(ids).size!==ids.length||ids.some(id=>!uuid.test(id))||new Set(recipients).size!==recipients.length||new Set(excluded).size!==excluded.length||recipients.length+excluded.length!==ids.length||new Set([...recipients,...excluded]).size!==ids.length||[...recipients,...excluded].some(id=>!ids.includes(id)))fail();
- const selected=members.filter(m=>recipients.includes(m.userId)).map(m=>({userId:m.userId,email:typeof m.email==='string'?m.email.trim():''}));
+ const optional=proposal.optional??[];
+ if(!Array.isArray(optional)||new Set(optional).size!==optional.length||optional.some(id=>!recipients.includes(id)))fail();
+ const selected=members.filter(m=>recipients.includes(m.userId)).map(m=>({userId:m.userId,email:typeof m.email==='string'?m.email.trim():'',optional:optional.includes(m.userId)}));
  if(selected.some(m=>! /^[^\s@\x00-\x1f\x7f]+@[^\s@.\x00-\x1f\x7f]+(?:\.[^\s@.\x00-\x1f\x7f]+)+$/.test(m.email))||new Set(selected.map(m=>m.email.toLowerCase())).size!==selected.length)fail();
  return Object.freeze({roomId:room.id,date:day,start:proposal.start,end:proposal.end,timezone:room.timezone,title:proposal.title.trim(),revision:proposal.revision,recipients:selected,excluded:[...excluded].sort()});
 }
-export function buildCalendarInsert(valid){return {summary:valid.title,start:{dateTime:valid.start,timeZone:valid.timezone},end:{dateTime:valid.end,timeZone:valid.timezone},attendees:valid.recipients.map(({email})=>({email})),guestsCanSeeOtherGuests:false,guestsCanInviteOthers:false,guestsCanModify:false};}
+export function buildCalendarInsert(valid){return {summary:valid.title,start:{dateTime:valid.start,timeZone:valid.timezone},end:{dateTime:valid.end,timeZone:valid.timezone},attendees:valid.recipients.map(({email,optional})=>optional?{email,optional:true}:{email}),guestsCanSeeOtherGuests:false,guestsCanInviteOthers:false,guestsCanModify:false};}
 export function confirmationFingerprint(valid){return createHash('sha256').update(JSON.stringify({...valid,recipients:[...valid.recipients].sort((a,b)=>a.userId.localeCompare(b.userId))})).digest('hex');}
 export function confirmationEventId(roomId,revision){if(!uuid.test(roomId)||!Number.isSafeInteger(revision)||revision<1)fail();return createHash('sha256').update(`wwm-confirmation-v1:${roomId}:${revision}`).digest('hex').replace(/[a-f]/g,c=>String.fromCharCode(97+parseInt(c,16)));}
 export function claimDecision(existing,hash){if(!existing)return 'reserve';if(existing.payloadHash!==hash)return 'conflict';return existing.status==='confirmed'?'existing':'reconcile';}

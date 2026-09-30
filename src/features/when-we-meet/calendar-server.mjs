@@ -24,4 +24,9 @@ export async function fetchCalendarIdentity(accessToken,fetcher=fetch){
  if(typeof data.sub!=='string'||typeof data.email!=='string'||data.email_verified!==true)throw Error('Google account unavailable');
  return data;
 }
-export function calendarStatus(row){return {connected:!!row,email:row?.google_email??null};}
+export function calendarStatus(row){return {connected:!!row,email:row?.googleEmail??null};}
+export async function fetchGrantedScope(accessToken,fetcher=fetch){
+ const data=await googleJSON(`https://oauth2.googleapis.com/tokeninfo?access_token=${encodeURIComponent(accessToken)}`,{},fetcher);
+ if(typeof data.scope!=='string')throw Error('Google scope unavailable');
+ return data.scope;
+}

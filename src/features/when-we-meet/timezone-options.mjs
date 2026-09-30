@@ -41,3 +41,13 @@ export function timezoneOffset(zone, referenceDate) {
   if (!match) return raw.replace('GMT', 'UTC');
   return `UTC${match[1] === '-' ? '−' : '+'}${match[2].padStart(2, '0')}:${match[3] || '00'}`;
 }
+
+/** Scroll delta that reveals an option inside the list viewport. `center` (on open) puts the selected
+ * option mid-list; `nearest` (arrow keys) moves only as far as needed. Rects need top and height. */
+export function revealScrollDelta(option, viewport, mode = 'nearest') {
+  const offset = option.top - viewport.top;
+  if (mode === 'center') return offset - (viewport.height - option.height) / 2;
+  if (offset < 0) return offset;
+  const overflow = offset + option.height - viewport.height;
+  return overflow > 0 ? overflow : 0;
+}

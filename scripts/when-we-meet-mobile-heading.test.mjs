@@ -12,6 +12,8 @@ test('calendar heading uses short English month names and keeps both years acros
  assert.equal(heading('2026-12-31','2027-01-01'),'Dec 2026 – Jan 2027');
  assert.equal(heading('2026-09-01','2026-09-30'),'Sep 2026');
 });
-test('mobile room tabs and calendar heading have a bounded gap without desktop or grid changes',()=>{
- assert.match(css,/@media\(max-width:600px\)\{\.wwm\.wwm-room \.wwm-view-switch:has\(\+ \.wwm-tab-panel \.wwm-weekly\)\{margin-bottom:0\}\.wwm\.wwm-room \.wwm-tab-panel \.wwm-calendar-heading\{margin-top:8px\}/);
+test('mobile room tab bar spacing is identical for every panel (no :has panel-dependent margin → no jump on switch)',()=>{
+ const all=['week-calendar.css','when-we-meet.css','room-toolbar.css','people-panel.css','confirmation-panel.css','calendar-fill.css'].map(file=>readFileSync(new URL(`../src/features/when-we-meet/${file}`,import.meta.url),'utf8')).join('\n');
+ assert.doesNotMatch(all,/wwm-view-switch:has\(/);
+ assert.match(css,/@media\(max-width:600px\)\{\.wwm\.wwm-room \.wwm-tab-panel \.wwm-calendar-heading\{margin-top:0\}\}/);
 });

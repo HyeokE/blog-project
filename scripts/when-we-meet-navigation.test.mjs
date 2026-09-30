@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { meetingView } from '../src/features/when-we-meet/meeting-view.mjs';
 
-const room = { id: 'r1', owner_id: 'alice', title: 'Coffee' };
+const room = { id: 'r1', ownerId: 'alice', title: 'Coffee' };
 test('same owner revalidation retains actionable meeting links', () => {
   assert.deepEqual(meetingView('alice', { owner: 'alice', meetings: [room], state: 'loading' }).meetings, [room]);
 });

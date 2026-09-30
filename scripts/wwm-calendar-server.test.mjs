@@ -22,6 +22,6 @@ test('identity is read from Google using bearer access token',async()=>{
  assert.equal(identity.sub,'subject');
 });
 test('status never exposes ciphertext or tokens',()=>{
- assert.deepEqual(calendarStatus({google_subject:'subject',google_email:'a@example.org',credential_ciphertext:'secret'}),{connected:true,email:'a@example.org'});
+ assert.deepEqual(calendarStatus({googleSubject:'subject',googleEmail:'a@example.org',credentialCiphertext:'secret'}),{connected:true,email:'a@example.org'});
  assert.deepEqual(calendarStatus(null),{connected:false,email:null});
 });

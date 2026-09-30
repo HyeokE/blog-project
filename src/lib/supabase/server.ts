@@ -1,7 +1,7 @@
 import {cookies,headers} from 'next/headers';
 import {roomForViewer} from '@/features/when-we-meet/room-permissions.mjs';
 import {createServerClient} from '@supabase/ssr';
-import {normalizeRoom,normalizeResponses} from '@/features/when-we-meet/normalize.mjs';
+import {normalizeRoom,normalizeResponses,normalizeMeeting,participantCountsByRoom} from '@/features/when-we-meet/normalize.mjs';
 
 export async function serverSupabaseClient({readOnly=false}:{readOnly?:boolean}={}) {
   const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -31,8 +31,8 @@ export async function ownedCraftMeetings(context?:Awaited<ReturnType<typeof curr
  const {data,error}=await client.from('wwm_rooms').select('id,owner_id,title,start_date,end_date,start_time,end_time,timezone,created_at').order('created_at',{ascending:false});
  if(error){throw new Error('Could not load meetings.');}
  const {data:counts,error:countError}=await client.rpc('wwm_participant_counts');
- const totals=new Map<string,number>((countError?[]:counts||[]).map((row:{room_id:string;participant_count:number|string})=>[row.room_id,Number(row.participant_count)]));
- return {meetings:(data||[]).map(meeting=>({...meeting,participant_count:totals.has(meeting.id)?totals.get(meeting.id)!:null})),userId:user.id};
+ const totals=participantCountsByRoom(countError?[]:counts);
+ return {meetings:(data||[]).map(row=>normalizeMeeting(row,totals)),userId:user.id};
 }
 export async function craftRoomMetadata(roomId:string,context:Awaited<ReturnType<typeof currentSupabaseUser>>){
  const {client,user}=context;if(!user)return null;

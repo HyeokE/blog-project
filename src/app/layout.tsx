@@ -13,6 +13,7 @@ import CurrentLayoutExtras from '@/container/designs/current/RootLayoutExtras';
 import InitialLightReveal from '@/container/light-wall/InitialLightReveal';
 import WebVitalsReporter from '@/components/WebVitalsReporter';
 import SupabaseHealthOnce from '@/components/SupabaseHealthOnce';
+import { InlineScript } from '@/components/InlineScript';
 
 export const revalidate = 3600;
 
@@ -42,17 +43,8 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
-interface RootLayoutProps {
-  children: React.ReactNode;
-}
-
-export default async function RootLayout({ children }: RootLayoutProps) {
-  return (
-    <html data-design="sweet-home" lang="ko" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
+// Runs during HTML parsing, before first paint: Craft scope, per-route design and the saved light/dark mode.
+const PRE_PAINT_SCRIPT = `
               (function() {
                 var path = window.location.pathname;
                 if (path === '/craft' || path.indexOf('/craft/') === 0) {
@@ -71,9 +63,17 @@ export default async function RootLayout({ children }: RootLayoutProps) {
                 var mode = savedMode === 'dark' || savedMode === 'light' ? savedMode : (prefersDark ? 'dark' : 'light');
                 document.documentElement.setAttribute('data-mode', mode);
               })();
-            `,
-          }}
-        />
+            `;
+
+interface RootLayoutProps {
+  children: React.ReactNode;
+}
+
+export default async function RootLayout({ children }: RootLayoutProps) {
+  return (
+    <html data-design="sweet-home" lang="ko" suppressHydrationWarning>
+      <head>
+        <InlineScript html={PRE_PAINT_SCRIPT} />
         <style>{`html[data-craft='true'] .initial-light-reveal { display: none !important; }`}</style>
         <link
           rel="preload"

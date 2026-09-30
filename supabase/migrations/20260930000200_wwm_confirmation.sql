@@ -1,4 +1,4 @@
--- LOCAL DRAFT ONLY. Requires independent hosted-schema/security approval.
+-- Confirmation reservation (owner RPC) and member status. Finalization lives in wwm_calendar_private (000300).
 -- No credential storage here. Reservation is one immutable confirmation per room;
 -- update/cancel and a second revision require a separately approved migration.
 begin;
@@ -6,7 +6,7 @@ create table public.wwm_confirmations (
   room_id uuid primary key references public.wwm_rooms(id) on delete cascade,
   revision integer not null check (revision = 1),
   payload_hash text not null check (payload_hash ~ '^[0-9a-f]{64}$'),
-  google_event_id text not null unique check (google_event_id ~ '^[0-9a-v]{5,1024}$'),
+  google_event_id text not null unique check (google_event_id ~ '^[0-9a-v]+$' and char_length(google_event_id) between 5 and 1024),
   organizer_id uuid not null references auth.users(id),
   organizer_email text not null,
   title text not null,
@@ -68,7 +68,7 @@ begin
   perform 1 from auth.users u join public.wwm_members m on m.user_id=u.id
     where m.room_id=p_room_id for share of u;
   if p_revision is distinct from 1 or p_payload_hash !~ '^[0-9a-f]{64}$'
-     or p_google_event_id !~ '^[0-9a-v]{5,1024}$'
+     or p_google_event_id !~ '^[0-9a-v]+$' or char_length(p_google_event_id) not between 5 and 1024
      or p_payload_hash is null or p_google_event_id is null
      or p_title is null or char_length(btrim(p_title)) not between 1 and 100
      or p_starts_at is null or p_ends_at is null or p_ends_at <= p_starts_at

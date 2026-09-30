@@ -40,7 +40,7 @@ test('RSC read-only store never writes while Route Handler adapter emits protect
  const mockCreateServerClient=(_url,_key,{cookies})=>{adapter=cookies;return {auth:{getUser:async()=>{cookies.setAll([{name:'sb-test',value:'opaque-test',options:{maxAge:60}}]);return {data:{user:{id:'test-user'}},error:null}}}}};
  const compiled=ts.transpileModule(server,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
  const exports={};
- runInNewContext(compiled,{exports,process:{env:{NEXT_PUBLIC_SUPABASE_URL:'https://example.invalid',NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:'test-public-key'}},require(id){if(id==='next/headers')return {cookies:async()=>store,headers:async()=>({get:()=>null})};if(id==='@supabase/ssr')return {createServerClient:mockCreateServerClient};if(id==='@/features/when-we-meet/normalize.mjs')return {normalizeRoom:x=>x,normalizeResponses:x=>x};throw Error(id)}});
+ runInNewContext(compiled,{exports,process:{env:{NEXT_PUBLIC_SUPABASE_URL:'https://example.invalid',NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:'test-public-key'}},require(id){if(id==='next/headers')return {cookies:async()=>store,headers:async()=>({get:()=>null})};if(id==='@supabase/ssr')return {createServerClient:mockCreateServerClient};if(id==='@/features/when-we-meet/normalize.mjs')return {normalizeRoom:x=>x,normalizeResponses:x=>x};if(id==='@/features/when-we-meet/room-permissions.mjs')return {roomForViewer:x=>x};throw Error(id)}});
  const context=await exports.currentSupabaseUser();
  assert.equal(context.user.id,'test-user');
  assert.equal(writes.length,0,'RSC must not call cookieStore.set');

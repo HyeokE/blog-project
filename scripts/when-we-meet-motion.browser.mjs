@@ -8,10 +8,11 @@ try{
  for(const name of entryNames){const matches=p.getByRole('button',{name,exact:true});for(let i=0;i<await matches.count();i++)if(await matches.nth(i).isVisible())visible.push({name,element:matches.nth(i)})}
  if(visible.length!==1)throw new Error(`Expected exactly one visible creation CTA, found ${visible.map(x=>x.name).join(', ') || 'none'}; snapshot: ${initial}`);
  await visible[0].element.click();
- const trigger=p.getByRole('button',{name:/Dates · up to 14 days/});
+ const trigger=p.locator('#wwm-range-trigger');
+ await sleep(350);
  const frames=[];
  for(let cycle=0;cycle<3;cycle++){
-  await trigger.click();
+  await trigger.click();await sleep(50);
   const trace=await p.evaluate(async()=>{const out=[];const started=performance.now();await new Promise(resolve=>{function sample(){const el=document.querySelector('.wwm-range-popover');out.push({t:Math.round(performance.now()-started),height:el?.getBoundingClientRect().height??null,opacity:el?Number(getComputedStyle(el).opacity):null,expanded:document.querySelector('.wwm-range>.wwm-picker-trigger')?.getAttribute('aria-expanded')});if(performance.now()-started<240)requestAnimationFrame(sample);else resolve()}requestAnimationFrame(sample)});return out});
   frames.push(trace);
   if(!trace.some(x=>x.height>0))failures.push(`cycle ${cycle}: popup absent`);

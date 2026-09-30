@@ -2,7 +2,7 @@ import {createServerClient} from '@supabase/ssr';
 import {cookies} from 'next/headers';
 import {serverSupabaseClient} from '@/lib/supabase/server';
 import {createLoginExchange} from '@/features/when-we-meet/calendar-login.mjs';
-import {fetchCalendarIdentity} from '@/features/when-we-meet/calendar-server.mjs';
+import {fetchCalendarIdentity,fetchGrantedScope} from '@/features/when-we-meet/calendar-server.mjs';
 import {encryptCredential} from '@/features/when-we-meet/calendar-connection.mjs';
 import {storeCredential} from '@/features/when-we-meet/calendar-db';
 import {body,failed,invalid,ok,sameOrigin} from '../../when-we-meet/http';
@@ -17,7 +17,7 @@ export async function POST(request:Request){
   // SIGNED_IN flushes provider-bearing sessions. This first adapter NEVER writes cookies.
   const discarded:{name:string;value:string;options?:Record<string,unknown>}[]=[];
   const staged=createServerClient(url,key,{cookies:{getAll(){return store.getAll()},setAll(values){discarded.push(...values)}}});
-  const result=await createLoginExchange({client:staged,createClient:()=>serverSupabaseClient(),identity:{code:input.code,fetchIdentity:fetchCalendarIdentity},scope:undefined,persist:async ({userId,subject,email,refreshToken}:{userId:string;subject:string;email:string;refreshToken:string})=>{
+  const result=await createLoginExchange({client:staged,createClient:()=>serverSupabaseClient(),identity:{code:input.code,fetchIdentity:fetchCalendarIdentity,fetchScope:fetchGrantedScope},scope:undefined,persist:async ({userId,subject,email,refreshToken}:{userId:string;subject:string;email:string;refreshToken:string})=>{
    const encryptionKey=process.env.WWM_CALENDAR_ENCRYPTION_KEY;
    if(!encryptionKey)throw Error('Calendar unavailable');
    const cipher=encryptCredential({refresh_token:refreshToken},encryptionKey,`credential:${userId}:${subject}`);

@@ -7,6 +7,9 @@ import { Dialog as DialogPrimitive } from "radix-ui"
 
 import { Button } from "@/components/ui/button"
 
+import "./dialog-sheet.css"
+import { releaseSheet, sheetDragFrame } from "./sheet-gesture.mjs"
+
 function Dialog({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
@@ -47,25 +50,135 @@ function DialogOverlay({
   )
 }
 
+const SHEET_QUERY = "(max-width: 640px)"
+const INTERACTIVE = "button,a,input,textarea,select,label,[role=combobox],[role=button],[contenteditable=true]"
+
+// Native-style detents for the mobile sheet: drag the grab bar or header to expand, collapse or dismiss.
+// Only the top zone listens, so inner scrolling, inputs and popovers keep their own gestures.
+function useSheetDrag(enabled: boolean) {
+  const contentRef = React.useRef<HTMLDivElement>(null)
+  const closeRef = React.useRef<HTMLButtonElement>(null)
+  const drag = React.useRef<{ id: number; y: number; t: number; lastY: number; lastT: number; height: number; max: number } | null>(null)
+
+  const onPointerDown = React.useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    const sheet = contentRef.current
+    const target = event.target as Element
+    if (!enabled || !sheet || event.button !== 0 || !window.matchMedia(SHEET_QUERY).matches) return
+    if (!target.closest("[data-slot='dialog-sheet-handle'],[data-slot='dialog-header']") || target.closest(INTERACTIVE)) return
+    const max = Math.round(window.innerHeight - 12)
+    drag.current = { id: event.pointerId, y: event.clientY, t: event.timeStamp, lastY: event.clientY, lastT: event.timeStamp, height: sheet.getBoundingClientRect().height, max }
+    try { sheet.setPointerCapture(event.pointerId) } catch { /* capture is best-effort; moves still arrive via bubbling */ }
+    sheet.dataset.sheetDragging = "true"
+  }, [enabled])
+
+  const onPointerMove = React.useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    const state = drag.current, sheet = contentRef.current
+    if (!state || !sheet || state.id !== event.pointerId) return
+    const frame = sheetDragFrame({ dy: event.clientY - state.y, startHeight: state.height, maxHeight: state.max })
+    sheet.style.transform = frame.translate ? `translateY(${frame.translate}px)` : ""
+    sheet.style.height = frame.height !== state.height ? `${frame.height}px` : ""
+    if (frame.height !== state.height) sheet.style.maxHeight = "none"
+    state.lastY = event.clientY; state.lastT = event.timeStamp
+  }, [])
+
+  const onPointerEnd = React.useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    const state = drag.current, sheet = contentRef.current
+    if (!state || !sheet || state.id !== event.pointerId) return
+    drag.current = null
+    delete sheet.dataset.sheetDragging
+    const dy = event.clientY - state.y
+    const elapsed = Math.max(1, event.timeStamp - state.lastT)
+    const velocity = event.timeStamp - state.lastT < 80 ? (event.clientY - state.lastY) / elapsed || dy / Math.max(1, event.timeStamp - state.t) : 0
+    const expanded = sheet.dataset.sheetExpanded === "true"
+    const decision = releaseSheet({ dy, velocity, expanded, height: state.height })
+    sheet.style.height = ""; sheet.style.maxHeight = ""
+    if (decision === "close") {
+      sheet.dataset.sheetDismissed = "true"
+      sheet.style.transform = "translateY(100%)"
+      window.setTimeout(() => closeRef.current?.click(), 180)
+      return
+    }
+    sheet.style.transform = ""
+    if (decision === "expand") sheet.dataset.sheetExpanded = "true"
+    if (decision === "collapse") delete sheet.dataset.sheetExpanded
+  }, [])
+
+  // A guarded close (e.g. busy) leaves the dialog open: bring the sheet back.
+  React.useEffect(() => {
+    const sheet = contentRef.current
+    if (!sheet || !enabled) return
+    const observer = new MutationObserver(() => {
+      if (sheet.dataset.sheetDismissed && sheet.dataset.state === "open") {
+        window.setTimeout(() => {
+          if (sheet.dataset.state === "open") { delete sheet.dataset.sheetDismissed; sheet.style.transform = "" }
+        }, 260)
+      }
+    })
+    observer.observe(sheet, { attributes: true, attributeFilter: ["data-sheet-dismissed"] })
+    return () => observer.disconnect()
+  }, [enabled])
+
+  return { contentRef, closeRef, handlers: enabled ? { onPointerDown, onPointerMove, onPointerUp: onPointerEnd, onPointerCancel: onPointerEnd } : {} }
+}
+
 function DialogContent({
   className,
   children,
   showCloseButton = true,
+  mobilePresentation = "sheet",
+  ref,
+  onOpenAutoFocus,
+  onCloseAutoFocus,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
+  /** Below 640px: "sheet" anchors to the bottom edge (see dialog-sheet.css); "modal" keeps the centered dialog. */
+  mobilePresentation?: "sheet" | "modal"
 }) {
+  const sheet = useSheetDrag(mobilePresentation === "sheet")
+  // Controlled dialogs often have no DialogTrigger, and Radix then has nothing to refocus on close.
+  // Remember the element that had focus when the dialog opened (focus has not moved yet) and return to it.
+  const opener = React.useRef<HTMLElement | null>(null)
+  const handleOpenAutoFocus = React.useCallback((event: Event) => {
+    const active = document.activeElement
+    opener.current = active instanceof HTMLElement && active !== document.body && !sheet.contentRef.current?.contains(active) ? active : null
+    onOpenAutoFocus?.(event)
+  }, [onOpenAutoFocus, sheet.contentRef])
+  const handleCloseAutoFocus = React.useCallback((event: Event) => {
+    onCloseAutoFocus?.(event)
+    const target = opener.current
+    opener.current = null
+    if (event.defaultPrevented || !target?.isConnected) return
+    event.preventDefault()
+    target.focus()
+  }, [onCloseAutoFocus])
+  const setRef = React.useCallback((node: HTMLDivElement | null) => {
+    sheet.contentRef.current = node
+    if (typeof ref === "function") ref(node)
+    else if (ref) ref.current = node
+  }, [ref, sheet.contentRef])
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"
+        data-mobile-presentation={mobilePresentation}
         className={cn(
           "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200 outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 sm:max-w-lg",
           className
         )}
         {...props}
+        onOpenAutoFocus={handleOpenAutoFocus}
+        onCloseAutoFocus={handleCloseAutoFocus}
+        {...sheet.handlers}
+        ref={setRef}
       >
+        {mobilePresentation === "sheet" && (
+          <>
+            <div data-slot="dialog-sheet-handle" aria-hidden="true" />
+            <DialogPrimitive.Close ref={sheet.closeRef} tabIndex={-1} aria-hidden="true" hidden />
+          </>
+        )}
         {children}
         {showCloseButton && (
           <DialogPrimitive.Close

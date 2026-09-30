@@ -37,10 +37,32 @@
 .wwm .wwm-weekly.wwm-everyone .wwm-calendar-events .wwm-calendar-event{padding:3px 5px;gap:1px;background:color-mix(in srgb,var(--event-color) 18%,var(--calendar-surface));border:1px solid var(--rail-color);border-left-width:3px;color:inherit}
 .wwm .wwm-weekly.wwm-everyone .wwm-calendar-event strong{font-size:12px;line-height:16px;white-space:nowrap}
 .wwm .wwm-weekly.wwm-everyone .wwm-calendar-event .wwm-event-time{font-size:11px;line-height:14px;white-space:nowrap;overflow-wrap:normal;opacity:.85;flex-shrink:0}
+/* Narrow bars: the time never clips mid-character. It ellipsizes, and when even that cannot show a useful range the bar
+   drops the time (name stays; the full range is in the accessible name and the detail popover). */
+.wwm .wwm-weekly.wwm-everyone .wwm-calendar-events .wwm-calendar-event{container-type:inline-size}
+.wwm .wwm-weekly.wwm-everyone .wwm-calendar-event .wwm-event-time{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+@container (max-width:72px){.wwm .wwm-weekly.wwm-everyone .wwm-calendar-event .wwm-event-time{display:none}}
 .wwm .wwm-weekly.wwm-everyone .wwm-calendar-event[data-density='single']{padding:1px 5px;justify-content:center}
 .wwm .wwm-weekly.wwm-everyone .wwm-calendar-event[data-density='single'] strong{line-height:14px;flex-shrink:0}
 .wwm .wwm-weekly.wwm-everyone .wwm-calendar-event[data-density='double']{justify-content:center}
 @media(prefers-reduced-motion:reduce){.wwm-calendar-event{transition:none!important}}
-@media(max-width:600px){.wwm.wwm-room .wwm-view-switch:has(+ .wwm-tab-panel .wwm-weekly){margin-bottom:0}.wwm.wwm-room .wwm-tab-panel .wwm-calendar-heading{margin-top:8px}}
+/* The tab bar keeps one spacing for every panel (no panel-dependent margin → no jump on tab switch). */
+@media(max-width:600px){.wwm.wwm-room .wwm-tab-panel .wwm-calendar-heading{margin-top:0}}
 
 .wwm .wwm-weekly.wwm-everyone-compact .wwm-calendar-events .wwm-calendar-event{padding:0;border:1px solid var(--rail-color);border-radius:4px;background:var(--rail-color)}
+
+/* Confirm mode: the compact Everyone calendar plus a transparent half-hour selection layer. */
+.wwm-confirm-mode{--confirm-accent:#a46e42;--confirm-fill:color-mix(in srgb,#b98a5c 30%,transparent)}
+:root[data-mode='dark'] .wwm-confirm-mode{--confirm-accent:#e0b98f;--confirm-fill:color-mix(in srgb,#e0b98f 26%,transparent)}
+.wwm-confirm-layer{position:absolute;inset:0;z-index:2}
+.wwm-confirm-mode.is-selecting .wwm-calendar-events{pointer-events:none}
+.wwm-confirm-gap{height:var(--row-height,24px)}
+.wwm .wwm-weekly .wwm-confirm-layer .wwm-confirm-slot{display:block;box-sizing:border-box;width:100%;height:var(--row-height,24px);min-height:var(--row-height,24px);padding:0;margin:0;border:0;border-radius:0;background:transparent;color:inherit;touch-action:pan-x pan-y;cursor:crosshair}
+.wwm .wwm-weekly .wwm-confirm-layer .wwm-confirm-slot:hover{background:var(--calendar-faint)}
+.wwm .wwm-weekly .wwm-confirm-layer .wwm-confirm-slot:focus-visible{position:relative;z-index:4;outline:2px solid var(--confirm-accent);outline-offset:-2px}
+.wwm .wwm-weekly .wwm-confirm-layer .wwm-confirm-slot.is-anchor{box-shadow:inset 0 2px 0 var(--confirm-accent)}
+.wwm-confirm-range{position:absolute;left:2px;right:2px;z-index:3;box-sizing:border-box;pointer-events:none;border:2px solid var(--confirm-accent);border-radius:4px;background:var(--confirm-fill);display:flex;flex-direction:column;align-items:flex-end;padding:1px 5px;overflow:hidden;line-height:14px;color:inherit}
+.wwm-confirm-range strong,.wwm-confirm-range small{font-size:11px;white-space:nowrap}
+.wwm-confirm-range strong{font-weight:650}
+.wwm-confirm-range small{font-variant-numeric:tabular-nums}
+.wwm-confirm-range[data-density='single']{flex-direction:row;align-items:center;justify-content:flex-end;gap:6px;padding-block:0}

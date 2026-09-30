@@ -5,7 +5,8 @@ import { readFileSync } from 'node:fs';
 const css = readFileSync(new URL('../src/features/when-we-meet/time-picker.css', import.meta.url), 'utf8');
 
 test('time popup width respects its trigger and Radix collision width, not only the viewport', () => {
-  assert.match(css, /width:min\(290px,var\(--radix-popper-anchor-width\),var\(--radix-popper-available-width\)\)/);
+  // Popup is a fixed 260px menu bounded by Radix collision width and the viewport (no longer capped at trigger width).
+  assert.match(css, /\.wwm-time-panel\[data-slot='popover-content'\]\{[^}]*width:min\(260px,var\(--radix-popper-available-width\)\);min-width:0;max-width:calc\(100vw - 16px\)/);
   assert.match(css, /grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
   assert.match(css, /min-height:44px/);
 });

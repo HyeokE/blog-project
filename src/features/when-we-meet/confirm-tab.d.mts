@@ -1,0 +1,14 @@
+export type ConfirmationRecordData={status:string;title:string;startsAt:string;endsAt:string;timezone:string;googleEventUrl:string|null};
+export type ConfirmationReview={calendarConnected:boolean;organizerEmail:string|null;attendees:Array<{userId:string;name:string;email:string|null;hasAvailability:boolean;isOrganizer:boolean}>};
+export type ConfirmationData={confirmation:ConfirmationRecordData|null;review:ConfirmationReview|null};
+export type ConfirmProposal={date:string;start:string;end:string;startId?:string;endId?:string;recipientIds:string[];excludedIds:string[];title?:string;optionalIds?:string[]};
+export type ConfirmRequestBody={title:string;date:string;start:string;end:string;recipients:string[];excluded:string[];optional:string[]};
+type Slot={id:string;utc:string;date:string;time:string};
+export type ConfirmPanelStatus='draft'|'pending'|'reconciling'|'failed'|'confirmed';
+export type ConfirmPanelState={role:'owner'|'member';members:Array<{id:string;name:string;email?:string;response:'available'|'not-responded'}>;organizerEmail?:string;calendar:'connected'|'disconnected';status:ConfirmPanelStatus;error?:string;confirmation?:{date:string;start:string;end:string;timezone:string;organizer:string;attendeeNames:string[];eventUrl?:string}};
+export function normalizeConfirmationResponse(raw:unknown):ConfirmationData;
+export function proposalInstants(proposal:{date:string;start:string;end:string;startId?:string;endId?:string},slots:Slot[]):{start:string;end:string};
+export function confirmationBody(input:{title:string;proposal:ConfirmProposal;slots:Slot[];attendeeIds:string[]}):ConfirmRequestBody;
+export function confirmPanelState(input:{data:ConfirmationData;slots:Slot[];organizerName?:string;recipientIds?:string[]}):ConfirmPanelState;
+export function confirmOutcome(result:unknown):{status:'confirmed'|'reconciling';confirmation:ConfirmationRecordData|null};
+export function confirmFailure(error:unknown):{status:'failed';error:string;retrySame:boolean;calendar?:'disconnected'};

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import {ANALYTICS_ELEMENTS,ANALYTICS_SECTIONS} from '@/constants/analytics';
 import {ParticipantCount} from '@/features/when-we-meet/ParticipantCount';
 import {EmptyMeetings} from '@/features/when-we-meet/EmptyMeetings';
 import {unstable_rethrow} from 'next/navigation';
@@ -11,5 +12,5 @@ export default async function OwnedMeetings(){
  catch(error){unstable_rethrow(error);return <ServerSectionRetry inline/>;}
  const {meetings,userId}=result;
  if(!userId){return null;}
- return <section className="wwm-card wwm-meetings" aria-label="Your meetings">{meetings.length?<ul>{meetings.map(item=><li key={item.id}><Link href={`/craft/when-we-meet/${item.id}`}><div className="wwm-meeting-title-row"><strong>{item.title}</strong><ParticipantCount count={item.participant_count}/></div><span>{formatCraftDate(item.start_date)} – {formatCraftDate(item.end_date)} · {item.start_time.slice(0,5)}–{item.end_time.slice(0,5)} · {item.timezone}</span></Link></li>)}</ul>:<EmptyMeetings/>}</section>;
+ return <section className="wwm-card wwm-meetings" aria-label="Your meetings" data-analytics-section={ANALYTICS_SECTIONS.WWM_MEETINGS}>{meetings.length?<ul>{meetings.map(item=><li key={item.id}><Link href={`/craft/when-we-meet/${item.id}`} data-analytics-label={ANALYTICS_ELEMENTS.MEETING_OPEN}><div className="wwm-meeting-title-row"><strong>{item.title}</strong><ParticipantCount count={item.participantCount}/></div><span>{formatCraftDate(item.startDate)} – {formatCraftDate(item.endDate)} · {item.startTime}–{item.endTime} · {item.timezone}</span></Link></li>)}</ul>:<EmptyMeetings/>}</section>;
 }

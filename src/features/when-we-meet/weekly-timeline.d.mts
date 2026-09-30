@@ -1,5 +1,5 @@
 export type TimelineSlot={id:string;utc:string;date:string;time:string};
-export type SavedResponse={user_id:string;display_name:string;slots:string[]};
+export type SavedResponse={userId:string;displayName:string;slots:string[]};
 export type TimelineRun={date:string;slotIds:string[];startUtc:string;endUtc:string};
 export type TimelineRow={userId:string;displayName:string;label:string;isCurrentUser:boolean;color:string;slotIds:string[];runs:TimelineRun[]};
 export type ProjectedSlot=TimelineSlot&{count:number;all:boolean};

@@ -6,8 +6,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { isValidTimezone, searchTimezones, timezoneOffset, timezoneOptions } from './timezone-options.mjs';
+import { isValidTimezone, revealScrollDelta, searchTimezones, timezoneOffset, timezoneOptions } from './timezone-options.mjs';
 import './timezone-combobox.css';
+import {ANALYTICS_ELEMENTS,ANALYTICS_SECTIONS} from '@/constants/analytics';
 
 type Props = {
   value: string;
@@ -20,6 +21,14 @@ type Props = {
   'aria-describedby'?: string;
   error?: string;
 };
+
+/** Scrolls only the list viewport (never the page) so the active option is visible. */
+function revealActive(list: HTMLElement | null, mode: 'center' | 'nearest') {
+  const option = list?.querySelector<HTMLElement>('[data-active="true"]');
+  const viewport = option?.closest<HTMLElement>('[data-slot="scroll-area-viewport"]');
+  if (!option || !viewport || !viewport.clientHeight) {return;}
+  viewport.scrollTop += revealScrollDelta(option.getBoundingClientRect(), viewport.getBoundingClientRect(), mode);
+}
 
 export function TimezoneCombobox({ value, onChange, id, required, disabled, referenceDate, error, ...aria }: Props) {
   const [open, setOpen] = useState(false);
@@ -36,9 +45,14 @@ export function TimezoneCombobox({ value, onChange, id, required, disabled, refe
   useEffect(() => {
     if (open) {searchRef.current?.focus();}
   }, [open]);
+  // On open, wait for the popover to be positioned and sized, then center the selection.
   useEffect(() => {
     if (!open) {return;}
-    resultsRef.current?.querySelector('[data-active="true"]')?.scrollIntoView({ block: 'nearest' });
+    let frame = requestAnimationFrame(() => { frame = requestAnimationFrame(() => revealActive(resultsRef.current, 'center')); });
+    return () => cancelAnimationFrame(frame);
+  }, [open]);
+  useEffect(() => {
+    if (open) {revealActive(resultsRef.current, 'nearest');}
   }, [active, results, open]);
 
   function commit(zone: string) {
@@ -70,14 +84,14 @@ export function TimezoneCombobox({ value, onChange, id, required, disabled, refe
 
   return <Popover open={open} onOpenChange={changeOpen} modal={false}>
     <PopoverTrigger asChild>
-      <Button id={id} type="button" variant="outline" disabled={disabled} aria-required={required} aria-invalid={Boolean(error)} aria-haspopup="listbox" aria-expanded={open} aria-controls={open ? listId : undefined} {...aria} className="wwm-tz-trigger">
+      <Button id={id} type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.TIMEZONE_PICKER} disabled={disabled} aria-required={required} aria-invalid={Boolean(error)} aria-haspopup="listbox" aria-expanded={open} aria-controls={open ? listId : undefined} {...aria} className="wwm-tz-trigger">
         <span>{selected ? `${selected.replaceAll('_', ' ')} · ${timezoneOffset(selected, referenceDate)}` : 'Choose a timezone'}</span><ChevronDown aria-hidden="true" />
       </Button>
     </PopoverTrigger>
     <PopoverContent align="start" sideOffset={4} collisionPadding={8} onOpenAutoFocus={event => { event.preventDefault(); searchRef.current?.focus(); }} className="wwm-tz-popover" onEscapeKeyDown={event => { event.preventDefault(); event.stopPropagation(); setOpen(false); }}>
-      <div className="wwm-tz-search-row"><Input ref={searchRef} role="combobox" aria-label="Search timezones" aria-autocomplete="list" aria-expanded={open} aria-controls={listId} aria-activedescendant={results[active] ? `${listId}-${results[active].replaceAll('/', '-')}` : undefined} value={query} onChange={event => { const next = event.target.value; setQuery(next); setActive(Math.max(0, searchTimezones(next, options).indexOf(selected))); }} onKeyDown={handleKeys} placeholder="Search city or timezone" /></div>
+      <div className="wwm-tz-search-row"><Input ref={searchRef} data-analytics-label={ANALYTICS_ELEMENTS.TIMEZONE_SEARCH} role="combobox" aria-label="Search timezones" aria-autocomplete="list" aria-expanded={open} aria-controls={listId} aria-activedescendant={results[active] ? `${listId}-${results[active].replaceAll('/', '-')}` : undefined} value={query} onChange={event => { const next = event.target.value; setQuery(next); setActive(Math.max(0, searchTimezones(next, options).indexOf(selected))); }} onKeyDown={handleKeys} placeholder="Search city or timezone" /></div>
       <ScrollArea className="wwm-tz-scroll"><div id={listId} role="listbox" aria-label="Timezones" ref={resultsRef}>
-        {results.length ? results.map((zone, index) => <button key={zone} type="button" id={`${listId}-${zone.replaceAll('/', '-')}`} role="option" aria-selected={zone === selected} data-active={index === active} className="wwm-tz-option" onMouseEnter={() => setActive(index)} onClick={() => commit(zone)}><span>{zone.replaceAll('_', ' ')}</span><small>{timezoneOffset(zone, referenceDate)}</small></button>) : <p className="wwm-tz-empty">No matching timezones.</p>}
+        {results.length ? results.map((zone, index) => <button key={zone} type="button" data-analytics-label={ANALYTICS_ELEMENTS.TIMEZONE_OPTION} id={`${listId}-${zone.replaceAll('/', '-')}`} role="option" aria-selected={zone === selected} data-active={index === active} className="wwm-tz-option" onMouseEnter={() => setActive(index)} onClick={() => commit(zone)}><span>{zone.replaceAll('_', ' ')}</span><small>{timezoneOffset(zone, referenceDate)}</small></button>) : <p className="wwm-tz-empty">No matching timezones.</p>}
       </div></ScrollArea>
     </PopoverContent>
   </Popover>;

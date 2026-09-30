@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { makeSlots, aggregate } from '../src/features/when-we-meet/domain.mjs';
 import { projectWeeklyTimeline, projectDraftRow, weekWindow } from '../src/features/when-we-meet/weekly-timeline.mjs';
 const room=(startDate,endDate,timezone='UTC',startTime='09:00',endTime='10:00')=>({title:'Test',startDate,endDate,startTime,endTime,timezone});
-const response=(user_id,display_name,slots)=>({user_id,display_name,slots});
+const response=(userId,displayName,slots)=>({userId,displayName,slots});
 test('saved rows and chronological counts are independent of response order, draft, and unknown members',()=>{
   const slots=makeSlots(room('2026-09-01','2026-09-01'));
   const responses=[response('b','Beta',[slots[0].id]),response('a','Alpha',[slots[0].id,slots[1].id])];

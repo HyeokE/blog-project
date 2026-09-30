@@ -1,0 +1,123 @@
+/*
+ * Mobile bottom-sheet presentation for the shared Radix dialog primitive.
+ * Desktop keeps the centered modal. Below 640px every DialogContent with
+ * data-mobile-presentation="sheet" is anchored to the bottom edge.
+ *
+ * Specificity note: feature CSS centers dialogs with transform/translate and
+ * surface-motion.css sets `animation: … !important`, so geometry and motion here
+ * use a 0,3,0 selector (plus !important where the feature rules use it).
+ * `transform` stays non-important so the slide keyframes can drive it.
+ */
+[data-slot='dialog-sheet-handle'] { display: none; }
+
+@keyframes dialog-sheet-in { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes dialog-sheet-out { from { transform: translateY(0); } to { transform: translateY(100%); } }
+@keyframes dialog-sheet-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes dialog-sheet-fade-out { from { opacity: 1; } to { opacity: 0; } }
+
+@media (max-width: 640px) {
+  :root [data-slot='dialog-content'][data-mobile-presentation='sheet'] {
+    top: auto !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    translate: none !important;
+    transform: none;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    max-height: 90vh !important;
+    max-height: 90dvh !important;
+    display: flex !important;
+    flex-direction: column;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    border-radius: 4px 4px 0 0 !important;
+    /* Transparent bottom border reserves the home-indicator inset and is painted
+       with the sheet's own background (background-clip: border-box). */
+    border-bottom: env(safe-area-inset-bottom, 0px) solid transparent !important;
+    opacity: 1;
+  }
+
+  /* Header, footer and fixed-size fields keep their height; a form or *-body
+     region shrinks and scrolls so footer actions remain reachable. */
+  :root [data-slot='dialog-content'][data-mobile-presentation='sheet'] > * { flex-shrink: 0; }
+  :root [data-slot='dialog-content'][data-mobile-presentation='sheet'] > :is(form, [class*='-body']) {
+    flex: 0 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  /* margin-top:auto pins the footer to the bottom edge when the form is taller than its fields (large detent). */
+  :root [data-slot='dialog-content'][data-mobile-presentation='sheet'] > form > [data-slot='dialog-footer'] { flex-shrink: 0; margin-top: auto; }
+  :root [data-slot='dialog-content'][data-mobile-presentation='sheet'] > form > [class*='-body'] { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
+
+  /* Full-width grab zone (top 24px); the visible bar is its ::before. The header is also draggable. */
+  :root [data-mobile-presentation='sheet'] > [data-slot='dialog-sheet-handle'] {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 24px;
+    z-index: 1;
+    touch-action: none;
+    cursor: grab;
+  }
+  :root [data-mobile-presentation='sheet'] > [data-slot='dialog-sheet-handle']::before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    width: 36px;
+    height: 4px;
+    margin-left: -18px;
+    border-radius: 2px;
+    background: currentColor;
+    opacity: .28;
+  }
+  :root [data-mobile-presentation='sheet'] > [data-slot='dialog-header'] { touch-action: none; }
+  :root [data-mobile-presentation='sheet'][data-sheet-dragging] { cursor: grabbing; user-select: none; }
+
+  /* Settle into detents after release; follow the finger 1:1 while dragging. */
+  :root [data-slot='dialog-content'][data-mobile-presentation='sheet'][data-state='open'] {
+    transition: transform 200ms cubic-bezier(.2, .7, .2, 1), height 200ms cubic-bezier(.2, .7, .2, 1), max-height 200ms cubic-bezier(.2, .7, .2, 1);
+  }
+  :root [data-slot='dialog-content'][data-mobile-presentation='sheet'][data-sheet-dragging] { transition: none !important; }
+  /* Large detent: almost full screen, keeping a sliver of the page visible above. */
+  :root [data-slot='dialog-content'][data-mobile-presentation='sheet'][data-sheet-expanded='true'] {
+    height: calc(100vh - 12px);
+    height: calc(100dvh - 12px);
+    max-height: calc(100dvh - 12px) !important;
+  }
+  /* In the large detent the body takes the extra space so footer actions sit at the bottom edge. */
+  :root [data-slot='dialog-content'][data-mobile-presentation='sheet'][data-sheet-expanded='true'] > :is(form, [class*='-body']) { flex: 1 1 auto; }
+  :root [data-slot='dialog-content'][data-mobile-presentation='sheet'][data-sheet-expanded='true'] > form > [class*='-body'] { flex: 1 1 auto; }
+  /* Dismissed by drag: the sheet already slid out, so skip the slide-out keyframes. */
+  :root [data-slot='dialog-content'][data-mobile-presentation='sheet'][data-sheet-dismissed][data-state='closed'] {
+    animation: dialog-sheet-fade-out 1ms linear both !important;
+  }
+  /* Clear the grab bar even when compact headers shrink their top padding. `~`, not `+`: the hidden
+     drag-dismiss Close sits between the handle and the header. */
+  :root [data-mobile-presentation='sheet'] > [data-slot='dialog-sheet-handle'] ~ [data-slot='dialog-header'] { margin-top: 8px; }
+
+  :root [data-slot='dialog-content'][data-mobile-presentation='sheet'][data-state='open'] {
+    animation: dialog-sheet-in 220ms cubic-bezier(.2, .7, .2, 1) backwards !important;
+  }
+  :root [data-slot='dialog-content'][data-mobile-presentation='sheet'][data-state='closed'] {
+    animation: dialog-sheet-out 180ms cubic-bezier(.4, 0, 1, 1) both !important;
+    pointer-events: none;
+  }
+}
+
+@media (max-width: 640px) and (prefers-reduced-motion: reduce) {
+  :root [data-slot='dialog-content'][data-mobile-presentation='sheet'][data-state='open'] {
+    animation: dialog-sheet-fade-in 160ms ease-out both !important;
+  }
+  :root [data-slot='dialog-content'][data-mobile-presentation='sheet'][data-state='closed'] {
+    animation: dialog-sheet-fade-out 140ms ease-in both !important;
+  }
+}

@@ -4,8 +4,11 @@ import {readFileSync} from 'node:fs';
 
 test('save only updates permitted mutable columns on existing RPC-created response',()=>{
   const source=readFileSync(new URL('../src/app/api/craft/when-we-meet/[roomId]/route.ts',import.meta.url),'utf8');
-  assert.match(source,/\.update\(\{display_name:name,slots\}\)\.eq\('room_id',roomId\)\.eq\('user_id',user\.id\)/);
+  // Save now three-way-merges against the client's base and writes with optimistic concurrency on updated_at.
+  assert.match(source,/\.update\(\{display_name:merged\.name,slots:merged\.slots\}\)\.eq\('room_id',roomId\)\.eq\('user_id',user\.id\)\.eq\('updated_at',current\.updatedAt\)/);
   assert.doesNotMatch(source,/\.upsert\(/);
+  assert.doesNotMatch(source,/from\('wwm_responses'\)\.insert\(/);
+  assert.doesNotMatch(source,/\.update\(\{[^}]*(?:room_id|user_id|owner_id)\s*:/,'save must not rewrite identity columns');
 });
 const sql=readFileSync(new URL('../supabase/migrations/20260929000000_wwm.sql',import.meta.url),'utf8');
 test('isolates membership and owner-only writes',()=>{
