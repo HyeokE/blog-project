@@ -21,7 +21,7 @@ Applies to `src/i18n/locales/wwm/ko.json` and any Korean copy in Craft. English 
 | meeting | 모임 | 미팅, 방 |
 | half-hour cell | 칸 | 슬롯, 30분 블록 |
 | availability | 되는 시간 / 가능한 시간 | 가용성 |
-| calendar import | Google 캘린더에서 빈 일정 불러오기 · {n}칸 불러오기 | 캘린더로 채우기 |
+| calendar import | Google 캘린더에서 일정 불러오기 · {n}칸 불러오기 | 캘린더로 채우기 |
 | room tabs | 내 일정 · 전체 일정 · 참여자 · 일정 확정 | 내 시간, 모두의 시간 |
 | organizer | 주최자 | 관리자, 방장 |
 | confirm a time (tab) | 일정 확정 (status chip: 확정) | 시간 정하기, 컨펌 |

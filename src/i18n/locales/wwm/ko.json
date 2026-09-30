@@ -177,7 +177,7 @@
     "showEarlier": "{from}–{to} 펼치기"
   },
   "fill": {
-    "trigger": "Google 캘린더에서 빈 일정 불러오기",
+    "trigger": "Google 캘린더에서 일정 불러오기",
     "checking": "캘린더를 보고 있어요",
     "intro": "캘린더에서 비어 있는 시간을 먼저 보여드릴게요.",
     "onlyTheseDates": "고른 날짜만 바뀌어요",

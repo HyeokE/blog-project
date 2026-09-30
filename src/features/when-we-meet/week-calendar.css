@@ -117,3 +117,7 @@
  .wwm-calendar-frame.is-hscroll .wwm-week-grid{grid-template-columns:54px repeat(var(--wwm-day-count),minmax(var(--hday),1fr));width:max(100%,calc(54px + var(--wwm-day-count) * var(--hday)))}
  .wwm-calendar-frame.is-hscroll .wwm-week-body .wwm-calendar-day{scroll-snap-align:start;scroll-margin-left:54px}
 }
+/* The import button is the main action of the My schedule tab: full 48px tap target, 16px label. */
+.wwm .wwm-weekly .wwm-calendar-tools>[data-slot='button'].wwm-calendar-fill-trigger{min-height:48px;padding-inline:var(--craft-space-5,20px);font-size:var(--craft-fs-16,16px)}
+/* Narrow phone columns: the time range may wrap instead of being cut off. */
+@media(max-width:480px){.wwm-calendar-frame.is-hscroll .wwm-calendar-own-event small{white-space:normal;overflow:visible;text-overflow:clip;line-height:14px;overflow-wrap:anywhere}}
