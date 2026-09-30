@@ -1,10 +1,11 @@
+import {googleOAuthClient} from '../../lib/google-login.mjs';
 import {CALENDAR_SCOPE,CALENDAR_CALLBACK_PATH,isCalendarOrigin,consumeConnection,readConnectionRoom,decodeFlowCookie,calendarReturnPath,validateCalendarGrant,encryptCredential} from './calendar-connection.mjs';
 const isKey=value=>typeof value==='string'&&Buffer.from(value,'base64url').length===32;
-/** OAuth settings for the direct Calendar consent. The redirect is derived from the trusted request origin. */
+/** OAuth settings for the direct Calendar consent on the unified sign-in client. The redirect is derived from the trusted request origin. */
 export function calendarConfig(origin,env=process.env){
- const clientId=env.GOOGLE_CALENDAR_CLIENT_ID,clientSecret=env.GOOGLE_CALENDAR_CLIENT_SECRET;
+ const {clientId,clientSecret}=googleOAuthClient(env);
  const encryptionKey=env.WWM_CALENDAR_ENCRYPTION_KEY,stateKey=env.WWM_CALENDAR_STATE_KEY;
- if(!clientId||!clientSecret||!isKey(encryptionKey)||!isKey(stateKey)||encryptionKey===stateKey)throw Error('Calendar configuration unavailable');
+ if(!isKey(encryptionKey)||!isKey(stateKey)||encryptionKey===stateKey)throw Error('Calendar configuration unavailable');
  if(!isCalendarOrigin(origin))throw Error('Invalid Calendar redirect');
  return {clientId,clientSecret,redirectUri:`${origin}${CALENDAR_CALLBACK_PATH}`,origin,encryptionKey,stateKey};
 }

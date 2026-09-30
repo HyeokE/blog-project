@@ -8,7 +8,7 @@ const src=new URL('../src/',import.meta.url);
 const read=path=>readFile(new URL(path,src),'utf8');
 const room='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const user={id:'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',email:'a@example.org',email_confirmed_at:'today',identities:[{provider:'google',id:'google-sub'}]};
-const config=calendarConfig('https://example.org',{GOOGLE_CALENDAR_CLIENT_ID:'client',GOOGLE_CALENDAR_CLIENT_SECRET:'secret',WWM_CALENDAR_ENCRYPTION_KEY:randomBytes(32).toString('base64url'),WWM_CALENDAR_STATE_KEY:randomBytes(32).toString('base64url')});
+const config=calendarConfig('https://example.org',{GOOGLE_OAUTH_CLIENT_ID:'client',GOOGLE_OAUTH_CLIENT_SECRET:'secret',WWM_CALENDAR_ENCRYPTION_KEY:randomBytes(32).toString('base64url'),WWM_CALENDAR_STATE_KEY:randomBytes(32).toString('base64url')});
 function begin({returnTo}={}){
  const nonce=randomBytes(32).toString('base64url');
  const flow=createConnection({roomId:room,userId:user.id,key:config.stateKey,origin:config.origin,nonce,clientId:config.clientId,loginHint:user.email,returnTo});
@@ -81,16 +81,21 @@ test('a malformed or missing code is rejected before the token exchange',async()
 
 test('ordinary Google sign-in requests only default scopes and never forces offline consent',async()=>{
  const route=await read('app/api/craft/auth/google/route.ts');
- assert.match(route,/signInWithOAuth\(/);
- assert.doesNotMatch(route,/scopes\s*:/);
- assert.match(route,/signInWithOAuth\(\{provider:'google',options:\{redirectTo:callback\.toString\(\)\}\}\)/);
- assert.doesNotMatch(route,/googleapis\.com\/auth/);
- assert.doesNotMatch(route,/access_type|prompt\s*:/);
+ const login=await read('lib/google-login.mjs');
+ assert.match(login,/scope:'openid email profile'/);
+ assert.doesNotMatch(`${route}\n${login}`,/googleapis\.com\/auth|access_type|include_granted_scopes/);
 });
 test('the login callback never reads, writes or deletes a Calendar credential',async()=>{
- const route=await read('app/api/craft/auth/callback/route.ts');
+ const route=await read('app/api/craft/auth/google/callback/route.ts');
  assert.doesNotMatch(route,/storeCredential|encryptCredential|calendar-server|calendar-db|provider_refresh_token/);
- assert.match(route,/createLoginExchange\(/);
+ assert.match(route,/signInWithIdToken\(/);
+});
+test('Calendar uses the unified sign-in OAuth client, not a separate GOOGLE_CALENDAR_* client',async()=>{
+ const legacy={GOOGLE_CALENDAR_CLIENT_ID:'old',GOOGLE_CALENDAR_CLIENT_SECRET:'old',WWM_CALENDAR_ENCRYPTION_KEY:randomBytes(32).toString('base64url'),WWM_CALENDAR_STATE_KEY:randomBytes(32).toString('base64url')};
+ assert.throws(()=>calendarConfig('https://example.org',legacy));
+ const {calendarClientConfig}=await import('../src/features/when-we-meet/calendar-google.mjs');
+ assert.throws(()=>calendarClientConfig(legacy));
+ assert.deepEqual(calendarClientConfig({GOOGLE_OAUTH_CLIENT_ID:'c',GOOGLE_OAUTH_CLIENT_SECRET:'s'}),{clientId:'c',clientSecret:'s'});
 });
 test('connect route is same-origin, member-only, origin-derived and sets a path-scoped httpOnly flow cookie',async()=>{
  const route=await read('app/api/craft/when-we-meet/[roomId]/calendar/connect/route.ts');

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {randomBytes} from 'node:crypto';
 import {calendarConfig,exchangeCalendarCode,fetchCalendarIdentity,calendarStatus} from '../src/features/when-we-meet/calendar-server.mjs';
 const key=randomBytes(32).toString('base64url');
-const env={GOOGLE_CALENDAR_CLIENT_ID:'client',GOOGLE_CALENDAR_CLIENT_SECRET:'secret',WWM_CALENDAR_ENCRYPTION_KEY:key,WWM_CALENDAR_STATE_KEY:randomBytes(32).toString('base64url')};
+const env={GOOGLE_OAUTH_CLIENT_ID:'client',GOOGLE_OAUTH_CLIENT_SECRET:'secret',WWM_CALENDAR_ENCRYPTION_KEY:key,WWM_CALENDAR_STATE_KEY:randomBytes(32).toString('base64url')};
 test('configuration derives the redirect from the request origin and requires distinct keys',()=>{
  const config=calendarConfig('https://example.org',env);
  assert.equal(config.redirectUri,'https://example.org/api/craft/when-we-meet/calendar/callback');
@@ -13,7 +13,7 @@ test('configuration derives the redirect from the request origin and requires di
  assert.throws(()=>calendarConfig('https://example.org',{...env,WWM_CALENDAR_STATE_KEY:key}));
  assert.throws(()=>calendarConfig('https://example.org',{...env,WWM_CALENDAR_STATE_KEY:undefined}));
  assert.throws(()=>calendarConfig('https://example.org',{...env,WWM_CALENDAR_STATE_KEY:'short'}));
- assert.throws(()=>calendarConfig('https://example.org',{...env,GOOGLE_CALENDAR_CLIENT_ID:''}));
+ assert.throws(()=>calendarConfig('https://example.org',{...env,GOOGLE_OAUTH_CLIENT_ID:''}));
  assert.throws(()=>calendarConfig('http://evil.example',env));
  assert.throws(()=>calendarConfig(null,env));
  assert.throws(()=>calendarConfig('https://example.org/path',env));

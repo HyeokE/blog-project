@@ -8,7 +8,7 @@ const require=createRequire(import.meta.url);
 const ts=require('typescript');
 const server=readFileSync(new URL('../src/lib/supabase/server.ts',import.meta.url),'utf8');
 const proxy=readFileSync(new URL('../src/proxy.ts',import.meta.url),'utf8');
-const callback=readFileSync(new URL('../src/app/api/craft/auth/callback/route.ts',import.meta.url),'utf8');
+const callback=readFileSync(new URL('../src/app/api/craft/auth/google/callback/route.ts',import.meta.url),'utf8');
 test('RSC user lookup selects a read-only cookie adapter, not an unconditional store.set',()=>{
  assert.match(server,/serverSupabaseClient\(\{readOnly:true\}\)/);
  assert.match(server,/if\(!readOnly\).*store\.set/s);

@@ -1,3 +1,4 @@
+import {googleOAuthClient} from '../../lib/google-login.mjs';
 // Google Calendar REST calls for the server only. `fetcher` is injectable for tests.
 // `definite` = Google answered with a 4xx, so nothing was created; otherwise the outcome is unknown.
 export class GoogleCalendarError extends Error{
@@ -9,10 +10,9 @@ async function call(fetcher,url,init){
  catch{throw new GoogleCalendarError('Google Calendar did not respond',{definite:false});}
 }
 const fail=(response,message)=>new GoogleCalendarError(message,{status:response.status,definite:response.status>=400&&response.status<500});
+/** Refreshes use the unified sign-in/Calendar OAuth client; tokens from an earlier client fail with unauthorized_client -> reconnect. */
 export function calendarClientConfig(env=process.env){
- const clientId=env.GOOGLE_CALENDAR_CLIENT_ID,clientSecret=env.GOOGLE_CALENDAR_CLIENT_SECRET;
- if(!clientId||!clientSecret)throw new GoogleCalendarError('Calendar configuration unavailable');
- return {clientId,clientSecret};
+ try{return googleOAuthClient(env)}catch{throw new GoogleCalendarError('Calendar configuration unavailable')}
 }
 export async function refreshAccessToken(refreshToken,config,fetcher=fetch){
  const body=new URLSearchParams({grant_type:'refresh_token',refresh_token:refreshToken,client_id:config.clientId,client_secret:config.clientSecret});
