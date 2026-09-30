@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {normalizeRoom,normalizeMeeting,normalizeResponses,normalizePeople,normalizeAttendees,normalizeConfirmation,normalizeCreatedRoom,normalizeCredential,participantCountsByRoom} from '../src/features/when-we-meet/normalize.mjs';
+import {normalizeRoom,normalizeMeeting,normalizeResponses,normalizePeople,normalizeAttendees,normalizeConfirmation,normalizeCreatedRoom,normalizeCredential,participantCountsByRoom,confirmationStatusByRoom} from '../src/features/when-we-meet/normalize.mjs';
 
 const SNAKE=/^[a-z]+(?:_[a-z]+)+$/;
 const keysDeep=value=>value&&typeof value==='object'?Object.entries(value).flatMap(([key,child])=>[key,...keysDeep(child)]):[];
@@ -22,6 +22,16 @@ test('meeting rows carry createdAt and participantCount',()=>{
  const meeting=normalizeMeeting({...roomRow,created_at:'2026-09-29T00:00:00Z'},counts);
  assert.equal(meeting.createdAt,'2026-09-29T00:00:00Z');assert.equal(meeting.participantCount,3);assert.equal(meeting.startTime,'09:00');
  assert.equal(normalizeMeeting({...roomRow,id:'x',created_at:'z'},counts).participantCount,null);
+ assertCamel(meeting);
+});
+
+test('meeting rows carry the confirmation status from wwm_confirmation_status rows (null when unknown)',()=>{
+ const statuses=confirmationStatusByRoom([['r',[{revision:1,status:'confirmed',title:'Meet',starts_at:'x',ends_at:'y',timezone:'UTC',google_event_url:null}]],['n',[]],['e',null]]);
+ assert.equal(statuses.get('r'),'confirmed');assert.equal(statuses.get('n'),null);assert.equal(statuses.has('e'),false);
+ const meeting=normalizeMeeting({...roomRow,created_at:'z'},new Map(),statuses);
+ assert.equal(meeting.confirmationStatus,'confirmed');
+ assert.equal(normalizeMeeting({...roomRow,id:'n',created_at:'z'},new Map(),statuses).confirmationStatus,null);
+ assert.equal(normalizeMeeting({...roomRow,id:'q',created_at:'z'}).confirmationStatus,null);
  assertCamel(meeting);
 });
 

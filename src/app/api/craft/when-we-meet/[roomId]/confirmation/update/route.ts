@@ -11,7 +11,7 @@ type Context={params:Promise<{roomId:string}>};
 // `baseRevision` is the confirmed revision the owner edited; a retry of the same edit reconciles instead of re-sending.
 export async function POST(request:Request,context:Context){
  if(!sameOrigin(request))return failed('Invalid request origin.',403);
- const {roomId}=await context.params;if(!uuid(roomId))return invalid('Invalid room ID.');
+ const {roomId}=await context.params;if(!uuid(roomId))return invalid('Invalid meeting ID.');
  const input=await body(request);if(!input)return invalid();
  const baseRevision=input.baseRevision;
  if(typeof baseRevision!=='number'||!Number.isSafeInteger(baseRevision)||baseRevision<1)return invalid('Reload the meeting and review again.');

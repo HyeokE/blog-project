@@ -7,6 +7,7 @@ import {Writable} from 'node:stream';
 import React, {Suspense, use} from 'react';
 import {renderToPipeableStream} from 'react-dom/server';
 import ts from 'typescript';
+import * as meetingCopy from '../src/features/when-we-meet/meeting-copy.mjs';
 
 // Isolated React SSR probe: execute actual production async section code, inject only the data reader.
 const require=createRequire(import.meta.url);
@@ -22,15 +23,15 @@ const ownedPresentation={'@/features/when-we-meet/ParticipantCount':{Participant
 function section(Section,fallback){let attempt;function Holder(){if(!attempt)attempt=Section({});return use(attempt)}return React.createElement('main',null,React.createElement('h1',null,'When We Meet'),React.createElement(Suspense,{fallback},React.createElement(Holder)))}
 
 test('actual OwnedMeetings streams geometry-matched fallback, then deferred owned row',async()=>{
- const read=deferred();const OwnedMeetings=loadComponent('src/app/craft/when-we-meet/OwnedMeetings.tsx',{'@/lib/supabase/server':{ownedCraftMeetings:()=>read.promise},'@/features/when-we-meet/ServerSectionRetry':{default:()=>null},'next/navigation':{unstable_rethrow:()=>{}},'@/features/when-we-meet/display-date.mjs':{formatCraftDate:x=>x},...ownedPresentation,'next/link':{default:({href,children})=>React.createElement('a',{href},children)}});
+ const read=deferred();const OwnedMeetings=loadComponent('src/app/craft/when-we-meet/OwnedMeetings.tsx',{'@/lib/supabase/server':{ownedCraftMeetings:()=>read.promise},'@/features/when-we-meet/ServerSectionRetry':{default:()=>null},'next/navigation':{unstable_rethrow:()=>{}},'@/features/when-we-meet/meeting-copy.mjs':meetingCopy,...ownedPresentation,'next/link':{default:({href,children})=>React.createElement('a',{href},children)}});
  const skeleton=loadComponent('src/features/when-we-meet/ServerSkeletons.tsx',{'@/container/light-wall/WallBackLink':{default:({children})=>React.createElement('a',null,children)},'./LoadingState':{LoadingState:({label})=>React.createElement('span',{role:'status'},label)}});
  const rendered=stream(section(OwnedMeetings,React.createElement(skeleton.MeetingRowsSkeleton)));
  await rendered.shell;await new Promise(r=>setTimeout(r,10));assert.match(rendered.chunks.join(''),/Loading meetings/,String(rendered.errors));assert.match(rendered.chunks.join(''),/wwm-skeleton-meeting/);assert.doesNotMatch(rendered.chunks.join(''),/Fixture meeting/);
- read.resolve({meetings:[fixture],userId:'fixture-user'});await rendered.done;
- assert.match(rendered.chunks.join(''),/Fixture meeting/);assert.match(rendered.chunks.join('').replaceAll('<!-- -->',''),/2026-10-01 – 2026-10-02 · 09:00–18:00 · Asia\/Seoul/,'camelCase meeting fields render');assert.match(rendered.chunks.join(''),/wwm-participant-count">2</);assert.match(rendered.chunks.join(''),/\/craft\/when-we-meet\/fixture-room/);assert.deepEqual(rendered.errors,[]);
+ read.resolve({meetings:[{...fixture,confirmationStatus:'confirmed'}],userId:'fixture-user'});await rendered.done;
+ assert.match(rendered.chunks.join(''),/Fixture meeting/);assert.match(rendered.chunks.join(''),/wwm-meeting-tag">Confirmed</,'a confirmed meeting carries a quiet tag');assert.match(rendered.chunks.join(''),/data-meeting-id="fixture-room"/);assert.match(rendered.chunks.join('').replaceAll('<!-- -->',''),/2026\.10\.01 – 10\.02 · 09:00–18:00 · Asia\/Seoul/,'camelCase meeting fields render');assert.match(rendered.chunks.join(''),/wwm-participant-count">2</);assert.match(rendered.chunks.join(''),/\/craft\/when-we-meet\/fixture-room/);assert.deepEqual(rendered.errors,[]);
 });
 test('actual OwnedMeetings guest resolution returns no private rows',async()=>{
- const read=deferred();const OwnedMeetings=loadComponent('src/app/craft/when-we-meet/OwnedMeetings.tsx',{'@/lib/supabase/server':{ownedCraftMeetings:()=>read.promise},'@/features/when-we-meet/ServerSectionRetry':{default:()=>null},'next/navigation':{unstable_rethrow:()=>{}},'@/features/when-we-meet/display-date.mjs':{formatCraftDate:x=>x},...ownedPresentation,'next/link':{default:({children})=>React.createElement('a',null,children)}});
+ const read=deferred();const OwnedMeetings=loadComponent('src/app/craft/when-we-meet/OwnedMeetings.tsx',{'@/lib/supabase/server':{ownedCraftMeetings:()=>read.promise},'@/features/when-we-meet/ServerSectionRetry':{default:()=>null},'next/navigation':{unstable_rethrow:()=>{}},'@/features/when-we-meet/meeting-copy.mjs':meetingCopy,...ownedPresentation,'next/link':{default:({children})=>React.createElement('a',null,children)}});
  const result=stream(section(OwnedMeetings,React.createElement('i',null,'waiting')));await result.shell;await new Promise(r=>setTimeout(r,10));assert.match(result.chunks.join(''),/waiting/);read.resolve({meetings:[fixture],userId:null});await result.done;assert.doesNotMatch(result.chunks.join(''),/Fixture meeting/);
 });
 test('room page reaches Suspense before awaiting params',async()=>{
@@ -49,20 +50,21 @@ test('actual room section resolves failed read into retry payload and recovers o
   '@/lib/supabase/server':{
    currentSupabaseUser:async()=>({client:{},user:{id:'u'}}),
    craftRoomMetadata:async()=>{if(fail)throw new Error('private database diagnostic');return {room:fixture,responses:[],userId:'u'}},
-   craftRoomResponses:async()=>[]
+   craftRoomResponses:async()=>[],
+   craftRoomConfirmation:async()=>{if(fail)throw new Error('private confirmation diagnostic');return {status:'confirmed'}}
   },
   '@/features/when-we-meet/ServerSkeletons':{RoomSkeleton:()=>null},
   '@/features/when-we-meet/ServerSectionRetry':{default:function ServerSectionRetry(){}}
  });
  const props={params:Promise.resolve({roomId:'fixture-room'})};
  const failure=await module.RoomSection(props);assert.equal(failure.type.name,'ServerSectionRetry');assert.equal(JSON.stringify(failure).includes('private database diagnostic'),false);
- fail=false;const recovered=await module.RoomSection(props);assert.equal(recovered.type.name,'WhenWeMeet');assert.equal(recovered.props.initialRoom.room.title,'Fixture meeting');assert.equal(JSON.stringify(await recovered.props.responsesPromise),'{"responses":[]}');
+ fail=false;const recovered=await module.RoomSection(props);assert.equal(recovered.type.name,'WhenWeMeet');assert.equal(recovered.props.initialRoom.room.title,'Fixture meeting');assert.equal(JSON.stringify(await recovered.props.responsesPromise),'{"responses":[]}');assert.equal(recovered.props.initialConfirmation.status,'confirmed');
 });
 
 test('owned meeting read failure returns isolated section retry',async()=>{
  const OwnedMeetings=loadComponent('src/app/craft/when-we-meet/OwnedMeetings.tsx',{
   '@/lib/supabase/server':{ownedCraftMeetings:async()=>{throw Error('private diagnostic')}},
-  '@/features/when-we-meet/display-date.mjs':{formatCraftDate:x=>x},...ownedPresentation,
+  '@/features/when-we-meet/meeting-copy.mjs':meetingCopy,...ownedPresentation,
   '@/features/when-we-meet/ServerSectionRetry':{default:function MeetingsRetry(){}},
   'next/navigation':{unstable_rethrow:()=>{}},'next/link':{default:()=>null}
  });

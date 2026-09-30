@@ -16,7 +16,7 @@
 .craft-chrome .craft-page{padding-top:88px;background:var(--craft-canvas)}
 .craft-chrome .craft-header{padding-top:18px;padding-bottom:24px}
 .craft-chrome .wwm{padding-top:max(112px,calc(var(--wall-header-top) + 70px));padding-bottom:110px}
-.craft-chrome .wwm .wall-context-back{position:relative;margin-bottom:24px;left:calc(4.5vw - clamp(24px,6vw,88px))}
+.craft-chrome .wwm .wall-context-back{position:relative;left:0;margin-bottom:24px}
 @media(max-width:700px){
   .craft-chrome .wall-header-actions{gap:4px}
   .craft-chrome .craft-account-login{font-size:11px!important;padding:6px;min-height:40px}
@@ -33,3 +33,9 @@
 
 /* Override the shared wall gradient only inside the Craft route family. */
 .craft-chrome.light-wall,:root[data-mode='dark'] .craft-chrome.light-wall{background:var(--craft-canvas)}
+
+/* One content column (stage 2): Craft index, When We Meet list/room and legal pages share a 1120px column; the back link sits on its left edge. */
+:root[data-craft]{--craft-content-max:1120px}
+.craft-page .craft-shell,.wwm .wwm-shell,.wwm .wwm-topline{width:100%;max-width:var(--craft-content-max);margin-inline:auto;box-sizing:border-box}
+.craft-legal .craft-shell{max-width:var(--craft-content-max)}
+.craft-legal .craft-shell>*{max-width:720px}

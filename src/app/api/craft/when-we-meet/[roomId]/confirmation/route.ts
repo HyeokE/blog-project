@@ -11,11 +11,11 @@ type Context={params:Promise<{roomId:string}>};
 
 // Members see the public status; the owner also receives the attendee review (names + login emails).
 export async function GET(_request:Request,context:Context){
- const {roomId}=await context.params;if(!uuid(roomId))return invalid('Invalid room ID.');
+ const {roomId}=await context.params;if(!uuid(roomId))return invalid('Invalid meeting ID.');
  try{
   const session=await currentSupabaseUser();if(!session.user)return unauthorized();
   const metadata=await craftRoomMetadata(roomId,session);
-  if(!metadata)return failed('Room unavailable or you are not a member.',403);
+  if(!metadata)return failed('Meeting unavailable or you are not a member.',403);
   const confirmation=await confirmationStatus(session,roomId);
   if(metadata.room.ownerId!==session.user.id)return ok({confirmation,review:null});
   const [rows,connected,edit]=await Promise.all([attendees(session,roomId),calendarConnected(session.user),confirmation?confirmationDetail(session,roomId):null]);
@@ -26,12 +26,12 @@ export async function GET(_request:Request,context:Context){
 // Owner-only, explicit action: sends Google Calendar invitations to the reviewed recipients.
 export async function POST(request:Request,context:Context){
  if(!sameOrigin(request))return failed('Invalid request origin.',403);
- const {roomId}=await context.params;if(!uuid(roomId))return invalid('Invalid room ID.');
+ const {roomId}=await context.params;if(!uuid(roomId))return invalid('Invalid meeting ID.');
  const input=await body(request);if(!input)return invalid();
  try{
   const session=await currentSupabaseUser();const user=session.user;if(!user)return unauthorized();
   const metadata=await craftRoomMetadata(roomId,session);
-  if(!metadata)return failed('Room unavailable or you are not a member.',403);
+  if(!metadata)return failed('Meeting unavailable or you are not a member.',403);
   if(metadata.room.ownerId!==user.id)return failed('Only the meeting owner can confirm.',403);
   const members=(await attendees(session,roomId)).map(row=>({userId:row.userId,email:row.email}));
   let valid;

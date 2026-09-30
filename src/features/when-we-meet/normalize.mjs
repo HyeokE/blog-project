@@ -10,7 +10,9 @@ export function normalizeRoom(row){
 }
 /** `wwm_participant_counts` rows → room id → count. */
 export function participantCountsByRoom(rows){return new Map((rows||[]).map(row=>[row.room_id,Number(row.participant_count)]))}
-export function normalizeMeeting(row,counts=new Map()){return {...normalizeRoom(row),createdAt:row.created_at,participantCount:counts.has(row.id)?counts.get(row.id):null}}
+/** Per-room `wwm_confirmation_status` results → room id → status (`null` = not confirmed yet). Rooms whose read failed (`null` rows) are left out. */
+export function confirmationStatusByRoom(entries){return new Map((entries||[]).filter(([,rows])=>Array.isArray(rows)).map(([roomId,rows])=>[roomId,rows[0]?.status??null]))}
+export function normalizeMeeting(row,counts=new Map(),statuses=new Map()){return {...normalizeRoom(row),createdAt:row.created_at,participantCount:counts.has(row.id)?counts.get(row.id):null,confirmationStatus:statuses.get(row.id)??null}}
 /** `updatedAt` stays the raw DB string: it is the optimistic-concurrency version compared back in SQL. */
 export function normalizeResponses(rows){return rows.map(row=>({userId:row.user_id,displayName:row.display_name,slots:(row.slots||[]).map(instant),...(row.updated_at!==undefined?{updatedAt:row.updated_at}:{})}))}
 export function normalizePeople(rows){return rows.map(row=>({userId:row.user_id,displayName:row.display_name,isAdmin:row.is_admin===true,hasAvailability:row.has_availability===true}))}

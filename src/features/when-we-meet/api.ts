@@ -2,7 +2,7 @@ import {safeReturnPath} from './return-path.mjs';
 import {normalizeConfirmationResponse,type ConfirmRequestBody,type ConfirmUpdateBody} from './confirm-tab.mjs';
 export type Room={id:string;ownerId?:string;role?:'ADMIN'|'MEMBER';title:string;startDate:string;endDate:string;startTime:string;endTime:string;timezone:string;inviteToken?:string};
 export type Response={userId:string;displayName:string;slots:string[];updatedAt?:string};
-export type Meeting={participantCount?:number|null;id:string;ownerId:string;title:string;startDate:string;endDate:string;startTime:string;endTime:string;timezone:string;createdAt:string};
+export type Meeting={participantCount?:number|null;id:string;ownerId:string;title:string;startDate:string;endDate:string;startTime:string;endTime:string;timezone:string;createdAt:string;confirmationStatus?:string|null};
 const base='/api/craft/when-we-meet';
 /** Non-OK response. Still an Error (existing callers read `.message`); adds the HTTP status and the server's reconnect flag. */
 export class ApiError extends Error{readonly status:number;readonly reconnect:boolean;constructor(message:string,status:number,reconnect=false){super(message);this.name='ApiError';this.status=status;this.reconnect=reconnect;}}

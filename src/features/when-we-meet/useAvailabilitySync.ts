@@ -6,7 +6,7 @@ import {toggleSlot} from './domain.mjs';
 
 type Options={roomId?:string;userId?:string;enabled:boolean;initial:AvailabilitySnapshot;draft:AvailabilitySnapshot;onSaved:(v:AvailabilitySnapshot)=>void;onDraft:(v:AvailabilitySnapshot)=>void;onResponses:(v:Response[])=>void};
 export function useAvailabilitySync(options:Options){
- const [state,setState]=useState<AutosaveState>('saved'),[connected,setConnected]=useState(false),[message,setMessage]=useState('');
+ const [state,setState]=useState<AutosaveState>('saved'),[connected,setConnected]=useState(false),[offline,setOffline]=useState(false),[message,setMessage]=useState('');
  const queue=useRef<ReturnType<typeof createAvailabilityAutosave>|null>(null);
  const current=useRef(options),draft=useRef(options.draft);
  useEffect(()=>{current.current=options;draft.current=options.draft},[options]);
@@ -31,22 +31,25 @@ export function useAvailabilitySync(options:Options){
     try{
      const payload=JSON.parse((event as MessageEvent).data) as {userId:string;responses:Response[]};
      if(payload.userId!==userId||!Array.isArray(payload.responses)){events?.close();setConnected(false);return}
-     current.current.onResponses(payload.responses);setConnected(true);
+     current.current.onResponses(payload.responses);setConnected(true);setOffline(false);
      const self=payload.responses.find(row=>row.userId===userId);
      if(self)controller.remote({name:self.displayName,slots:self.slots,version:self.updatedAt});
     }catch{setConnected(false)}
    });
-   events.onerror=()=>{if(!disposed)setConnected(false)};
+   // Only a dropped stream is "offline"; the initial connect is silent.
+   events.onerror=()=>{if(!disposed){setConnected(false);setOffline(navigator.onLine===false||events?.readyState===2)}};
+   events.onopen=()=>{if(!disposed)setOffline(false)};
   };
   const visibility=()=>{setConnected(false);connect()};
+  const online=()=>{setOffline(false);connect()},wentOffline=()=>setOffline(true);
   const beforeUnload=(event:BeforeUnloadEvent)=>{if(controller.pending()){event.preventDefault();event.returnValue=''}};
-  connect();document.addEventListener('visibilitychange',visibility);window.addEventListener('beforeunload',beforeUnload);
-  return()=>{disposed=true;events?.close();controller.dispose();if(queue.current===controller)queue.current=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('beforeunload',beforeUnload)};
+  connect();document.addEventListener('visibilitychange',visibility);window.addEventListener('online',online);window.addEventListener('offline',wentOffline);window.addEventListener('beforeunload',beforeUnload);
+  return()=>{disposed=true;events?.close();controller.dispose();if(queue.current===controller)queue.current=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('online',online);window.removeEventListener('offline',wentOffline);window.removeEventListener('beforeunload',beforeUnload)};
  },[roomId,userId,enabled]);
  const update=useCallback((value:AvailabilitySnapshot)=>{draft.current=value;current.current.onDraft(value);queue.current?.update(value)},[]);
  const toggle=useCallback((id:string)=>{update({...draft.current,slots:toggleSlot(draft.current.slots,id)})},[update]);
  const rename=useCallback((name:string)=>{update({...draft.current,name})},[update]);
  // Whole-selection replacement (e.g. an applied calendar preview); same draft/autosave path as toggles.
  const replace=useCallback((slots:string[])=>{update({...draft.current,slots:[...new Set(slots)].sort()})},[update]);
- return {state,connected,message,toggle,rename,replace,retry:()=>queue.current?.retry()};
+ return {state,connected,offline,message,toggle,rename,replace,retry:()=>queue.current?.retry()};
 }

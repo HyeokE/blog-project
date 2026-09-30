@@ -11,7 +11,7 @@ type Context={params:Promise<{roomId:string}>};
 // Limited server-side to once per minute per room (wwm_reserve_resend).
 export async function POST(request:Request,context:Context){
  if(!sameOrigin(request))return failed('Invalid request origin.',403);
- const {roomId}=await context.params;if(!uuid(roomId))return invalid('Invalid room ID.');
+ const {roomId}=await context.params;if(!uuid(roomId))return invalid('Invalid meeting ID.');
  try{
   const owner=await ownerSession(roomId,'resend invitations');if('response' in owner)return owner.response;
   const {session,user}=owner;

@@ -1,3 +1,0 @@
-/* Invitation link dialog: surface, field and buttons come from the shared Craft primitives. */
-.wwm-invite-link-dialog{width:min(520px,calc(100vw - 32px));max-width:520px;padding:var(--craft-space-6);gap:var(--craft-space-4)}
-.wwm-invite-link-dialog [data-slot=dialog-footer]{display:flex;flex-direction:row;justify-content:flex-end;gap:var(--craft-space-2)}

@@ -7,13 +7,17 @@ test('room title owns metadata and header actions without redundant headings',()
  assert.doesNotMatch(component,/wwm-eyebrow/);
  // Availability autosaves (useAvailabilitySync); the explicit Save button is superseded. Status sits outside the tabs.
  assert.doesNotMatch(component,/Save availability<\/Button>/);
- assert.match(component,/<div className="wwm-save-state"><span className="wwm-sr-only" role="status">[^\n]*<\/div>\n\s*<Tabs /);
+ // Compact status shares the tab row (beside the tabs, outside the panels).
+ assert.match(component,/<div className="wwm-tabs-row"><TabsList[^\n]*<\/TabsList>\n[^\n]*\n\s*\{\(view==="availability"\|\|save\.tone!=="idle"\)&&<div className="wwm-save-state" data-tone=\{save\.tone\}><span className="wwm-sr-only" role="status">/);
  // One live sentence; the visible line with the rolling count is hidden from AT so the number is not announced twice.
- assert.match(component,/<span aria-hidden="true">\{saveLabel\} · <RollingNumber value=\{mine\.length\}\/> selected<\/span>/);
- assert.match(component,/role="status">\{`\$\{saveLabel\} · \$\{mine\.length\} selected/);
+ assert.match(component,/<span aria-hidden="true">\{save\.text&&<>\{save\.text\} · <\/>\}<RollingNumber value=\{mine\.length\}\/> selected<\/span>/);
+ assert.match(component,/role="status">\{save\.text\?`\$\{save\.text\} · \$\{mine\.length\} selected`:''\}/);
  // Metadata line sits directly under the room title (h1).
- assert.match(component,/<h1>\{room\?\.title\|\|'When We Meet'\}<\/h1>/);
- assert.match(component,/\{room\?<p className="wwm-room-meta">\{room\.timezone\}/);
+ const chrome=readFileSync(new URL('../src/features/when-we-meet/RoomChrome.tsx',import.meta.url),'utf8');
+ assert.match(chrome,/<h1>\{title\}<\/h1>/);
+ // Meta: date range · timezone (the only timezone in the view); no "Live updates" text, only an Offline dot.
+ assert.match(chrome,/<p className="wwm-room-meta">\{compactRange\(startDate,endDate\)\}<span aria-hidden="true"> · <\/span>\{timezone\}\{offline&&/);
+ assert.doesNotMatch(component+chrome,/Live updates|Connecting…/);
  assert.doesNotMatch(component,/<div className="wwm-heading"><div><h2>시간표<\/h2>/);
 });
 test('room uses the continuous scrolling availability calendar instead of the superseded standalone calendar',()=>{

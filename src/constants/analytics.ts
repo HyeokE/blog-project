@@ -102,6 +102,7 @@ export const ANALYTICS_ELEMENTS = {
   MEETING_SETTINGS: 'meeting_settings',
   MEETING_SETTINGS_FORM: 'meeting_settings_form',
   MEETING_TAB: 'meeting_tab',
+  MEETING_MENU: 'meeting_menu',
   INVITE_LINK_COPY: 'invite_link_copy',
   INVITE_LINK_INPUT: 'invite_link_input',
   DATE_RANGE_PICKER: 'date_range_picker',
@@ -137,6 +138,8 @@ export const ANALYTICS_ELEMENTS = {
   CONFIRM_EDIT_SAVE: 'confirm_edit_save',
   CONFIRM_EDIT_CANCEL: 'confirm_edit_cancel',
   CONFIRM_RESEND: 'confirm_resend',
+  CONFIRM_RESEND_SEND: 'confirm_resend_send',
+  CONFIRM_MANUAL_TIME: 'confirm_manual_time',
 } as const;
 
 export const ANALYTICS_SECTIONS = {

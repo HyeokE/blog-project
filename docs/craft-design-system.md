@@ -6,13 +6,25 @@ Official basis: https://ui.shadcn.com/docs/installation/next , https://ui.shadcn
 
 Tokens live on `:root[data-craft]` (light) and `:root[data-craft][data-mode='dark']` in `src/app/craft/design-system.css`, so Radix portals inherit them; dialogs/popovers must not redeclare palettes. Scale: type 12/14/16/20/28 (+40 display on /craft), weights 400/500/600; space 4/8/12/16/24/32/48; `--craft-h-md` 44px for every field and button, `--craft-h-sm` 32px for in-grid toolbars; one 4px radius (avatar 50%); layers sticky 20 / popover 60 / dialog 80 / popover-in-dialog 90 / toast 100. The same file holds the Craft look of the `src/components/ui` primitives (Input, FieldTrigger, Select, Checkbox, Command, Popover, Dialog, Calendar, Button), keyed on `data-slot`. Participant colours are `--craft-person-1…8` + `--craft-person-you`, mirrored and contrast-tested in `participant-palette.mjs`.
 
+## Stage 2 surface rules (2026-10-01)
+
+- One content column: `--craft-content-max` 1120px for the Craft index, When We Meet list/room and legal pages; the back link sits on the column edge; legal text keeps a 720px measure inside it.
+- Room header (`RoomChrome.tsx`): title 28/600; one meta line `yyyy.mm.dd – mm.dd · Timezone` (the only timezone in the view); `Confirmed · Thu 2026.10.01 · 10:00–10:30` + View event when confirmed; outline Invite + ⋯ menu (Settings, owner Resend behind “Email N attendees again?”). No live-connection text; a dot + Offline only when the stream is down. A confirmed meeting opens on Confirm.
+- Compact save status sits in the tab row (`Saving…` → `Saved` · N selected; error = `Couldn’t save` + Retry and an error toast). Copy/plurals come from `meeting-copy.mjs` (unit-tested).
+- Grid toolbar: month 16/600 left; 32px tools right (Detailed | Compact segmented control, Fill from Google Calendar). One short legend line; no per-day sub-labels.
+- Fill from Google Calendar: popover anchored to its button (Dialog bottom sheet ≤640px): Dates field → count + “Only these dates change” → Cancel / Fill N slots. Applying closes it and shows the 10s Undo toast.
+- Toasts (`ui/sonner.tsx`): bottom-right desktop, full-width bottom on phones, icon + one sentence (+ optional action), 4s; Undo 10s. Close button inside the right edge.
+- At most one filled primary per view; Confirm’s sticky footer appears only once a time is chosen; on phones the date/time fields fold into “Enter time manually” below the calendar; slot rows are 32px at ≤480px.
+- Fields: hover darkens the border (no fill), disabled is half opacity. `ui/button` keeps `data-slot="button"` under Radix `asChild` triggers.
+- `<html lang>` is set to `en` on /craft by the pre-paint script and CraftAccount (SSR HTML still says `ko`; a true per-segment lang needs separate root layouts).
+
 ## Information hierarchy / purpose
 
 | Surface | User task and primary information | Primary action | Secondary / state |
 |---|---|---|---|
 | `/craft` | Discover services, scan short service name/description | Enter When We Meet | Site backlink; no invented counters |
 | When We Meet home | Find **own** meetings; authenticated ownership matters | Open meeting or create a new one | Returning-user Google login; owned-list pending/error/empty |
-| Creation | Enter meeting title, contiguous max-14-day range, half-hour time window, timezone and name | Explicit Create room | Google login only after valid draft; range Apply/Cancel, no auto-create |
+| Creation | Enter meeting title, contiguous max-14-day range, half-hour time window, timezone and name | Explicit Create meeting, then one “{Title} is ready” dialog | Google login only after valid draft; range Apply/Cancel, no auto-create |
 | Room identity | Title, date range and timezone directly beneath | Save changed selection when applicable | Invite participants by a compact header action (pending); no bottom share essay |
 | My time | Editable availability grid and bounded date navigator | Select slots / save | Unsaved count and status outside tab, preserved through switches |
 | Overlap | Saved participant responses and common availability | Compare windows | No editing controls as tab-purpose copy |

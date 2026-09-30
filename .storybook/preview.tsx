@@ -1,5 +1,7 @@
 import type {Preview} from '@storybook/nextjs-vite';
 import {reset,MockEventSource,mockPeopleFetch} from '../src/stories/wwm/mock-api';
+import {addons} from 'storybook/preview-api';
+import {PLAY_FUNCTION_THREW_EXCEPTION} from 'storybook/internal/core-events';
 import '../src/app/craft/craft.css';
 import '../src/app/craft/design-system.css';
 import '../src/app/globals.css';
@@ -19,11 +21,13 @@ if(typeof window!=='undefined'){
     return originalFetch(input,init);
   }) as typeof fetch;
   window.EventSource=MockEventSource as unknown as typeof EventSource;
+  // Visual QA marks a failed play so screenshot runs can tell a broken interaction from a finished one.
+  addons.getChannel().on(PLAY_FUNCTION_THREW_EXCEPTION,(error:{message?:string})=>{document.documentElement.dataset.wwmPlayError=error?.message||'play failed';});
   document.addEventListener('click',event=>{if(event.target instanceof Element&&event.target.closest('a'))event.preventDefault();},true);
 }
 const preview:Preview={
   afterEach:(context)=>{document.documentElement.dataset.wwmStoryVerified=context.id;},
-  beforeEach:()=>{delete document.documentElement.dataset.wwmStoryVerified;reset();for(const key of Object.keys(sessionStorage))if(key.startsWith('wwm:'))sessionStorage.removeItem(key);},
+  beforeEach:()=>{delete document.documentElement.dataset.wwmStoryVerified;delete document.documentElement.dataset.wwmPlayError;reset();for(const key of Object.keys(sessionStorage))if(key.startsWith('wwm:'))sessionStorage.removeItem(key);},
   globalTypes:{theme:{description:'Craft theme',toolbar:{icon:'circlehollow',items:['light','dark'],dynamicTitle:true}}},
   initialGlobals:{theme:'light'},
   parameters:{layout:'fullscreen',viewport:{options:{mobile:{name:'Mobile',styles:{width:'390px',height:'844px'}},desktop:{name:'Desktop',styles:{width:'1440px',height:'900px'}}}}},

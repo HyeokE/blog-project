@@ -1,0 +1,12 @@
+export function plural(count:number,singular:string,pluralForm?:string):string;
+export function compactRange(start:string,end:string):string;
+export function meetingSummary(window:{startDate:string;endDate:string;startTime:string;endTime:string;timezone:string}):string;
+export function dayLabel(date:string):string;
+export function confirmedLine(confirmation:{startsAt:string;endsAt:string;timezone:string}|null|undefined):string;
+export function confirmedFacts(record:{date:string;start:string;end:string;organizer:string;attendeeNames?:string[]}):Array<{label:string;value:string}>;
+export function saveStatus(input:{state:string;dirty:boolean;edited:boolean}):{tone:'idle'|'saving'|'saved'|'error';text:string};
+export function fillButtonLabel(count:number):string;
+export function fillToast(count:number):string;
+export function invitationsSentToast(count:number):string;
+export function resendQuestion(count:number|undefined):string;
+export const MEETING_TOASTS:Readonly<{linkCopied:string;copyFailed:string;renamed:string;nameUpdated:string;editSaved:string;resent:string;saveFailed:string}>;

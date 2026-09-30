@@ -49,6 +49,7 @@ const PRE_PAINT_SCRIPT = `
                 var path = window.location.pathname;
                 if (path === '/craft' || path.indexOf('/craft/') === 0) {
                   document.documentElement.setAttribute('data-craft', 'true');
+                  document.documentElement.setAttribute('lang', 'en');
                 }
                 if (path === '/2025/light') {
                   document.documentElement.setAttribute('data-design', 'sweet-home');

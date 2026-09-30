@@ -27,8 +27,9 @@ test('P1-2 closing a controlled dialog returns focus to its opener',()=>{
  // Explicit trigger refs for the Review and Settings dialogs.
  assert.match(panel,/<Button ref=\{reviewTrigger\}[^>]*CONFIRM_REVIEW/);
  assert.match(panel,/onCloseAutoFocus=\{event=>\{event\.preventDefault\(\);reviewTrigger\.current\?\.focus\(\)\}\}/);
- assert.match(wwm,/<Button ref=\{settingsTrigger\}[^>]*MEETING_SETTINGS/);
- assert.match(wwm,/className="wwm-settings-dialog" onCloseAutoFocus=\{event=>\{event\.preventDefault\(\);settingsTrigger\.current\?\.focus\(\)\}\}/);
+ // Settings opens from the ⋯ menu: focus returns to the menu trigger.
+ assert.match(readFileSync(new URL('../src/features/when-we-meet/RoomChrome.tsx',import.meta.url),'utf8'),/<Button ref=\{menuTrigger\}[^>]*MEETING_MENU/);
+ assert.match(wwm,/className="wwm-settings-dialog" onCloseAutoFocus=\{event=>\{event\.preventDefault\(\);menuTrigger\.current\?\.focus\(\)\}\}/);
 });
 
 test('P2-1 Everyone bar times ellipsize, then drop out on narrow bars',()=>{

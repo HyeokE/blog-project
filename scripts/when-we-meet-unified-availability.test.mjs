@@ -8,7 +8,7 @@ const room=()=>readFileSync(new URL('WhenWeMeet.tsx',root),'utf8');
 test('unified availability is wired into the three room tabs',()=>{
  // Availability (editable) and Everyone (read-only) share one WeeklyAvailability; People renders the roster.
  const s=room();
- assert.match(s,/view==='people'\?<PeoplePanel [^>]*\/>:<WeeklyAvailability [^>]*readOnly=\{view==='everyone'\}\/>/);
+ assert.match(s,/view==='people'\?<PeoplePanel [^>]*\/>:<WeeklyAvailability [^>]*readOnly=\{view==='everyone'\}[^>]*\/>/);
  assert.equal((s.match(/<WeeklyAvailability\b/g)||[]).length,1);
  assert.doesNotMatch(s,/view==='overlap'|Suggestions/);
  assert.match(s,/availability:'Availability',everyone:'Everyone',people:'People'/);

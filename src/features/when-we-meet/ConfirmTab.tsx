@@ -4,9 +4,10 @@ import {useCallback,useEffect,useState} from 'react';
 import {useCraftAccount} from '@/app/craft/CraftAccount';
 import {Button} from '@/components/ui/button';
 import {ConfirmationPanel} from './ConfirmationPanel';
-import {connectGoogleCalendar,loadConfirmation,postConfirmation,postConfirmationUpdate,resendConfirmation,type Response,type Room} from './api';
-import {confirmationBody,confirmFailure,confirmOutcome,confirmPanelState,confirmUpdateBody,normalizeConfirmationResponse,openEditBody,resendFailure,type ConfirmationData,type ConfirmPanelStatus,type ConfirmProposal,type ConfirmRequestBody,type ConfirmUpdateBody} from './confirm-tab.mjs';
-import type {ConfirmationResendState} from './ConfirmationPanel';
+import {toast} from 'sonner';
+import {connectGoogleCalendar,loadConfirmation,postConfirmation,postConfirmationUpdate,type Response,type Room} from './api';
+import {invitationsSentToast,MEETING_TOASTS} from './meeting-copy.mjs';
+import {confirmationBody,confirmFailure,confirmOutcome,confirmPanelState,confirmUpdateBody,normalizeConfirmationResponse,openEditBody,type ConfirmationData,type ConfirmationRecordData,type ConfirmPanelStatus,type ConfirmProposal,type ConfirmRequestBody,type ConfirmUpdateBody} from './confirm-tab.mjs';
 
 type Slot={id:string;utc:string;date:string;time:string};
 type Local={status:ConfirmPanelStatus;error?:string;calendar?:'disconnected'};
@@ -20,11 +21,12 @@ const storage={
  write(key:string,value:string|null){try{if(value===null)window.sessionStorage.removeItem(key);else window.sessionStorage.setItem(key,value)}catch{/* tab storage unavailable: retry falls back to a status refresh */}},
 };
 
-export function ConfirmTab({roomId,room,slots,responses}:{roomId:string;room:Room;slots:Slot[];responses:Response[]}){
+/** `onConfirmation` keeps the room header's status line in step with the record shown here. */
+export function ConfirmTab({roomId,room,slots,responses,onConfirmation}:{roomId:string;room:Room;slots:Slot[];responses:Response[];onConfirmation?:(record:ConfirmationRecordData|null)=>void}){
  const [data,setData]=useState<ConfirmationData|null>(null),[loadError,setLoadError]=useState(''),[attempt,setAttempt]=useState(0);
  const [local,setLocal]=useState<Local|null>(null),[recipientIds,setRecipientIds]=useState<string[]|undefined>();
- // Edit/resend of a confirmed meeting: request state lives here; the record itself stays visible (no skeleton on save).
- const [editLocal,setEditLocal]=useState<EditLocal|null>(null),[resend,setResend]=useState<ConfirmationResendState>({status:'idle'});
+ // Edit of a confirmed meeting: request state lives here; the record itself stays visible (no skeleton on save). Resend lives in the header menu.
+ const [editLocal,setEditLocal]=useState<EditLocal|null>(null);
  const reload=useCallback(()=>{setLocal(null);setAttempt(value=>value+1)},[]);
  useEffect(()=>{
   const controller=new AbortController();
@@ -32,6 +34,8 @@ export function ConfirmTab({roomId,room,slots,responses}:{roomId:string;room:Roo
   loadConfirmation(roomId,controller.signal).then(result=>{if(!controller.signal.aborted)setData(result)},()=>{if(!controller.signal.aborted)setLoadError('Could not load the confirmation. Please try again.')});
   return()=>controller.abort();
  },[roomId,attempt]);
+ const record=data?.confirmation??null,loaded=data!==null;
+ useEffect(()=>{if(loaded)onConfirmation?.(record)},[loaded,record,onConfirmation]);
  const {user}=useCraftAccount();
  const ownerName=responses.find(row=>row.userId===room.ownerId)?.displayName;
 
@@ -41,7 +45,7 @@ export function ConfirmTab({roomId,room,slots,responses}:{roomId:string;room:Roo
    const outcome=confirmOutcome(await postConfirmation(roomId,body));
    setRecipientIds(body.recipients);
    if(outcome.confirmation)setData(current=>current&&{...current,confirmation:outcome.confirmation});
-   if(outcome.status==='confirmed'){storage.write(sentKey(roomId),null);if(outcome.confirmation?.status==='confirmed')setLocal(null);else reload();}
+   if(outcome.status==='confirmed'){storage.write(sentKey(roomId),null);toast.success(invitationsSentToast(body.recipients.length));if(outcome.confirmation?.status==='confirmed')setLocal(null);else reload();}
    else setLocal({status:'reconciling'});
   }catch(error){
    const failure=confirmFailure(error);
@@ -62,12 +66,13 @@ export function ConfirmTab({roomId,room,slots,responses}:{roomId:string;room:Roo
   reload();
  }
  async function sendEdit(body:ConfirmUpdateBody){
-  setEditLocal({status:'pending'});setResend({status:'idle'});
+  setEditLocal({status:'pending'});
   try{
    const result=await postConfirmationUpdate(roomId,body);
    // Same validation as the GET payload; the review (attendees) is kept, only the record and edit detail change.
    setData(current=>{if(!current)return current;try{const next=normalizeConfirmationResponse({confirmation:result.confirmation,review:current.review&&{...current.review,edit:result.edit}});return next}catch{return current}});
    setEditLocal(result.status==='confirmed'?{status:'saved'}:{status:'reconciling'});
+   if(result.status==='confirmed')toast.success(MEETING_TOASTS.editSaved);
   }catch(error){
    const failure=confirmFailure(error);
    setEditLocal({status:'failed',error:failure.error,calendar:failure.calendar});
@@ -83,12 +88,6 @@ export function ConfirmTab({roomId,room,slots,responses}:{roomId:string;room:Roo
  }
  // Re-POSTs the server's own open edit (same payload): the server reads the event back and never notifies twice.
  function checkEdit(){const body=data&&openEditBody(data,slots);if(body)void sendEdit(body);else{setEditLocal(null);reload()}}
- async function resendInvites(){
-  if(resend.status==='pending')return;
-  setResend({status:'pending'});
-  try{await resendConfirmation(roomId);setResend({status:'sent'})}
-  catch(error){setResend({status:'failed',message:resendFailure(error).error})}
- }
  function connectCalendar(){storage.write(confirmReturnKey(roomId),'confirm');void connectGoogleCalendar(roomId,window.location.pathname+window.location.search).catch(()=>{storage.write(confirmReturnKey(roomId),null);setLocal({status:'failed',error:'Google Calendar connection is unavailable. Please try again.',calendar:'disconnected'})})}
 
  if(loadError)return <div className="wwm-confirm-load-error" role="alert" data-analytics-section={ANALYTICS_SECTIONS.WWM_CONFIRM}><p>{loadError}</p><Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.RETRY} onClick={reload}>Retry</Button></div>;
@@ -103,5 +102,5 @@ export function ConfirmTab({roomId,room,slots,responses}:{roomId:string;room:Roo
   onRetry={state.role==='owner'?checkAgain:reload}
   onConnectCalendar={connectCalendar} onConfirm={confirm}
   edit={state.edit&&{initial:state.edit.initial,status:editLocal?.status??state.edit.status,error:editLocal?.error}}
-  onEdit={edit} onCheckEdit={checkEdit} resend={resend} onResend={state.edit?()=>void resendInvites():undefined}/>;
+  onEdit={edit} onCheckEdit={checkEdit}/>;
 }

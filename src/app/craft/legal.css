@@ -1,5 +1,4 @@
 /* Craft legal pages: plain reading layout on the Craft canvas. */
-.craft-legal .craft-shell{max-width:720px}
 .craft-legal .craft-header{padding-bottom:clamp(20px,4vh,32px)}
 .craft-legal-meta{margin:8px 0 0;color:var(--craft-muted,#635f52);font-size:13px}
 .craft-legal section{padding:24px 0;border-top:1px solid var(--craft-border,#81775b30)}

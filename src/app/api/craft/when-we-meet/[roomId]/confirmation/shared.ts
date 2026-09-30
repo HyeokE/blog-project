@@ -34,7 +34,7 @@ export async function ownerSession(roomId:string,action:string):Promise<{session
  const session=await currentSupabaseUser();const user=session.user;
  if(!user)return {response:Response.json({error:'Sign in with Google to continue.'},{status:401,headers:privateHeaders})};
  const metadata=await craftRoomMetadata(roomId,session);
- if(!metadata)return {response:failed('Room unavailable or you are not a member.',403)};
+ if(!metadata)return {response:failed('Meeting unavailable or you are not a member.',403)};
  if(metadata.room.ownerId!==user.id)return {response:failed(`Only the meeting owner can ${action}.`,403)};
  return {session,user,room:metadata.room};
 }

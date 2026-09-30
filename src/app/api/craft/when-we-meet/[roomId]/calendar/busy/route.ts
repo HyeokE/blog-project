@@ -10,11 +10,11 @@ type Context={params:Promise<{roomId:string}>};
 // Busy time comes from event listing (not FreeBusy) so multi-day all-day events can be ignored.
 // Nothing is saved; the client applies the preview to its draft after an explicit action.
 export async function GET(_request:Request,context:Context){
- const {roomId}=await context.params;if(!uuid(roomId))return invalid('Invalid room ID.');
+ const {roomId}=await context.params;if(!uuid(roomId))return invalid('Invalid meeting ID.');
  try{
   const session=await currentSupabaseUser();if(!session.user)return unauthorized();
   const metadata=await craftRoomMetadata(roomId,session);
-  if(!metadata)return failed('Room unavailable or you are not a member.',403);
+  if(!metadata)return failed('Meeting unavailable or you are not a member.',403);
   const slots=makeSlots(metadata.room);
   if(!slots.length)return ok({availableSlotIds:[],slotCount:0});
   let accessToken:string;

@@ -1,0 +1,45 @@
+/* Room chrome (stage 2): header hierarchy, tab row with save status, invite/created dialogs. Tokens only. */
+.wwm.wwm-room .wwm-room-header{display:grid;gap:var(--craft-space-1);margin:0 0 var(--craft-space-6)}
+.wwm.wwm-room .wwm-room-title-row{display:flex;align-items:center;justify-content:space-between;gap:var(--craft-space-4);min-width:0}
+.wwm.wwm-room .wwm-room-title-row h1{flex:1 1 auto;min-width:0;margin:0;font-size:var(--craft-fs-28);font-weight:var(--craft-fw-semibold);line-height:36px;letter-spacing:-.02em;overflow-wrap:anywhere}
+.wwm.wwm-room .wwm-header-actions{display:flex;flex:none;align-items:center;gap:var(--craft-space-2);width:auto}
+.wwm.wwm-room .wwm-header-actions [data-slot='button']:not([data-size='icon']){width:auto}
+.wwm.wwm-room .wwm-room-meta,.wwm.wwm-room .wwm-room-status{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--craft-space-1);margin:0;font-size:var(--craft-fs-14);line-height:20px;color:var(--craft-muted)}
+.wwm.wwm-room .wwm-room-status{color:var(--craft-ink);font-weight:var(--craft-fw-medium)}
+.wwm.wwm-room .wwm-room-status a{margin-left:var(--craft-space-2);color:inherit;font-weight:var(--craft-fw-regular);text-underline-offset:3px}
+.wwm.wwm-room .wwm-offline{display:inline-flex;align-items:center;gap:var(--craft-space-1);margin-left:var(--craft-space-3);color:var(--craft-warning)}
+.wwm.wwm-room .wwm-offline i{width:8px;height:8px;border-radius:50%;background:currentColor}
+[data-slot='dropdown-menu-content'].wwm-room-menu{z-index:var(--craft-z-popover);min-width:200px;padding:var(--craft-space-1);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:var(--craft-surface);color:var(--craft-ink);font-family:var(--craft-font);box-shadow:var(--craft-shadow-pop)}
+.wwm-room-menu [data-slot='dropdown-menu-item']{min-height:var(--craft-h-md);padding:0 var(--craft-space-3);border-radius:var(--craft-radius);font-size:var(--craft-fs-14)}
+.wwm-room-menu [data-slot='dropdown-menu-item'][data-highlighted]{background:var(--craft-hover);color:var(--craft-ink)}
+
+/* Tabs share one row with the compact save status; the rule under the row is the tabs' baseline. */
+.wwm.wwm-room .wwm-tabs-row{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--craft-space-2) var(--craft-space-4);flex-wrap:wrap;margin:0 0 var(--craft-space-4);border-bottom:1px solid var(--craft-rule)}
+.wwm.wwm-room .wwm-tabs-row .wwm-view-switch{width:auto;flex:0 1 auto;margin:0;border-bottom:0}
+.wwm.wwm-room .wwm-save-state{display:flex;align-items:center;gap:var(--craft-space-2);min-height:var(--craft-h-sm);margin:0 0 var(--craft-space-1);font-size:var(--craft-fs-12);color:var(--craft-muted);font-variant-numeric:tabular-nums}
+.wwm.wwm-room .wwm-save-state[data-tone='error']{color:var(--craft-danger)}
+.wwm.wwm-room .wwm-save-state [data-slot='button']{color:inherit;text-decoration:underline;text-underline-offset:3px;padding-inline:var(--craft-space-2)}
+
+/* Created / invite dialogs: one link field with an inline Copy. */
+.wwm-ready-dialog{max-width:min(480px,calc(100vw - 32px))}
+.wwm-ready-dialog [data-slot='dialog-header']{text-align:left}
+.wwm-ready-dialog .wwm-ready-name{font-weight:var(--craft-fw-semibold)}
+.wwm-ready-footer{gap:var(--craft-space-2)}
+.wwm-link-field{position:relative;display:flex;align-items:center}
+:root[data-craft] .wwm-link-field [data-slot='input']{padding-right:88px;font-size:var(--craft-fs-14);color:var(--craft-muted);text-overflow:ellipsis}
+.wwm-link-field .wwm-link-copy{position:absolute;right:6px;min-width:72px}
+.wwm-resend-dialog{max-width:min(420px,calc(100vw - 32px))}
+.wwm-resend-dialog [data-slot='dialog-header']{text-align:left}
+
+/* Meetings list: a quiet Confirmed tag and a one-time highlight for a row just created. */
+.wwm .wwm-meeting-title-row .wwm-meeting-tag{flex:none;margin-right:auto;padding:0 var(--craft-space-2);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);font-size:var(--craft-fs-12);font-weight:var(--craft-fw-medium);line-height:20px;color:var(--craft-muted)}
+.wwm .wwm-meetings li[data-fresh='true']{animation:wwm-fresh-row 2.4s ease-out 1}
+@keyframes wwm-fresh-row{from{background:var(--craft-selected)}to{background:transparent}}
+@media(prefers-reduced-motion:reduce){.wwm .wwm-meetings li[data-fresh='true']{animation:none;background:var(--craft-hover)}}
+
+@media(max-width:600px){
+ .wwm.wwm-room .wwm-room-title-row{align-items:flex-start}
+ .wwm.wwm-room .wwm-tabs-row{flex-direction:column;align-items:stretch;border-bottom:0}
+ .wwm.wwm-room .wwm-tabs-row .wwm-view-switch{border-bottom:1px solid var(--craft-rule)}
+ .wwm.wwm-room .wwm-save-state{order:-1;margin:0}
+}

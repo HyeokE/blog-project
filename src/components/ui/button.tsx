@@ -51,11 +51,12 @@ function Button({
 
   return (
     <Comp
-      data-slot="button"
       data-variant={variant}
       data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
+      // After the spread: a Radix `asChild` trigger/anchor passes its own data-slot, which would drop the Craft button look.
+      data-slot="button"
     />
   )
 }

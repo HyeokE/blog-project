@@ -77,10 +77,14 @@ test('resend failures map to inline messages; a rate limit is not an error state
  assert.equal(confirmFailure({status:409,message:'This meeting changed since you opened it. Reload and review again.'}).error,'This meeting changed since you opened it. Reload and review again.');
 });
 
-test('the panel exposes owner-only Edit and Resend, and the edit review reuses the compact calendar',()=>{
+test('the panel exposes owner-only Edit; Resend moved to the header menu behind a confirm dialog',()=>{
  const s=readFileSync(new URL('../src/features/when-we-meet/ConfirmationPanel.tsx',import.meta.url),'utf8');
- assert.match(s,/Edit meeting/);assert.match(s,/Resend invitations/);assert.match(s,/Save &amp; notify attendees/);
+ const chrome=readFileSync(new URL('../src/features/when-we-meet/RoomChrome.tsx',import.meta.url),'utf8');
+ assert.match(s,/Edit meeting/);assert.doesNotMatch(s,/Resend/);assert.match(s,/Save &amp; notify attendees/);
  assert.match(s,/owner&&edit&&/);
- assert.match(s,/ANALYTICS_ELEMENTS\.CONFIRM_EDIT\b/);assert.match(s,/ANALYTICS_ELEMENTS\.CONFIRM_RESEND\b/);assert.match(s,/ANALYTICS_ELEMENTS\.CONFIRM_EDIT_SAVE\b/);
+ assert.match(s,/ANALYTICS_ELEMENTS\.CONFIRM_EDIT\b/);
+ assert.match(chrome,/\{resend&&confirmed&&<DropdownMenuItem data-analytics-label=\{ANALYTICS_ELEMENTS\.CONFIRM_RESEND\} onSelect=\{askResend\}>Resend invitations…<\/DropdownMenuItem>\}/);
+ assert.match(chrome,/<DialogTitle>\{resendQuestion\(count\)\}<\/DialogTitle>/);
+ assert.match(chrome,/toast\.success\(MEETING_TOASTS\.resent\)/);assert.match(s,/ANALYTICS_ELEMENTS\.CONFIRM_EDIT_SAVE\b/);
  assert.match(s,/Updated by the organizer/);
 });

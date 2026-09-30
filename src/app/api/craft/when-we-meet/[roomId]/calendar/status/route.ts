@@ -5,7 +5,7 @@ import {failed,invalid,ok,unauthorized,uuid} from '../../../http';
 export const dynamic='force-dynamic';export const runtime='nodejs';
 type Context={params:Promise<{roomId:string}>};
 export async function GET(_request:Request,context:Context){
- const {roomId}=await context.params;if(!uuid(roomId))return invalid('Invalid room ID.');
+ const {roomId}=await context.params;if(!uuid(roomId))return invalid('Invalid meeting ID.');
  try{
   const {user}=await currentSupabaseUser();if(!user)return unauthorized();
   const subject=user.identities?.find(identity=>identity.provider==='google')?.id;

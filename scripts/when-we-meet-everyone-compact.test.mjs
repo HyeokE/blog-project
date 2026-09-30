@@ -13,7 +13,10 @@ test('regular cards fit in 72px lanes and compact lanes retain 16px pitch',()=>{
 });
 test('compact is opt-in and only offered in Everyone, with accessible event details',()=>{
  assert.match(source,/useState\(false\)/);
- assert.match(source,/readOnly&&<Button[^>]*aria-pressed=\{compact\}.*>Compact<\/Button>/);
+ // A quiet Detailed | Compact segmented control in the grid toolbar, only in Everyone.
+ assert.match(source,/!selection&&readOnly&&<div className="wwm-segmented" role="group" aria-label="Calendar density">/);
+ assert.match(source,/aria-pressed=\{compact===\(mode==='compact'\)\}/);
+ assert.match(source,/\{mode==='compact'\?'Compact':'Detailed'\}/);
  assert.match(source,/readOnly&&compact\?'wwm-everyone-compact'/);
  assert.match(source,/everyoneDayWidth\(savedBlocks,compact\)/);
  assert.match(source,/eventGeometry\(block,compact\)/);

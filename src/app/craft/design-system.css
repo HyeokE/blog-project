@@ -50,7 +50,9 @@
 :root[data-craft] :is([data-slot='field-trigger'],[data-slot='select-trigger'])>svg{flex:none;width:16px;height:16px;color:var(--craft-muted)}
 :root[data-craft] [data-slot='input']::placeholder{color:var(--craft-muted);opacity:1}
 :root[data-craft] :is([data-slot='field-trigger'][data-placeholder],[data-slot='select-trigger'][data-placeholder]) :is([data-slot='field-trigger-value'],[data-slot='select-value']){color:var(--craft-muted)}
-:root[data-craft] :is([data-slot='input'],[data-slot='field-trigger'],[data-slot='select-trigger']):hover:not(:disabled){background:var(--craft-hover)}
+/* Hover darkens the border only: a filled field read as disabled (stage 2, create dialog "To"). Disabled = half opacity. */
+:root[data-craft] :is([data-slot='input'],[data-slot='field-trigger'],[data-slot='select-trigger']):hover:not(:disabled){border-color:var(--craft-ink)}
+:root[data-craft] :is([data-slot='input'],[data-slot='field-trigger'],[data-slot='select-trigger'])[readonly]:hover{border-color:var(--craft-rule)}
 :root[data-craft] :is([data-slot='input'],[data-slot='field-trigger'],[data-slot='select-trigger'],[data-slot='button']:not(:where(.craft-google-sign-in,.craft-account-avatar)),[data-slot='checkbox']):focus-visible{outline:2px solid var(--craft-focus);outline-offset:2px;box-shadow:none}
 :root[data-craft] :is([data-slot='input'],[data-slot='field-trigger'],[data-slot='select-trigger']):disabled{opacity:.5;cursor:not-allowed}
 :root[data-craft] :is([data-slot='input'],[data-slot='field-trigger'],[data-slot='select-trigger'])[aria-invalid='true']{border-color:var(--craft-danger);box-shadow:inset 0 0 0 1px var(--craft-danger)}
@@ -99,6 +101,17 @@
 :root[data-craft] [data-slot='dialog-close']{display:grid;place-items:center;width:var(--craft-h-sm);height:var(--craft-h-sm);border-radius:var(--craft-radius);color:var(--craft-ink)}
 :root[data-craft] [data-slot='dialog-close']:focus-visible{outline:2px solid var(--craft-focus);outline-offset:2px;box-shadow:none}
 :root[data-craft] [data-sonner-toaster]{z-index:var(--craft-z-toast)}
+/* Toast: one style — icon + one sentence + optional action; the close button sits inside the right edge, never over the icon. */
+:root[data-craft] [data-sonner-toaster] [data-sonner-toast].craft-toast{display:flex;align-items:center;gap:var(--craft-space-3);min-height:var(--craft-h-md);padding:var(--craft-space-3) 44px var(--craft-space-3) var(--craft-space-4);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:var(--craft-surface);color:var(--craft-ink);font:var(--craft-fw-medium) var(--craft-fs-14)/20px var(--craft-font);box-shadow:var(--craft-shadow-pop)}
+:root[data-craft] [data-sonner-toast].craft-toast [data-icon]{flex:none;width:16px;height:16px;margin:0;color:var(--craft-ink)}
+:root[data-craft] [data-sonner-toast].craft-toast[data-type='error'] [data-icon]{color:var(--craft-danger)}
+:root[data-craft] [data-sonner-toast].craft-toast [data-title]{font-weight:var(--craft-fw-medium);line-height:20px}
+:root[data-craft] [data-sonner-toast].craft-toast [data-button]{height:var(--craft-h-sm);margin-left:auto;padding:0 var(--craft-space-3);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:transparent;color:var(--craft-ink);font:var(--craft-fw-medium) var(--craft-fs-14)/1 var(--craft-font)}
+:root[data-craft] [data-sonner-toaster] [data-sonner-toast].craft-toast{--toast-close-button-start:auto;--toast-close-button-end:var(--craft-space-2);--toast-close-button-transform:none}
+:root[data-craft] [data-sonner-toaster] [data-sonner-toast].craft-toast [data-close-button]{top:0;bottom:0;margin:auto 0;width:var(--craft-h-sm);height:var(--craft-h-sm);border:0;border-radius:var(--craft-radius);background:transparent;color:var(--craft-muted)}
+:root[data-craft] [data-sonner-toast].craft-toast [data-close-button]:hover{background:var(--craft-hover);color:var(--craft-ink)}
+/* Programmatic focus targets (tabIndex=-1 headings, status regions) get focus without a ring. */
+:root[data-craft] [tabindex='-1']:focus{outline:none}
 
 /* shadcn Calendar (react-day-picker): one Sunday-first grid for range and single-date pickers. */
 :root[data-craft] [data-slot='calendar']{--cell-size:40px;padding:var(--craft-space-2);background:transparent;color:var(--craft-ink);font-family:var(--craft-font)}

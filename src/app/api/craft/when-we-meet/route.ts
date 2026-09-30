@@ -14,5 +14,5 @@ export async function POST(request:Request){
  const errors=creationErrors({title,startDate,endDate,timezone,name},new Date());if(Object.keys(errors).length){return invalid(Object.values(errors)[0])}
  try{const {client,user}=await currentSupabaseUser();if(!user){return unauthorized()}
  const {data,error}=await client.rpc('wwm_create_room',{p_title:title,p_start_date:startDate,p_end_date:endDate,p_start_time:startTime,p_end_time:endTime,p_timezone:timezone,p_name:name});
- return error?failed(error.message,400):ok(normalizeCreatedRoom(data))}catch{return failed('Could not create room.')}
+ return error?failed(error.message,400):ok(normalizeCreatedRoom(data))}catch{return failed('Could not create the meeting.')}
 }

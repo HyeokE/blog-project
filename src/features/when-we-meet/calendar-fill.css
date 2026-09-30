@@ -1,9 +1,12 @@
-/* Calendar autofill: a quiet secondary action above the editable calendar. No motion. Buttons are ui primitives. */
-.wwm-calendar-fill{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:var(--craft-space-2) var(--craft-space-3);margin:0 0 var(--craft-space-1)}
-.wwm .wwm-calendar-fill [data-slot='button'][data-variant='ghost']{color:var(--craft-muted)}
-.wwm .wwm-calendar-fill [data-slot='button'][data-variant='ghost']:hover{color:var(--craft-ink)}
-.wwm-calendar-fill-result{flex:1 1 100%;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--craft-space-3) var(--craft-space-4);padding:var(--craft-space-3);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:var(--craft-surface)}
-.wwm-calendar-fill-result .wwm-range{flex:1 1 280px;grid-column:auto}
-.wwm .wwm-calendar-fill-result p{flex:1 1 220px;margin:0;font-size:var(--craft-fs-14);line-height:1.45;color:var(--craft-ink)}
-.wwm-calendar-fill-actions{display:flex;gap:var(--craft-space-2);flex-shrink:0}
-@media(max-width:600px){.wwm-calendar-fill{justify-content:stretch}.wwm-calendar-fill-trigger{flex:1 1 auto}.wwm-calendar-fill-actions{width:100%;justify-content:flex-end}}
+/* Calendar fill: a 32px toolbar action and a small anchored panel (bottom sheet on phones). No motion. */
+.wwm .wwm-calendar-fill-trigger{width:auto}
+[data-slot='popover-content'].wwm-fill-panel{width:320px;max-width:calc(100vw - 32px);padding:var(--craft-space-4)}
+.wwm-fill-body{display:grid;gap:var(--craft-space-4);font-family:var(--craft-font);color:var(--craft-ink)}
+.wwm-fill-body .wwm-range{display:grid;gap:var(--craft-space-2);font-size:var(--craft-fs-14);font-weight:var(--craft-fw-medium)}
+.wwm-fill-summary{display:grid;gap:var(--craft-space-1);margin:0;font-size:var(--craft-fs-14);line-height:20px}
+.wwm-fill-summary p{margin:0;color:var(--craft-ink)}
+.wwm-fill-summary strong{font-size:var(--craft-fs-20);font-weight:var(--craft-fw-semibold);font-variant-numeric:tabular-nums}
+.wwm-fill-summary .wwm-fill-muted{color:var(--craft-muted)}
+.wwm-fill-actions{display:flex;justify-content:flex-end;gap:var(--craft-space-2)}
+.wwm-fill-sheet [data-slot='dialog-header']{text-align:left}
+.wwm-fill-sheet .wwm-fill-body{padding:0 var(--craft-space-4) var(--craft-space-4)}

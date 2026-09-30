@@ -7,7 +7,7 @@ test('Craft uses shadcn controls in live form and room actions',()=>{
  // Availability autosaves via useAvailabilitySync; the explicit Save button was superseded. Room/form actions stay shadcn Buttons.
  assert.doesNotMatch(feature,/onClick=\{save\}/);
  assert.match(feature,/<Button[^>]*onClick=\{sync\.retry\}>Retry<\/Button>/);
- assert.match(feature,/<Button[^>]*disabled=\{!configured\|\|busy\|\|accountLoading\}>\{busy\?'Creating…':'Create room'\}<\/Button>/);
+ assert.match(feature,/<Button[^>]*disabled=\{!configured\|\|busy\|\|accountLoading\}>\{busy\?'Creating…':'Create meeting'\}<\/Button>/);
  assert.doesNotMatch(feature,/<button\b/,'WhenWeMeet must not render raw <button> controls');
  assert.match(feature,/<Input[^>]*value=\{form\.title\}/);
  assert.match(feature,/<Tabs[^>]*value=\{view\}/);

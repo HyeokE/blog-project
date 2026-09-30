@@ -100,8 +100,6 @@
 .wwm .wwm-view-switch [data-slot='tabs-trigger']:focus-visible{outline:2px solid var(--craft-focus);outline-offset:2px}
 :root[data-mode='dark'] .wwm:not(.wwm-room) .wwm-view-switch [data-slot='tabs-trigger'][data-state='active']{background:#d6cdb3;border-color:#d6cdb3;color:#20211c}
 @media(max-width:700px){.wwm .wwm-view-switch{grid-template-columns:repeat(3,minmax(0,1fr))}}
-[data-sonner-toaster] [data-sonner-toast].craft-toast{font-family:'SUIT','Pretendard',sans-serif;background:#f1eee2;color:#514e40;border:1px solid #81775b70;border-radius:4px;box-shadow:0 8px 24px #20211c26}
-:root[data-mode='dark'] [data-sonner-toaster] [data-sonner-toast].craft-toast{background:#36372d;color:#d6cdb3;border-color:#d8ccaf55}
 /* Create modal uses Craft tokens despite Radix rendering it in a body portal. */
 .wwm-create-dialog{--craft-motion-enter:260ms;--craft-motion-exit:180ms;display:flex;flex-direction:column;gap:0;width:min(calc(100vw - 32px),640px);max-width:640px;max-height:min(calc(100dvh - 32px),760px);padding:0;overflow:hidden;animation:none;translate:0 0!important;transform:translate(-50%,-50%);transition:opacity var(--craft-motion-enter) cubic-bezier(.2,.7,.2,1)}
 .wwm-create-dialog[data-state='open']{opacity:1;transform:translate(-50%,-50%);animation:wwm-create-enter var(--craft-motion-enter) cubic-bezier(.2,.7,.2,1) both}.wwm-create-dialog[data-state='closed']{opacity:0;transform:translate(-50%,-50%);transition-duration:var(--craft-motion-exit);pointer-events:none}@keyframes wwm-create-enter{from{opacity:0;transform:translate(-50%,-50%)}to{opacity:1;transform:translate(-50%,-50%)}}

@@ -12,14 +12,14 @@ type Context={params:Promise<{roomId:string}>};
 // scoped to the callback path. Connecting never applies availability or sends invitations.
 export async function POST(request:Request,context:Context){
  if(!sameOrigin(request))return failed('Invalid request origin.',403);
- const {roomId}=await context.params;if(!uuid(roomId))return invalid('Invalid room ID.');
+ const {roomId}=await context.params;if(!uuid(roomId))return invalid('Invalid meeting ID.');
  const input=await body(request);const returnTo=typeof input?.returnTo==='string'?input.returnTo:undefined;
  const origin=requestOrigin(request.headers);if(!origin)return failed('Invalid request origin.',403);
  let config:ReturnType<typeof calendarConfig>;
  try{config=calendarConfig(origin)}catch{return failed('Google Calendar is unavailable here.',503)}
  try{
   const session=await currentSupabaseUser();const {user}=session;if(!user)return unauthorized();
-  if(!await craftRoomMetadata(roomId,session))return failed('Room unavailable or you are not a member.',403);
+  if(!await craftRoomMetadata(roomId,session))return failed('Meeting unavailable or you are not a member.',403);
   const nonce=randomBytes(32).toString('base64url');
   const flow=createConnection({roomId,userId:user.id,key:config.stateKey,origin,nonce,clientId:config.clientId,loginHint:user.email,returnTo});
   (await cookies()).set(CALENDAR_FLOW_COOKIE,encodeFlowCookie({nonce,verifier:flow.verifier,roomId}),{httpOnly:true,secure:origin.startsWith('https:'),sameSite:'lax',path:CALENDAR_CALLBACK_PATH,maxAge:600});

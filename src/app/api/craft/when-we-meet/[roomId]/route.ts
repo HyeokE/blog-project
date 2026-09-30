@@ -4,11 +4,11 @@ import {normalizeResponses} from '@/features/when-we-meet/normalize.mjs';
 import {body,failed,invalid,ok,sameOrigin,unauthorized,uuid} from '../http';
 export const dynamic='force-dynamic';
 type Context={params:Promise<{roomId:string}>};
-export async function GET(_request:Request,context:Context){const {roomId}=await context.params;if(!uuid(roomId)){return invalid('Invalid room ID.');}try{const context=await currentSupabaseUser();if(!context.user){return unauthorized();}const result=await craftRoom(roomId,context);return result?ok(result):failed('Room unavailable or you are not a member.',403)}catch{return failed('Could not load room.')}}
+export async function GET(_request:Request,context:Context){const {roomId}=await context.params;if(!uuid(roomId)){return invalid('Invalid meeting ID.');}try{const context=await currentSupabaseUser();if(!context.user){return unauthorized();}const result=await craftRoom(roomId,context);return result?ok(result):failed('Meeting unavailable or you are not a member.',403)}catch{return failed('Could not load the meeting.')}}
 const validSlots=(value:unknown):value is string[]=>Array.isArray(value)&&value.length<=672&&value.every(s=>typeof s==='string'&&/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(s))&&new Set(value).size===value.length;
 export async function POST(request:Request,context:Context){
  if(!sameOrigin(request))return failed('Invalid request origin.',403);
- const {roomId}=await context.params;if(!uuid(roomId))return invalid('Invalid room ID.');
+ const {roomId}=await context.params;if(!uuid(roomId))return invalid('Invalid meeting ID.');
  const input=await body(request,64*1024);if(!input)return invalid();
  // Owner-only meeting rename; the RPC re-checks ownership, trims and bounds the title.
  if(input.action==='rename'){
@@ -27,7 +27,7 @@ export async function POST(request:Request,context:Context){
   if(action==='join'){
    if(!uuid(input.token))return invalid('Invalid invitation token.');
    const {data,error}=await client.rpc('wwm_join_room',{p_room_id:roomId,p_token:input.token,p_name:name.trim()});
-   return error?failed('Could not join this invitation.',400):data?ok({joined:true}):failed('Invalid room invitation.',403);
+   return error?failed('Could not join this invitation.',400):data?ok({joined:true}):failed('Invalid meeting invitation.',403);
   }
   if(action!=='save')return invalid('Invalid action.');
   if(!validSlots(input.slots))return invalid('Invalid availability slots.');
@@ -46,5 +46,5 @@ export async function POST(request:Request,context:Context){
    if(data?.length){const [saved]=normalizeResponses(data);return ok({saved:true,value:{name:saved.displayName,slots:saved.slots,version:saved.updatedAt}});}
   }
   return failed('Another edit arrived while saving. Retry to merge your changes.',409);
- }catch{return failed('Could not update room.')}
+ }catch{return failed('Could not update the meeting.')}
 }

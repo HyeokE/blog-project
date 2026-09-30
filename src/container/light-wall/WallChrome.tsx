@@ -13,9 +13,17 @@ type Props = {
   account?: ReactNode;
   trailing?: ReactNode;
   showMenu?: boolean;
+  /** Accessible-name language of the chrome; Craft passes 'en'. */
+  locale?: 'ko' | 'en';
 };
 
-export default function WallChrome({ variant, search, account, trailing, showMenu = true }: Props) {
+const LABELS = {
+  ko: { home: 'HYEOK.DEV 홈', light: '밝은 조명으로 전환', dark: '어두운 조명으로 전환' },
+  en: { home: 'HYEOK.DEV home', light: 'Switch to light mode', dark: 'Switch to dark mode' },
+} as const;
+
+export default function WallChrome({ variant, search, account, trailing, showMenu = true, locale = 'ko' }: Props) {
+  const labels = LABELS[locale];
   const { mode, toggleMode } = useDarkMode();
   const dark = mode === 'dark';
   return (
@@ -27,7 +35,7 @@ export default function WallChrome({ variant, search, account, trailing, showMen
           data-analytics-id="home"
           href="/"
           className="wall-wordmark"
-          aria-label="HYEOK.DEV 홈"
+          aria-label={labels.home}
         >
           HYEOK<span>.</span>
         </Link>
@@ -39,7 +47,7 @@ export default function WallChrome({ variant, search, account, trailing, showMen
             data-analytics-section={ANALYTICS_SECTIONS.HEADER}
             type="button"
             onClick={toggleMode}
-            aria-label={dark ? '밝은 조명으로 전환' : '어두운 조명으로 전환'}
+            aria-label={dark ? labels.light : labels.dark}
           >
             {dark ? <Sun size={18} strokeWidth={1.5} /> : <Moon size={18} strokeWidth={1.5} />}
           </button>

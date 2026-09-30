@@ -9,6 +9,7 @@ import {Popover,PopoverContent,PopoverTrigger} from '@/components/ui/popover';
 import {RequiredFieldLabel} from '@/components/craft/RequiredFieldLabel';
 import {isRangeDateDisabled,rangeDays,resetRange,selectRangeDate} from './range.mjs';
 import {formatCraftDate,formatCraftRange} from './display-date.mjs';
+import {compactRange} from './meeting-copy.mjs';
 import {useMediaQuery} from './use-media-query';
 import './date-range-picker.css';
 
@@ -16,7 +17,7 @@ type Range={start:string;end:string;phase:string;error:string};
 const fromISO=(value:string)=>value?new Date(`${value}T12:00:00`):undefined;
 const toISO=(date:Date)=>`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
 
-export function DateRangePicker({start,end,onChange,minDate,maxDate,error,id='wwm-range',label='Dates',ariaLabel,required=true,errorId='wwm-create-dates-error'}:{ariaLabel?:string;start:string;end:string;onChange:(start:string,end:string)=>void;minDate:string;maxDate?:string;error?:string;id?:string;label?:string;required?:boolean;errorId?:string}){
+export function DateRangePicker({start,end,onChange,minDate,maxDate,error,id='wwm-range',label='Dates',ariaLabel,required=true,errorId='wwm-create-dates-error',compactValue=false}:{compactValue?:boolean;ariaLabel?:string;start:string;end:string;onChange:(start:string,end:string)=>void;minDate:string;maxDate?:string;error?:string;id?:string;label?:string;required?:boolean;errorId?:string}){
  const [open,setOpen]=useState(false);
  const [draft,setDraft]=useState<Range>(resetRange);
  const [month,setMonth]=useState<Date>(()=>fromISO(start)||new Date());
@@ -34,7 +35,7 @@ export function DateRangePicker({start,end,onChange,minDate,maxDate,error,id='ww
  const display=(value:string)=>value?formatCraftDate(value):'Choose dates';
  const announcement=draft.error?`That end date is more than 14 days after ${display(draft.start)}. Choose an earlier end date.`:draft.phase==='end'?`Start ${display(draft.start)}. Choose an end date.`:draft.start&&draft.end?`Current range ${display(draft.start)} to ${display(draft.end)}, ${rangeDays(draft.start,draft.end)} days. Choose a new start date to replace it.`:'Choose a start date.';
  const panelLabel=ariaLabel??(label==='Dates'?'Choose meeting dates':`Choose ${label.toLowerCase()}`);
- const value=start||end?formatCraftRange(start,end):'';
+ const value=start||end?(compactValue?compactRange(start,end):formatCraftRange(start,end)):'';
  const field=(extra?:React.ComponentProps<typeof FieldTrigger>)=><FieldTrigger id={`${id}-trigger`} ref={trigger} valueId={`${id}-value`} data-analytics-label={ANALYTICS_ELEMENTS.DATE_RANGE_PICKER} className="wwm-picker-trigger" value={value} placeholder="Choose dates" icon={<CalendarDays aria-hidden="true"/>} aria-required={required||undefined} aria-invalid={Boolean(error)} aria-describedby={error?errorId:undefined} {...extra}/>;
  const calendar=<>
   <p className="sr-only" id={`${id}-guidance`}>Select a start date, then an end date up to 14 consecutive days later. Selecting an earlier date starts a new range. The range is saved when you choose the end date; Escape keeps the previous range.</p>

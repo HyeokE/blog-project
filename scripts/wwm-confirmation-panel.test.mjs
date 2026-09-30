@@ -7,7 +7,7 @@ test('recipient exclusions and missing addresses are reviewed',()=>{const s=sour
 const weekly=()=>readFileSync(new URL('../src/features/when-we-meet/WeeklyAvailability.tsx',import.meta.url),'utf8');
 const panelCss=()=>readFileSync(new URL('../src/features/when-we-meet/confirmation-panel.css',import.meta.url),'utf8');
 test('the confirm calendar is the compact Everyone calendar, not a separate count grid',()=>{const s=source();assert.match(s,/<WeeklyAvailability [^>]*selection=\{selection\}\/>/);assert.doesNotMatch(s,/wwm-confirm-grid|wwm-confirm-cell|available:number/);assert.doesNotMatch(panelCss(),/wwm-confirm-grid|wwm-confirm-cell/);
- const w=weekly();assert.match(w,/compact=compactChoice\|\|Boolean\(selection\)/);assert.match(w,/\{!selection&&readOnly&&<Button/);assert.match(w,/readOnly=everyoneView\|\|Boolean\(selection\)/);});
+ const w=weekly();assert.match(w,/compact=compactChoice\|\|Boolean\(selection\)/);assert.match(w,/\{!selection&&readOnly&&<div className="wwm-segmented"/);assert.match(w,/readOnly=everyoneView\|\|Boolean\(selection\)/);});
 test('selection cells name date, time and N of M members; rails are visual only while selecting',()=>{const w=weekly();
  assert.match(w,/aria-label=\{`\$\{formatCraftDate\(slot\.date\)\} \$\{span\(slot\.id,endOf\(slot\.id\)\)\}, \$\{projection\.countById\[slot\.id\]\?\?0\} of \$\{selection\.memberCount\} available`\}/);
  assert.match(w,/data-analytics-label=\{ANALYTICS_ELEMENTS\.CONFIRM_CELL\}/);assert.match(w,/aria-hidden=\{selecting\|\|undefined\}/);assert.match(w,/tabIndex=\{selecting\?-1:undefined\}/);

@@ -5,9 +5,9 @@ export const runtime='nodejs';
 // Same-origin authenticated stream. Server checks RLS every second; clients never
 // connect to Supabase directly. Reconnect periodically to revalidate authentication.
 export async function GET(request:Request,{params}:{params:Promise<{roomId:string}>}){
- const {roomId}=await params;if(!uuid(roomId))return failed('Invalid room.',400);
+ const {roomId}=await params;if(!uuid(roomId))return failed('Invalid meeting.',400);
  const context=await currentSupabaseUser();if(!context.user)return unauthorized();
- const initial=await craftRoom(roomId,context);if(!initial)return failed('Room unavailable.',403);
+ const initial=await craftRoom(roomId,context);if(!initial)return failed('Meeting unavailable.',403);
  let stopped=false,timer:ReturnType<typeof setTimeout>|undefined,closeStream:()=>void=()=>{};
  const encoder=new TextEncoder();
  const stop=()=>{if(stopped)return;stopped=true;if(timer)clearTimeout(timer);request.signal.removeEventListener('abort',stop);closeStream()};

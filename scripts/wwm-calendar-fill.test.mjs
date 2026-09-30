@@ -36,11 +36,17 @@ test('Apply goes through the shared draft path and the action is available to ev
  const fill=read('src/features/when-we-meet/CalendarFill.tsx');
  assert.match(fill,/loadCalendarBusy\(roomId\)/);
  assert.match(fill,/Fill from Google Calendar/);
- assert.match(fill,/Dismiss/);
+ assert.match(fill,/>Cancel<\/Button>/);
+ // Anchored panel on desktop, the shared Dialog sheet on phones.
+ assert.match(fill,/<PopoverAnchor asChild>\{button\}<\/PopoverAnchor>/);
+ assert.match(fill,/if\(phone\)return <>\{button\}<Dialog /);
+ assert.match(fill,/fillButtonLabel\(summary\.freeCount\)/);
+ assert.match(fill,/toast\.success\(fillToast\(summary\.freeCount\),\{duration:UNDO_TOAST_MS,action:\{label:'Undo'/);
  assert.match(fill,/Connect Google Calendar/);
  assert.doesNotMatch(fill,/saveResponse|skeleton/i);
  const room=read('src/features/when-we-meet/WhenWeMeet.tsx');
- assert.match(room,/view==='availability'&&<CalendarFill [^>]*onApply=\{sync\.replace\}/);
+ assert.match(room,/view==='availability'\?<CalendarFill [^>]*onApply=\{sync\.replace\}/);
+ assert.match(room,/toolbar=\{fill\}/);
  assert.doesNotMatch(room,/<CalendarFill [^>]*(owner|role)/);
 });
 test('ApiError keeps status and reconnect without breaking request callers',()=>{
