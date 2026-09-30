@@ -16,3 +16,12 @@ test('bottom sheets follow the visual viewport so the on-screen keyboard never c
  assert.match(css,/\[data-sheet-keyboard\][^{]*\{[^}]*bottom: var\(--sheet-keyboard/);
  assert.match(css,/max-height: calc\(var\(--sheet-visible-height/);
 });
+
+test('phones never auto-focus a text field when a sheet or the timezone picker opens',()=>{
+ const dialog=read('src/components/ui/dialog.tsx');
+ assert.match(dialog,/const SHEET_MEDIA = "\(max-width: 640px\)"/);
+ assert.match(dialog,/!event\.defaultPrevented && mobilePresentation === "sheet" && window\.matchMedia\(SHEET_MEDIA\)\.matches/);
+ assert.match(dialog,/sheet\.contentRef\.current\?\.focus\(\{ preventScroll: true \}\)/);
+ const tz=read('src/features/when-we-meet/TimezoneCombobox.tsx');
+ assert.match(tz,/onOpenAutoFocus=\{event => \{ if \(window\.matchMedia\('\(max-width: 640px\)'\)\.matches\) \{ event\.preventDefault\(\)/);
+});

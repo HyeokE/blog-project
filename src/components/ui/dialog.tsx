@@ -62,6 +62,9 @@ const INTERACTIVE = "button,a,input,textarea,select,label,[role=combobox],[role=
  * layout viewport the keyboard covers (--sheet-keyboard) and the visible height (--sheet-visible-height);
  * dialog-sheet.css lifts and shortens the sheet with them. The focused field is then scrolled into view.
  */
+/** Matches the dialog-sheet.css breakpoint where dialogs become bottom sheets. */
+const SHEET_MEDIA = "(max-width: 640px)"
+
 function useSheetKeyboard(contentRef: React.RefObject<HTMLDivElement | null>, enabled: boolean) {
   React.useEffect(() => {
     const viewport = typeof window === "undefined" ? null : window.visualViewport
@@ -188,7 +191,13 @@ function DialogContent({
     const active = document.activeElement
     opener.current = active instanceof HTMLElement && active !== document.body && !sheet.contentRef.current?.contains(active) ? active : null
     onOpenAutoFocus?.(event)
-  }, [onOpenAutoFocus, sheet.contentRef])
+    // Phones: opening a sheet must not focus a text field and pop the keyboard over it. Focus the sheet itself
+    // (keeps the focus trap and screen-reader context); the user taps a field when they want to type.
+    if (!event.defaultPrevented && mobilePresentation === "sheet" && window.matchMedia(SHEET_MEDIA).matches) {
+      event.preventDefault()
+      sheet.contentRef.current?.focus({ preventScroll: true })
+    }
+  }, [onOpenAutoFocus, sheet.contentRef, mobilePresentation])
   const handleCloseAutoFocus = React.useCallback((event: Event) => {
     onCloseAutoFocus?.(event)
     const target = opener.current

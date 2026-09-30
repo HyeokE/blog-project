@@ -66,7 +66,7 @@ export function TimezoneCombobox({ value, onChange, id, required, disabled, refe
     <PopoverTrigger asChild>
       <FieldTrigger id={id} data-analytics-label={ANALYTICS_ELEMENTS.TIMEZONE_PICKER} disabled={disabled} aria-required={required} aria-invalid={Boolean(error)} {...aria} className="wwm-tz-trigger" value={selected ? `${selected.replaceAll('_', ' ')} · ${timezoneOffset(selected, referenceDate)}` : ''} placeholder={t('picker.chooseTimezone')}/>
     </PopoverTrigger>
-    <PopoverContent align="start" side="bottom" sideOffset={4} collisionPadding={16} avoidCollisions={false} className="wwm-tz-popover" onEscapeKeyDown={event => { event.preventDefault(); event.stopPropagation(); setOpen(false); }}>
+    <PopoverContent align="start" side="bottom" sideOffset={4} collisionPadding={16} avoidCollisions={false} className="wwm-tz-popover" onOpenAutoFocus={event => { if (window.matchMedia('(max-width: 640px)').matches) { event.preventDefault(); (event.currentTarget as HTMLElement | null)?.focus({ preventScroll: true }); } }} onEscapeKeyDown={event => { event.preventDefault(); event.stopPropagation(); setOpen(false); }}>
       <Command shouldFilter={false} value={active} onValueChange={setActive} label={t('picker.timezones')} loop={false}>
         <CommandInput data-analytics-label={ANALYTICS_ELEMENTS.TIMEZONE_SEARCH} aria-label={t('picker.searchTimezonesLabel')} value={query} onValueChange={next => { setQuery(next); const matches = searchTimezones(next, options); setActive(matches.includes(selected) ? selected : matches[0] || ''); }} placeholder={t('picker.searchTimezones')} />
         <CommandList ref={resultsRef} className="wwm-tz-scroll" aria-label={t('picker.timezones')}>
