@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { unstable_rethrow } from 'next/navigation';
 import WhenWeMeet from '@/features/when-we-meet/WhenWeMeet';
+import {createWwmTranslator} from '@/i18n/wwm.mjs';
+import {getWwmLocale} from '@/lib/wwm-locale';
 import {craftRoomConfirmation,craftRoomMetadata,craftRoomResponses,currentSupabaseUser} from '@/lib/supabase/server';
 import type {RoomResponseResult} from '@/features/when-we-meet/RoomResponseLoader';
 import {Suspense} from 'react';
@@ -20,7 +22,10 @@ export async function RoomSection({params}:{params:Promise<{roomId:string}>}){
   return <ServerSectionRetry room/>;
  }
 }
-export const metadata: Metadata={title:'Meeting | When We Meet',robots:{index:false,follow:false},description:'Private scheduling invitation.'};
+export async function generateMetadata(): Promise<Metadata>{
+ const t=createWwmTranslator(await getWwmLocale());
+ return {title:t('app.roomTitle'),robots:{index:false,follow:false},description:'Private scheduling invitation.'};
+}
 export default function Page({params}:{params:Promise<{roomId:string}>}){
  return <Suspense fallback={<main className="wwm"><RoomSkeleton/></main>}><RoomSection params={params}/></Suspense>;
 }

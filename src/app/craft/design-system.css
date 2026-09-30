@@ -112,6 +112,8 @@
 :root[data-craft] [data-slot$='dialog-header']{position:relative;display:flex;flex-direction:column;gap:var(--craft-space-1);text-align:left;border-bottom:0}
 :where(:root[data-craft] [data-slot$='dialog-header']){padding-bottom:var(--craft-space-4)}
 :root[data-craft] [data-slot$='dialog-header']::after{content:'';position:absolute;left:calc(var(--craft-space-6) * -1);right:calc(var(--craft-space-6) * -1);bottom:0;height:1px;background:var(--craft-rule-soft);pointer-events:none}
+/* A visually hidden header (title kept for assistive tech only) must not paint its rule as a 1px dot. */
+:root[data-craft] [data-slot$='dialog-header'].wwm-sr-only::after{display:none}
 :root[data-craft] [data-slot$='dialog-footer']{position:relative;display:flex;flex-direction:row;justify-content:flex-end;align-items:center;gap:var(--craft-space-2);border-top:0}
 :where(:root[data-craft] [data-slot$='dialog-footer']){padding-top:var(--craft-space-4)}
 :root[data-craft] [data-slot$='dialog-footer']::before{content:'';position:absolute;left:calc(var(--craft-space-6) * -1);right:calc(var(--craft-space-6) * -1);top:0;height:1px;background:var(--craft-rule-soft);pointer-events:none}

@@ -55,13 +55,15 @@ export function projectWeeklyTimeline({slots,responses,currentUserId,youLabel='Y
     return {userId:response.userId,displayName:response.displayName,label,isCurrentUser,color:palette.get(response.userId).color,mark:palette.get(response.userId).mark,slotIds:ordered.filter(slot=>selected.has(slot.id)).map(slot=>slot.id),runs:runsFor(ordered,selected)};
   });
   const selectedByRow=sorted.map(response=>new Set(response.slots));
+  // A saved response with no slots is "not entered yet" everywhere else (People tab, confirm review), so it is not counted.
+  const responseCount=selectedByRow.filter(ids=>ids.size>0).length;
   const countById={};
   const days=[];
   for(const slot of ordered){
     const count=selectedByRow.filter(ids=>ids.has(slot.id)).length;
     countById[slot.id]=count;
     if(days.at(-1)?.date!==slot.date)days.push({date:slot.date,slots:[]});
-    days.at(-1).slots.push({...slot,count,all:responses.length>0&&count===responses.length});
+    days.at(-1).slots.push({...slot,count,all:responseCount>0&&count===responseCount});
   }
-  return {responseCount:responses.length,days,rows,countById};
+  return {responseCount,days,rows,countById};
 }

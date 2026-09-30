@@ -90,8 +90,8 @@
 .wwm-confirm-mode .wwm-grid-cell.is-selected:focus-visible{outline:none;box-shadow:inset 4px 0 0 var(--confirm-accent);background:var(--confirm-fill)}
 .wwm-confirm-mode .wwm-grid-cell.is-anchor{box-shadow:inset 0 2px 0 var(--confirm-accent)}
 /* Collapsed empty leading hours: one slim full-width row between the day headers and the first visible hour. */
-.wwm .wwm-weekly .wwm-calendar-earlier{display:block;width:100%;box-sizing:border-box;margin:0;padding:6px 12px;border:1px solid var(--calendar-line);border-top:0;background:var(--calendar-surface);color:var(--craft-muted);font:inherit;font-size:var(--craft-fs-12);text-align:left;cursor:pointer}
-.wwm .wwm-weekly .wwm-calendar-earlier:hover{color:var(--craft-ink);background:var(--calendar-faint)}
+:root .wwm .wwm-weekly button.wwm-calendar-earlier{display:block;width:100%;box-sizing:border-box;margin:0;padding:6px 12px;border:1px solid var(--calendar-line);border-top:0;background:var(--calendar-surface);color:var(--craft-muted);font:inherit;font-size:var(--craft-fs-12);text-align:left;cursor:pointer}
+:root .wwm .wwm-weekly button.wwm-calendar-earlier:hover{color:var(--craft-ink);background:var(--calendar-faint)}
 .wwm .wwm-weekly .wwm-calendar-earlier:focus-visible{outline:2px solid var(--craft-focus);outline-offset:-2px}
 .wwm-calendar-earlier+.wwm-week-body{border-top:0}
 

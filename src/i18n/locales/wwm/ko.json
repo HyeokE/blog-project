@@ -4,7 +4,8 @@
     "tagline": "다 같이 되는 시간을 쉽게 찾아요",
     "craft": "Craft",
     "meetings": "모임",
-    "yourMeetings": "내 모임"
+    "yourMeetings": "내 모임",
+    "roomTitle": "모임 | When We Meet"
   },
   "common": {
     "cancel": "취소",
@@ -237,7 +238,7 @@
       "missingEmail": "이메일이 없는 사람이 있어요: {names}. 받는 사람에서 빼고 보내주세요.",
       "unavailable": "안 되는 사람: {names}",
       "partly": "일부만 되는 사람: {names}",
-      "notResponded": "아직 입력 안 한 사람: {names}",
+      "notResponded": "아직 입력 전: {names}",
       "excluded": "뺀 사람: {names}",
       "optional": "선택 참석: {names}",
       "noLongerWorks": "그사이 이 시간이 안 되는 사람이 생겼어요"
@@ -433,5 +434,10 @@
     "conflict": "그사이 모임이 바뀌었어요. 새로고침하고 다시 시도해주세요.",
     "invalidSchedule": "날짜와 시간을 확인하고 다시 시도해주세요.",
     "generic": "문제가 생겼어요. 다시 시도해주세요."
+  },
+  "account": {
+    "profileMenu": "프로필 메뉴",
+    "signOut": "로그아웃",
+    "signOutFailed": "로그아웃하지 못했어요. 다시 시도해주세요."
   }
 }
