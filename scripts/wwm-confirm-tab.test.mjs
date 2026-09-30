@@ -75,7 +75,7 @@ test('member sees no review; confirmed record is formatted in the room timezone'
  const confirmation={status:'confirmed',title:'T',startsAt:'2026-10-01T01:00:00.000Z',endsAt:'2026-10-01T02:30:00.000Z',timezone:'Asia/Seoul',googleEventUrl:null};
  const member=confirmPanelState({data:normalizeConfirmationResponse({confirmation,review:null}),slots,organizerName:'Alex'});
  assert.equal(member.role,'member');assert.equal(member.status,'confirmed');assert.deepEqual(member.members,[]);
- assert.deepEqual(member.confirmation,{title:'T',date:'2026-10-01',start:'10:00',end:'11:30',timezone:'Asia/Seoul',organizer:'Alex',attendeeNames:[],attendees:[],rsvp:false});
+ assert.deepEqual(member.confirmation,{title:'T',date:'2026-10-01',start:'10:00',end:'11:30',timezone:'Asia/Seoul',organizer:'Alex',attendeeNames:[],attendees:[],rsvp:false,isRecipient:null});
  const owner=confirmPanelState({data:normalizeConfirmationResponse({...raw,confirmation:{...confirmation,googleEventUrl:'https://calendar.google.com/e'}}),slots});
  assert.equal(owner.confirmation.organizer,'Alex');assert.deepEqual(owner.confirmation.attendeeNames,['Alex','Morgan']);assert.equal(owner.confirmation.eventUrl,'https://calendar.google.com/e');
  const known=confirmPanelState({data:normalizeConfirmationResponse({...raw,confirmation}),slots,recipientIds:[A]});

@@ -3,8 +3,9 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {makeSlots} from '../src/features/when-we-meet/domain.mjs';
 import {rsvpByMember,rsvpCounts} from '../src/features/when-we-meet/rsvp.mjs';
-import {shortDay,confirmedWhen,confirmedChip,rsvpSummary,RSVP_LABELS} from '../src/features/when-we-meet/meeting-copy.mjs';
+import {shortDay,confirmedWhen,confirmedChip,rsvpSummary,RSVP_LABELS,memberInvitedLine} from '../src/features/when-we-meet/meeting-copy.mjs';
 import {normalizeConfirmationResponse,confirmPanelState} from '../src/features/when-we-meet/confirm-tab.mjs';
+import {normalizeRecipientFlag} from '../src/features/when-we-meet/normalize.mjs';
 
 const A='11111111-1111-4111-8111-111111111111',B='33333333-3333-4333-8333-333333333333',C='44444444-4444-4444-8444-444444444444',D='55555555-5555-4555-8555-555555555555';
 const members=[{userId:A,email:'Alex@Example.test'},{userId:B,email:'m@example.test'},{userId:C,email:'t@example.test'},{userId:D,email:null}];
@@ -74,6 +75,56 @@ test('the owner GET adds RSVP from the owner token server-side and never fails o
  const route=readFileSync(new URL('../src/app/api/craft/when-we-meet/[roomId]/confirmation/route.ts',import.meta.url),'utf8');
  const shared=readFileSync(new URL('../src/app/api/craft/when-we-meet/[roomId]/confirmation/shared.ts',import.meta.url),'utf8');
  assert.match(route,/ownerRsvp\(/);
- assert.match(route,/if\(metadata\.room\.ownerId!==session\.user\.id\)return ok\(\{confirmation,review:null\}\)/);
+ assert.match(route,/if\(metadata\.room\.ownerId!==session\.user\.id\)return ok\(\{confirmation:confirmation\?\.status==='confirmed'\?\{\.\.\.confirmation,isRecipient:await recipientFlag\(session,roomId\)\}:confirmation,review:null\}\)/);
  assert.match(shared,/export async function ownerRsvp[\s\S]*catch\{return null\}/);
+});
+
+test('member recipient flag: true shows the event link, false hides it, unknown (RPC missing) hides it with neutral copy',()=>{
+ const member=isRecipient=>confirmPanelState({data:normalizeConfirmationResponse({confirmation:isRecipient===undefined?record:{...record,isRecipient},review:null}),slots,organizerName:'Alex'}).confirmation;
+ assert.equal(member(true).isRecipient,true);
+ assert.equal(member(true).eventUrl,record.googleEventUrl);
+ assert.equal(member(false).isRecipient,false);
+ assert.equal(member(false).eventUrl,undefined);
+ assert.equal(member(undefined).isRecipient,null);
+ assert.equal(member(undefined).eventUrl,undefined);
+ assert.equal(member('yes').isRecipient,null,'non-boolean flags read as unknown');
+ // Owner view is unchanged: link kept, no member flag.
+ const owner=confirmPanelState({data:normalizeConfirmationResponse({confirmation:{...record,isRecipient:false},review:{calendarConnected:true,organizerEmail:'a@example.test',attendees,edit,rsvp:null}}),slots}).confirmation;
+ assert.equal(owner.eventUrl,record.googleEventUrl);
+ assert.equal('isRecipient' in owner,false);
+});
+
+test('member invited line per recipient flag',()=>{
+ assert.equal(memberInvitedLine(true,'Alex'),'You’re invited · Organized by Alex');
+ assert.equal(memberInvitedLine(false,'Alex'),'Confirmed by Alex · You weren’t included in the invitation');
+ assert.equal(memberInvitedLine(null,'Alex'),'Organized by Alex');
+ assert.equal(memberInvitedLine(true,'Organizer'),'You’re invited');
+ assert.equal(memberInvitedLine(false,undefined),'Confirmed by the organizer · You weren’t included in the invitation');
+ assert.equal(memberInvitedLine(null,undefined),'Confirmed by the organizer');
+});
+
+test('normalizeRecipientFlag: only real booleans pass; missing RPC/null → unknown',()=>{
+ assert.equal(normalizeRecipientFlag(true),true);
+ assert.equal(normalizeRecipientFlag(false),false);
+ for(const value of [null,undefined,'true',1,[true],{}])assert.equal(normalizeRecipientFlag(value),null);
+ const shared=readFileSync(new URL('../src/app/api/craft/when-we-meet/[roomId]/confirmation/shared.ts',import.meta.url),'utf8');
+ assert.match(shared,/rpc\('wwm_confirmation_is_recipient',\{p_room_id:roomId\}\);\s*return error\?null:normalizeRecipientFlag\(data\)/);
+});
+
+test('is_recipient migration: member-gated security definer boolean over the confirmed snapshot, no emails, authenticated only',()=>{
+ const s=readFileSync(new URL('../supabase/migrations/20261001010000_wwm_confirmation_is_recipient.sql',import.meta.url),'utf8');
+ assert.match(s,/create or replace function public\.wwm_confirmation_is_recipient\(p_room_id uuid\)\s*returns boolean language plpgsql stable security definer set search_path = ''/);
+ assert.match(s,/auth\.uid\(\) is null or not wwm_private\.is_google\(\) or not wwm_private\.is_member\(p_room_id\)/);
+ assert.match(s,/errcode='42501'/);
+ assert.match(s,/from public\.wwm_confirmations c\s+where c\.room_id=p_room_id and c\.status='confirmed'/);
+ assert.match(s,/jsonb_array_elements\(c\.attendee_snapshot\)/);
+ assert.match(s,/\(a->>'userId'\)::uuid = auth\.uid\(\)/);
+ assert.match(s,/coalesce\([\s\S]*,false\)/,'not confirmed → false');
+ const body=s.replace(/^--.*$/gm,'');
+ assert.doesNotMatch(body,/email/i,'never reads or returns addresses');
+ assert.doesNotMatch(body,/wwm_confirmation_revisions/,'open edits are ignored until confirmed');
+ assert.match(s,/revoke all on function public\.wwm_confirmation_is_recipient\(uuid\) from public,anon;/);
+ assert.match(s,/grant execute on function public\.wwm_confirmation_is_recipient\(uuid\) to authenticated;/);
+ assert.doesNotMatch(s,/grant [^;]* to (?:anon|public)/i);
+ assert.match(s,/^begin;[\s\S]*commit;\s*$/m);
 });

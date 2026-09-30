@@ -97,7 +97,9 @@
 .wwm .wwm-view-switch [data-slot='tabs-trigger']{display:flex;align-items:center;justify-content:center;height:44px;min-height:44px;min-width:0;width:100%;padding:0 8px;border:1px solid transparent;border-radius:4px;background:transparent;color:var(--craft-muted);font-size:14px;font-weight:500;line-height:1.2;white-space:nowrap;box-shadow:none;transform:none}
 .wwm .wwm-view-switch [data-slot='tabs-trigger']::after{display:none!important;content:none!important}
 .wwm .wwm-view-switch [data-slot='tabs-trigger'][data-state='active']{background:#baa981;color:#20211c;border-color:#9a895f;box-shadow:none;font-weight:650}
-.wwm .wwm-view-switch [data-slot='tabs-trigger']:focus-visible{outline:2px solid var(--craft-focus);outline-offset:2px}
+/* Tab ring only for keyboard focus: data-input-modality comes from ui/tabs (a click or scripted focus never shows it). */
+.wwm .wwm-view-switch [data-slot='tabs-trigger']:focus-visible{outline:none}
+:root[data-input-modality='keyboard'] .wwm .wwm-view-switch [data-slot='tabs-trigger']:focus-visible{outline:2px solid var(--craft-focus);outline-offset:2px}
 :root[data-mode='dark'] .wwm:not(.wwm-room) .wwm-view-switch [data-slot='tabs-trigger'][data-state='active']{background:#d6cdb3;border-color:#d6cdb3;color:#20211c}
 @media(max-width:700px){.wwm .wwm-view-switch{grid-template-columns:repeat(3,minmax(0,1fr))}}
 /* Create modal uses Craft tokens despite Radix rendering it in a body portal. */

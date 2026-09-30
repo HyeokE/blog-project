@@ -13,7 +13,7 @@ const fail=message=>{throw new Error(message)};
 function normalizeRecord(value){
  if(value===null||value===undefined)return null;
  if(typeof value!=='object'||!isString(value.status)||!isString(value.startsAt)||!isString(value.endsAt)||!isString(value.timezone))fail('Invalid confirmation');
- return {status:value.status,title:isString(value.title)?value.title:'',startsAt:value.startsAt,endsAt:value.endsAt,timezone:value.timezone,googleEventUrl:isString(value.googleEventUrl)?value.googleEventUrl:null,...(Number.isSafeInteger(value.revision)?{revision:value.revision}:{})};
+ return {status:value.status,title:isString(value.title)?value.title:'',startsAt:value.startsAt,endsAt:value.endsAt,timezone:value.timezone,googleEventUrl:isString(value.googleEventUrl)?value.googleEventUrl:null,...(Number.isSafeInteger(value.revision)?{revision:value.revision}:{}),...(typeof value.isRecipient==='boolean'?{isRecipient:value.isRecipient}:{})};
 }
 const idList=value=>{if(!Array.isArray(value)||!value.every(isString))fail('Invalid confirmation edit');return [...value];};
 /** Owner-only edit detail (ids only; addresses stay in the attendee review). Null when the server has none. */
@@ -101,11 +101,12 @@ export function confirmPanelState({data,slots,organizerName,recipientIds}){
   const shown=edit?edit.recipientIds:recipientIds;
   const recipients=shown?attendees.filter(row=>shown.includes(row.userId)):attendees;
   const names=recipients.map(row=>row.name);
+  // The organizer's event link is useful only to people on the invitation: members get it once the server confirms they are (unknown → no link).
   // Owner only: the recipient roster with Optional and, when Google could be read, each reply. Members see no roster.
   const replies=review?.rsvp?new Map(review.rsvp.map(row=>[row.userId,row.response])):null;
   const optional=edit?.optionalIds||[];
   const roster=recipients.map(row=>({id:row.userId,name:row.name,optional:optional.includes(row.userId),...(replies?{rsvp:replies.get(row.userId)||'needsAction'}:{})}));
-  state.confirmation={title:record.title,date:start.date,start:start.time,end:end.time,timezone:record.timezone,organizer:attendees.find(row=>row.isOrganizer)?.name||organizerName||'Organizer',attendeeNames:names,attendees:roster,rsvp:Boolean(replies),...(review?{recipientCount:recipients.length}:{}),...((record.revision??1)>1?{updated:true}:{}),...(record.googleEventUrl?{eventUrl:record.googleEventUrl}:{})};
+  state.confirmation={title:record.title,date:start.date,start:start.time,end:end.time,timezone:record.timezone,organizer:attendees.find(row=>row.isOrganizer)?.name||organizerName||'Organizer',attendeeNames:names,attendees:roster,rsvp:Boolean(replies),...(review?{recipientCount:recipients.length}:{}),...((record.revision??1)>1?{updated:true}:{}),...(record.googleEventUrl&&(review||record.isRecipient===true)?{eventUrl:record.googleEventUrl}:{}),...(review?{}:{isRecipient:typeof record.isRecipient==='boolean'?record.isRecipient:null})};
   // Edit review starts from the confirmed snapshot; members who joined since then start excluded.
   if(edit)state.edit={baseRevision:edit.revision,initial:{title:record.title,date:start.date,start:start.time,end:end.time,excludedIds:attendees.map(row=>row.userId).filter(id=>!edit.recipientIds.includes(id)),optionalIds:edit.optionalIds.filter(id=>edit.recipientIds.includes(id))},status:edit.open?'reconciling':'idle',lastResentAt:edit.lastResentAt};
  }

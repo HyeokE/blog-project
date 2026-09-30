@@ -6,7 +6,7 @@ import {readCredential} from '@/features/when-we-meet/calendar-db';
 import {getEvent} from '@/features/when-we-meet/calendar-google.mjs';
 import {confirmationEventId} from '@/features/when-we-meet/confirmation-foundation.mjs';
 import {rsvpByMember} from '@/features/when-we-meet/rsvp.mjs';
-import {normalizeAttendees,normalizeConfirmation,normalizeConfirmationDetail} from '@/features/when-we-meet/normalize.mjs';
+import {normalizeAttendees,normalizeConfirmation,normalizeConfirmationDetail,normalizeRecipientFlag} from '@/features/when-we-meet/normalize.mjs';
 import {failed} from '../../http';
 
 export type Session=Awaited<ReturnType<typeof currentSupabaseUser>>;
@@ -25,6 +25,11 @@ export async function confirmationStatus(session:Session,roomId:string){
  const {data,error}=await session.client.rpc('wwm_confirmation_status',{p_room_id:roomId});
  if(error)throw Error('Status unavailable');
  return normalizeConfirmation(data?.[0]);
+}
+/** Member-safe: is the caller a recipient of the current confirmed meeting? Null (unknown) when the RPC is unavailable (migration not applied yet) or fails. */
+export async function recipientFlag(session:Session,roomId:string){
+ const {data,error}=await session.client.rpc('wwm_confirmation_is_recipient',{p_room_id:roomId});
+ return error?null:normalizeRecipientFlag(data);
 }
 /** Owner-only edit/resend details. Null when unavailable (e.g. the revisions migration is not applied yet): the UI then hides Edit/Resend. */
 export async function confirmationDetail(session:Session,roomId:string){

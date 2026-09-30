@@ -3,11 +3,11 @@
 ## Private Tailscale access
 - https://macmini-home.taile6a871.ts.net:8447/ → http://127.0.0.1:6006. Tailnet-only Serve; existing443/8444/8445/8446 mappings preserved.
 - Parent readback and HTTPS200 plus actual room story rendering verified. Core and Vite allow only the exact Tailnet hostname in addition to local defaults. HMR WebSocket not independently verified.
-- Current process `proc_dac4b2e96b8b`, command `pnpm storybook --host 127.0.0.1 --ci --exact-port`; supersedes earlier process below. No permanent launchd service added.
+- Current process `proc_dac4b2e96b8b`, command `bun run storybook --host 127.0.0.1 --ci --exact-port`; supersedes earlier process below. No permanent launchd service added.
 
 ## Run
-- `pnpm storybook` → http://localhost:6006 (script explicitly sets NODE_ENV=development; this host exports production and otherwise jsxDEV is undefined).
-- `pnpm storybook:build` produces a static build.
+- `bun run storybook` → http://localhost:6006 (script explicitly sets NODE_ENV=development; this host exports production and otherwise jsxDEV is undefined).
+- `bun run storybook:build` produces a static build.
 - Parent-running dev process: `proc_a3c1ca8c0399`, started 2026-09-30. Process handle is session evidence, not a permanent service guarantee.
 - Use theme toolbar and viewport controls. API and EventSource are synthetic; no production data, OAuth or mail. Relative `./api` imports as well as the absolute alias are intercepted. Local link navigation is suppressed inside stories. Creation/saving success means fixture success only.
 
@@ -43,4 +43,4 @@ Saving, SaveFailed, SaveRetryRecovered, LiveConnected, ConnectionUnavailable, Se
 - Account-error chrome and misconfigured-service environment branch have no dedicated stories yet. Dedicated unauthorized-room UI is not implemented; save rejection message is simulated through the real error surface.
 - People intentionally shows the actual unavailable-roster notice. Administrator capacity/rename, Google Calendar confirmation/invitation, and all-day/time controls not yet implemented in the application are not invented as finished screens.
 - Real OAuth, DB writes, email sending, remote multi-user conflict behavior, native iOS touch and full light/dark × viewport combinations are not certified by Storybook.
-- pnpm10.33.0 installation rewrote the prior lockfile format. Review package/lock diff before merge; existing dirty-tree work was not reverted. No commit/push/deploy.
+- The previous pnpm 10.33.0 installation rewrote the prior lockfile format (historical note). Bun migration generated bun.lock; review diff before merge; existing dirty-tree work was not reverted. No commit/push/deploy.

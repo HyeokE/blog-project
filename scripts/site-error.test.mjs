@@ -64,3 +64,24 @@ test('global error supplies its own document and provider-free recovery', () => 
   assert.match(html, /다시 시도/);
   assert.doesNotMatch(html, /PRIVATE_STACK_SECRET/);
 });
+test('Craft 404/500 render English Craft copy inside the Craft layout; the blog pages keep Korean', () => {
+  const missing = renderToStaticMarkup(React.createElement(load('app/craft/not-found.tsx')));
+  assert.match(missing, /Page not found/);
+  assert.match(missing, /href="\/craft"/);
+  assert.match(missing, /class="craft-page craft-error"/);
+  assert.doesNotMatch(missing, /[가-힣]/);
+  assert.doesNotMatch(missing, /Try again/);
+  const reset = () => {};
+  const failed = renderToStaticMarkup(React.createElement(load('app/craft/error.tsx'), {
+    error: Object.assign(new Error('PRIVATE_STACK_SECRET'), { digest: 'PRIVATE_DIGEST_SECRET' }), reset,
+  }));
+  assert.match(failed, /Something went wrong/);
+  assert.match(failed, /Try again/);
+  assert.match(failed, /href="\/craft"/);
+  assert.doesNotMatch(failed, /[가-힣]|PRIVATE_(STACK|DIGEST)_SECRET/);
+  assert.equal(load('app/craft/error.tsx')({ error: new Error('x'), reset }).props.onRetry, reset);
+  // Unmatched /craft/** URLs reach the Craft 404 through a catch-all that only calls notFound().
+  const catchAll = fs.readFileSync(path.join(root, 'app/craft/[...missing]/page.tsx'), 'utf8');
+  assert.match(catchAll, /notFound\(\)/);
+  assert.match(renderToStaticMarkup(React.createElement(load('app/not-found.tsx'))), /페이지를 찾을 수 없어요/);
+});

@@ -1,0 +1,7 @@
+/* Craft 404/500: one column, Craft type scale and tokens; actions are the shared Button primitive. */
+.craft-error .craft-error-body{display:grid;justify-items:start;gap:var(--craft-space-3);padding-block:var(--craft-space-12)}
+.craft-error .craft-error-body>*{max-width:560px}
+.craft-error .craft-error-code{margin:0;color:var(--craft-muted);font-size:var(--craft-fs-14);font-weight:var(--craft-fw-medium);font-variant-numeric:tabular-nums}
+.craft-error h1{margin:0;color:var(--craft-ink);font-size:var(--craft-fs-28);font-weight:var(--craft-fw-semibold);line-height:1.25}
+.craft-error .craft-error-text{margin:0;color:var(--craft-muted);font-size:var(--craft-fs-16);line-height:1.5}
+.craft-error .craft-error-actions{display:flex;flex-wrap:wrap;gap:var(--craft-space-3);margin-top:var(--craft-space-3)}

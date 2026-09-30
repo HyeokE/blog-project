@@ -2,16 +2,11 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+Install with Bun 1.4.2 and run the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install --frozen-lockfile
+bun run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -31,6 +26,6 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The local `vercel.json` pins the deployment install command to `bunx bun@1.4.2 install --frozen-lockfile` and the build command to `bunx bun@1.4.2 run build`. Keep `bun.lock` in source control. This changes repository configuration only; it does not update the linked Vercel project's remote settings or deploy the app. Verify those settings before the next deployment. Framework detection remains Next.js; no Bun server runtime override is configured.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See [Vercel project configuration](https://vercel.com/docs/project-configuration/vercel-json) and [pinning a Bun version](https://vercel.com/kb/guide/how-to-pin-a-specific-bun-version-for-vercel-builds).

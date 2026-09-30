@@ -5,6 +5,7 @@ export function dayLabel(date:string):string;
 export function saveStatus(input:{state:string;dirty:boolean;edited:boolean}):{tone:'idle'|'saving'|'saved'|'error';text:string};
 export function fillButtonLabel(count:number):string;
 export function fillToast(count:number):string;
+export function memberInvitedLine(isRecipient:boolean|null,organizer?:string):string;
 export function invitationsSentToast(count:number):string;
 export function resendQuestion(count:number|undefined):string;
 export const MEETING_TOASTS:Readonly<{linkCopied:string;copyFailed:string;renamed:string;nameUpdated:string;editSaved:string;resent:string;saveFailed:string}>;

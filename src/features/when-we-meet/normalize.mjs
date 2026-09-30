@@ -18,6 +18,8 @@ export function normalizeResponses(rows){return rows.map(row=>({userId:row.user_
 export function normalizePeople(rows){return rows.map(row=>({userId:row.user_id,displayName:row.display_name,isAdmin:row.is_admin===true,hasAvailability:row.has_availability===true}))}
 export function normalizeAttendees(rows){return rows.map(row=>({userId:row.user_id,displayName:row.display_name,email:row.email??null,hasAvailability:row.has_availability===true}))}
 export function normalizeConfirmation(row){return row?{status:row.status,title:row.title??'',startsAt:row.starts_at,endsAt:row.ends_at,timezone:row.timezone,googleEventUrl:row.google_event_url??null,...(row.revision!==undefined&&row.revision!==null?{revision:Number(row.revision)}:{})}:null}
+/** `wwm_confirmation_is_recipient` scalar → true/false; anything else (RPC missing or failed) → null = unknown. */
+export function normalizeRecipientFlag(value){return value===true||value===false?value:null}
 /** Owner-only `wwm_confirmation_owner_detail` row → edit review ids, the open edit (if any) and the last resend. */
 export function normalizeConfirmationDetail(row){
  if(!row)return null;

@@ -25,6 +25,7 @@ The inventory comes from `src/app/**/page.tsx`. The global tracker supplies page
 | `/craft/when-we-meet/auth/callback` | OAuth return link after a failed exchange (`wwm_auth`). |
 | `/craft/privacy` | Contact mailto link, Google policy and permissions external links, links to Craft and Terms (`craft_legal`). |
 | `/craft/terms` | Contact mailto link and links to Craft and Privacy Policy (`craft_legal`). |
+| `/craft/[...missing]` | Unmatched Craft URL → Craft 404 (`craft/not-found.tsx`, English): Back to Craft link (`home_link`); Craft route errors (`craft/error.tsx`) add Try again (`retry`) (`error`). |
 
 Craft labels are fixed UI names from `ANALYTICS_ELEMENTS`; names, emails, meeting titles and room IDs are never attached as labels or `data-analytics-id`. Explicit labels also stop the tracker from falling back to `aria-label`/text content, which in When We Meet contains participant names and meeting titles. Link URLs and `page_location` still carry the room path, as for every route. The error boundaries (`src/app/error.tsx`, `src/app/global-error.tsx`) and the 404 page render `SiteError`; their retry and home controls are labelled in the `error` section.
 

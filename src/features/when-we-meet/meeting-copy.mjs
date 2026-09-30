@@ -54,6 +54,13 @@ export function saveStatus({state,dirty,edited}){
 
 export const fillButtonLabel=count=>`Fill ${plural(count,'slot')}`;
 export const fillToast=count=>`Filled ${plural(count,'half-hour')}`;
+/** Member line on the confirmed card. isRecipient: true / false / null (unknown: the server could not tell). "Organizer" is the placeholder name. */
+export function memberInvitedLine(isRecipient,organizer){
+ const name=organizer&&organizer!=='Organizer'?organizer:null;
+ if(isRecipient===true)return name?`You’re invited · Organized by ${name}`:'You’re invited';
+ if(isRecipient===false)return `${name?`Confirmed by ${name}`:'Confirmed by the organizer'} · You weren’t included in the invitation`;
+ return name?`Organized by ${name}`:'Confirmed by the organizer';
+}
 export const invitationsSentToast=count=>`Invitations sent to ${plural(count,'person','people')}`;
 export const resendQuestion=count=>typeof count==='number'?`Email ${plural(count,'attendee')} again?`:'Email the attendees again?';
 

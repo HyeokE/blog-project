@@ -11,7 +11,7 @@ import {WeeklyAvailability} from './WeeklyAvailability';
 import {fieldsRange,rangeFields,selectionAvailability,type ConfirmRange} from './confirm-selection.mjs';
 import './confirmation-panel.css';
 import {ANALYTICS_ELEMENTS,ANALYTICS_SECTIONS} from '@/constants/analytics';
-import {confirmedWhen,invitationsSentToast,RSVP_LABELS,rsvpSummary} from './meeting-copy.mjs';
+import {confirmedWhen,invitationsSentToast,memberInvitedLine,RSVP_LABELS,rsvpSummary} from './meeting-copy.mjs';
 import {rsvpCounts,type RsvpStatus} from './rsvp.mjs';
 import {useMediaQuery} from './use-media-query';
 
@@ -20,7 +20,7 @@ type Slot={id:string;utc:string;date:string;time:string};
 type SavedResponse={userId:string;displayName:string;slots:string[]};
 export type ConfirmedAttendee={id:string;name:string;optional:boolean;rsvp?:RsvpStatus};
 /** `attendees`/`recipientCount` are owner-only (members never receive the roster); `rsvp` is true when Google replies could be read. */
-export type ConfirmationRecord={title?:string;date:string;start:string;end:string;timezone:string;organizer:string;attendeeNames:string[];attendees?:ConfirmedAttendee[];rsvp?:boolean;recipientCount?:number;eventUrl?:string;updated?:boolean};
+export type ConfirmationRecord={title?:string;date:string;start:string;end:string;timezone:string;organizer:string;attendeeNames:string[];attendees?:ConfirmedAttendee[];rsvp?:boolean;recipientCount?:number;eventUrl?:string;updated?:boolean;isRecipient?:boolean|null};
 export type ConfirmationProposal={date:string;start:string;end:string;startId:string;endId:string;recipientIds:string[];excludedIds:string[];title:string;optionalIds:string[]};
 /** Owner editing of a confirmed meeting. `initial` is the confirmed snapshot; status is the edit request, not the meeting. */
 export type ConfirmationEditState={initial:{title:string;date:string;start:string;end:string;excludedIds:string[];optionalIds:string[]};status:'idle'|'pending'|'reconciling'|'failed'|'saved';error?:string};
@@ -79,7 +79,7 @@ export function ConfirmationPanel({room,role,members=[],slots,responses,currentU
  // The confirmed card: one status, the sent event name, one time line, who was invited and the next step.
  const roster=confirmation?.attendees??[];
  const replies=confirmation?.rsvp?rsvpCounts(roster.map(row=>({response:row.rsvp}))):null;
- const invitedLine=owner?(typeof confirmation?.recipientCount==='number'?invitationsSentToast(confirmation.recipientCount):'Invitations sent'):confirmation?.organizer&&confirmation.organizer!=='Organizer'?`You’re invited · Organized by ${confirmation.organizer}`:'You’re invited';
+ const invitedLine=owner?(typeof confirmation?.recipientCount==='number'?invitationsSentToast(confirmation.recipientCount):'Invitations sent'):memberInvitedLine(confirmation?.isRecipient??null,confirmation?.organizer);
  const record=recorded&&<article className="wwm-confirmed" aria-labelledby="wwm-confirmed-title">
   <p className="wwm-confirmed-status"><Check aria-hidden="true"/>Confirmed</p>
   <h2 id="wwm-confirmed-title">{confirmation.title||room.title}</h2>

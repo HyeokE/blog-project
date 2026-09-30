@@ -39,12 +39,32 @@ const tabsListVariants = cva(
   }
 )
 
+// Input modality on <html data-input-modality>: "keyboard" after a key press, "pointer" after a pointer press.
+// Craft draws the tab focus ring only in keyboard modality, so a click or a scripted focus() never shows it
+// (Chrome treats script focus without prior pointer input as :focus-visible). Installed once, never removed.
+let inputModalityInstalled = false
+function useInputModality() {
+  React.useEffect(() => {
+    if (inputModalityInstalled) return
+    inputModalityInstalled = true
+    const root = document.documentElement
+    document.addEventListener("keydown", (event) => {
+      if (event.metaKey || event.ctrlKey || event.altKey) return
+      root.dataset.inputModality = "keyboard"
+    }, true)
+    document.addEventListener("pointerdown", () => {
+      root.dataset.inputModality = "pointer"
+    }, true)
+  }, [])
+}
+
 function TabsList({
   className,
   variant = "default",
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.List> &
   VariantProps<typeof tabsListVariants>) {
+  useInputModality()
   return (
     <TabsPrimitive.List
       data-slot="tabs-list"

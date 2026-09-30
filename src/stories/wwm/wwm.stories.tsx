@@ -11,6 +11,7 @@ import {MockAccountProvider,PERSON} from './mock-account';
 import {state,calendar,type Room,type Response,type ConfirmationPayload} from './mock-api';
 import {MeetingRowsSkeleton,RoomSkeleton} from '@/features/when-we-meet/ServerSkeletons';
 import ServerSectionBoundary from '@/features/when-we-meet/ServerSectionBoundary';
+import CraftError from '@/components/craft/CraftError';
 import SiteError from '@/components/site-error/SiteError';
 import {saveDraft} from '@/features/when-we-meet/draft.mjs';
 import {todayInTimezone} from '@/features/when-we-meet/creation-validation.mjs';
@@ -63,6 +64,11 @@ export const ListLoadError:Story={render:()=> <Frame><WhenWeMeet meetingsSection
 export const RoomLoadError:Story={render:()=> <Frame><main className="wwm"><ServerSectionBoundary><BrokenSection/></ServerSectionBoundary></main></Frame>};
 export const RouteNotFound:Story={render:()=> <Frame><SiteError status="404"/></Frame>};
 export const RouteServerError:Story={render:()=> <Frame><SiteError status="500" retry={<button onClick={()=>{}}>다시 시도</button>}/></Frame>};
+// Craft routes (/craft/**) render their own English error pages; the blog keeps SiteError in Korean.
+export const CraftNotFound:Story={render:()=> <Frame><CraftError status="404"/></Frame>};
+export const CraftServerError:Story={render:()=> <Frame><CraftError status="500" onRetry={()=>{}}/></Frame>};
+export const CraftServerErrorDark:Story={...CraftServerError,globals:{theme:'dark'}};
+export const CraftNotFoundMobile:Story={...CraftNotFound,globals:{viewport:{value:'mobile',isRotated:false}}};
 // Draft dates are relative to today in the room timezone, so Create stories never hit "dates in the past".
 const plusDays=(iso:string,days:number)=>new Date(Date.parse(`${iso}T00:00:00Z`)+days*86_400_000).toISOString().slice(0,10);
 const draftDates=()=>{const start=plusDays(todayInTimezone('Asia/Seoul')||new Date().toISOString().slice(0,10),1);return {startDate:start,endDate:plusDays(start,2)}};
@@ -124,8 +130,14 @@ export const ConfirmConfirmedMobile:Story={...ConfirmConfirmed,globals:{viewport
 export const ConfirmConfirmedDark:Story={...ConfirmConfirmed,globals:{theme:'dark'}};
 export const ConfirmConfirmedNoToken:Story={...RoomAvailability,beforeEach:()=>{calendar.confirmation={confirmation:sentRecord,review:{...rsvpReview,calendarConnected:false,rsvp:null}};},play:async ctx=>{await confirmedCard(ctx);await expect(within(ctx.canvasElement).queryByText(/accepted/)).not.toBeInTheDocument();}};
 export const ConfirmConfirmedAvailability:Story={...ConfirmConfirmed,play:async ctx=>{await confirmedCard(ctx);await userEvent.click(within(ctx.canvasElement).getByRole('button',{name:'Show availability'}));}};
-export const ConfirmMemberConfirmed:Story={render:()=> <Frame><WhenWeMeet roomId={id} initialRoom={{room:{...room,ownerId:MORGAN,role:'MEMBER'},responses:rows,userId:PERSON.id}} initialConfirmation={sentRecord}/></Frame>,beforeEach:()=>{calendar.confirmation={confirmation:sentRecord,review:null};},play:async ctx=>{await waitFor(()=>expect(within(ctx.canvasElement).getByText(/You’re invited/)).toBeVisible());}};
-export const ConfirmMemberConfirmedMobile:Story={...ConfirmMemberConfirmed,globals:{viewport:{value:'mobile',isRotated:false}}};
+// Member card by recipient flag (wwm_confirmation_is_recipient): invited, left out by the owner, or unknown (RPC not applied yet).
+const memberConfirmed=(isRecipient:boolean|undefined,check:(c:ReturnType<typeof within>)=>Promise<void>):Story=>({render:()=> <Frame><WhenWeMeet roomId={id} initialRoom={{room:{...room,ownerId:MORGAN,role:'MEMBER'},responses:rows,userId:PERSON.id}} initialConfirmation={sentRecord}/></Frame>,beforeEach:()=>{calendar.confirmation={confirmation:isRecipient===undefined?sentRecord:{...sentRecord,isRecipient},review:null};},play:async ctx=>{await waitFor(()=>expect(within(ctx.canvasElement).getByRole('heading',{name:'Team coffee · Hongdae'})).toBeVisible());await check(within(ctx.canvasElement));}});
+export const ConfirmMemberRecipient:Story=memberConfirmed(true,async c=>{await waitFor(()=>expect(c.getByText(/^You’re invited · Organized by /)).toBeVisible());await expect(c.getByRole('link',{name:/Open in Google Calendar/})).toBeVisible();});
+export const ConfirmMemberNotRecipient:Story=memberConfirmed(false,async c=>{await waitFor(()=>expect(c.getByText(/You weren’t included in the invitation/)).toBeVisible());await expect(c.queryByRole('link',{name:/Open in Google Calendar/})).not.toBeInTheDocument();});
+export const ConfirmMemberRecipientUnknown:Story=memberConfirmed(undefined,async c=>{await waitFor(()=>expect(c.getByText(/^Organized by |^Confirmed by the organizer$/)).toBeVisible());await expect(c.queryByText(/You’re invited/)).not.toBeInTheDocument();await expect(c.queryByRole('link',{name:/Open in Google Calendar/})).not.toBeInTheDocument();});
+export const ConfirmMemberRecipientMobile:Story={...ConfirmMemberRecipient,globals:{viewport:{value:'mobile',isRotated:false}}};
+export const ConfirmMemberNotRecipientMobile:Story={...ConfirmMemberNotRecipient,globals:{viewport:{value:'mobile',isRotated:false}}};
+export const ConfirmMemberNotRecipientDark:Story={...ConfirmMemberNotRecipient,globals:{theme:'dark'}};
 // A confirmed meeting opens on Confirm, with the status line in the header.
 const confirmedRecord:ConfirmationRecordData={status:'confirmed',title:'Team coffee',startsAt:slots[12].id,endsAt:new Date(Date.parse(slots[13].id)+1800000).toISOString(),timezone:'Asia/Seoul',googleEventUrl:'https://calendar.google.com/calendar/event?eid=storybook',revision:1};
 export const ConfirmedRoom:Story={render:()=> <Frame><WhenWeMeet roomId={id} initialRoom={{room,responses:rows,userId:PERSON.id}} initialConfirmation={confirmedRecord}/></Frame>,beforeEach:()=>{confirmedOwner()();},play:async ctx=>{await waitFor(()=>expect(within(ctx.canvasElement).getByText('Confirmed · Wed, Sep 30')).toBeVisible());await waitFor(()=>expect(within(ctx.canvasElement).getByRole('heading',{name:'Team coffee',level:2})).toBeVisible());}};
@@ -159,7 +171,7 @@ export const ConfirmResendAsk:Story={...ConfirmedRoom,play:async ctx=>{await Con
 export const ConfirmResendPending:Story={...ConfirmedRoom,beforeEach:()=>{confirmedOwner()();calendar.resend='pending';},play:async ctx=>{await askResend(ctx);await userEvent.click(within(document.body).getByRole('button',{name:'Resend'}));await waitFor(()=>expect(within(document.body).getByRole('button',{name:'Resending…'})).toBeDisabled());}};
 export const ConfirmResendDone:Story={...ConfirmedRoom,beforeEach:()=>{confirmedOwner()();calendar.resend='sent';},play:async ctx=>{await askResend(ctx);await userEvent.click(within(document.body).getByRole('button',{name:'Resend'}));await waitFor(()=>expect(within(document.body).getByText('Invitations re-sent')).toBeVisible());}};
 export const ConfirmResendTooSoon:Story={...ConfirmedRoom,beforeEach:()=>{confirmedOwner()();calendar.resend='too_soon';},play:async ctx=>{await askResend(ctx);await userEvent.click(within(document.body).getByRole('button',{name:'Resend'}));await waitFor(()=>expect(within(document.body).getByText(/Try again in a minute/)).toBeVisible());}};
-export const ConfirmMemberUpdated:Story={render:()=> <Frame><WhenWeMeet roomId={id} initialRoom={{room:{...room,ownerId:MORGAN,role:'MEMBER'},responses:rows,userId:PERSON.id}}/></Frame>,beforeEach:()=>{calendar.confirmation={confirmation:{...confirmed('confirmed'),title:'Team coffee (moved)',startsAt:slots[16].id,endsAt:new Date(Date.parse(slots[17].id)+1800000).toISOString(),revision:2},review:null};},play:async ctx=>{await openConfirm(ctx);await waitFor(()=>expect(within(ctx.canvasElement).getByText(/Updated by the organizer/)).toBeVisible());}};
+export const ConfirmMemberUpdated:Story={render:()=> <Frame><WhenWeMeet roomId={id} initialRoom={{room:{...room,ownerId:MORGAN,role:'MEMBER'},responses:rows,userId:PERSON.id}}/></Frame>,beforeEach:()=>{calendar.confirmation={confirmation:{...confirmed('confirmed'),title:'Team coffee (moved)',startsAt:slots[16].id,endsAt:new Date(Date.parse(slots[17].id)+1800000).toISOString(),revision:2,isRecipient:true},review:null};},play:async ctx=>{await openConfirm(ctx);await waitFor(()=>expect(within(ctx.canvasElement).getByText(/Updated by the organizer/)).toBeVisible());}};
 export const ConfirmMemberUpdatedMobile:Story={...ConfirmMemberUpdated,globals:{viewport:{value:'mobile',isRotated:false}}};
 
 // Settings: the owner can rename the meeting; members only see their own name.

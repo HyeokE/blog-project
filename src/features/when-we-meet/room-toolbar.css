@@ -12,5 +12,6 @@
 @media(prefers-reduced-motion:reduce){.wwm.wwm-room .wwm-view-switch .wwm-tab-indicator[data-animate]{transition:none}}
 /* Settings dialog: tokens, controls and focus come from the shared Craft primitives. */
 .wwm-settings-dialog{max-width:min(420px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow-y:auto;animation:none!important;translate:0 0!important;transform:translate(-50%,-50%)}
-.wwm-settings-dialog form{display:grid;gap:var(--craft-space-6)}
+/* The form is the sheet's scroller on phones; 4px of inner room (margin cancels it) keeps the 2px focus ring + 2px offset unclipped. */
+.wwm-settings-dialog form{display:grid;gap:var(--craft-space-6);padding:var(--craft-space-1);margin:calc(var(--craft-space-1) * -1)}
 .wwm-settings-dialog [data-slot='dialog-header']{text-align:left}
