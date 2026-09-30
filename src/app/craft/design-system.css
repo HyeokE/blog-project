@@ -21,7 +21,7 @@
  --craft-z-sticky:20;--craft-z-popover:60;--craft-z-dialog:80;--craft-z-dialog-popover:90;--craft-z-toast:100;
  /* Participants: earthy 8-hue ramp, each >=3:1 against --craft-surface (see participant-palette.mjs) */
  --craft-person-1:#a85e4a;--craft-person-2:#76702a;--craft-person-3:#946512;--craft-person-4:#4a6a60;
- --craft-person-5:#7a4a5c;--craft-person-6:#9c3f1f;--craft-person-7:#4f6e3c;--craft-person-8:#7f6a45;--craft-person-you:#5b4e3a;
+ --craft-person-5:#7a4a5c;--craft-person-6:#6a5a8c;--craft-person-7:#3f7040;--craft-person-8:#56657f;--craft-person-you:#5b4e3a;
 }
 :root[data-craft][data-mode='dark']{
  color-scheme:dark;
@@ -30,7 +30,7 @@
  --craft-on-ink:#20211c;--craft-focus:#d6cdb3;--craft-danger:#ff7379;--craft-warning:#e0b98f;--craft-accent:#e0b98f;
  --craft-shadow-pop:0 8px 24px #0000004d;
  --craft-person-1:#d99178;--craft-person-2:#b5ae6a;--craft-person-3:#d6a95a;--craft-person-4:#8fb3a6;
- --craft-person-5:#c99aab;--craft-person-6:#e08a6a;--craft-person-7:#a3b97e;--craft-person-8:#cdb48a;--craft-person-you:#e6dcc2;
+ --craft-person-5:#c99aab;--craft-person-6:#b3a3d6;--craft-person-7:#8fc28a;--craft-person-8:#a7b4cf;--craft-person-you:#e6dcc2;
 }
 .craft-chrome,.craft-page,.wwm,.craft-account{font-family:var(--craft-font)}
 
