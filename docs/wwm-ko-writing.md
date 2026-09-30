@@ -12,7 +12,8 @@ Applies to `src/i18n/locales/wwm/ko.json` and any Korean copy in Craft. English 
 7. **Positive framing first.** `~하면 돼요` before `~할 수 없어요`.
 8. **Numbers first, one unit.** `5명 중 4명 돼요`, `3칸 채우기`. A half-hour cell is always `칸`.
 9. **Honorifics only for people.** `{name}님`; don't honour the system.
-10. **No exclamation marks, emoji, or forced friendliness.**
+10. **No memo-style endings.** Status labels use 해요체 or a noun phrase (`입력했어요`, `아직 입력 전`), never `알려줌`/`없음`.
+11. **No exclamation marks, emoji, or forced friendliness.**
 
 ## Vocabulary
 | Concept | Use | Avoid |

@@ -204,8 +204,8 @@
     "heading": "참여자",
     "loading": "참여자를 불러오고 있어요",
     "empty": "아직 참여한 사람이 없어요. 초대 링크를 보내보세요.",
-    "availabilityAdded": "시간 알려줌",
-    "noAvailability": "아직 안 알려줌",
+    "availabilityAdded": "입력했어요",
+    "noAvailability": "아직 입력 전",
     "loadFailed": "참여자를 불러오지 못했어요. 다시 시도해주세요."
   },
   "confirm": {
@@ -231,14 +231,14 @@
       "available": "돼요",
       "partial": "일부만 돼요",
       "unavailable": "안 돼요",
-      "notResponded": "아직 안 알려줌",
+      "notResponded": "아직 입력 전",
       "availableBetween": "{range}만 돼요"
     },
     "warnings": {
       "missingEmail": "이메일이 없는 사람이 있어요: {names}. 받는 사람에서 빼고 보내주세요.",
       "unavailable": "안 되는 사람: {names}",
       "partly": "일부만 되는 사람: {names}",
-      "notResponded": "아직 안 알려준 사람: {names}",
+      "notResponded": "아직 입력 안 한 사람: {names}",
       "excluded": "뺀 사람: {names}",
       "optional": "선택 참석: {names}",
       "noLongerWorks": "그사이 이 시간이 안 되는 사람이 생겼어요"
@@ -259,7 +259,7 @@
     "calendarUnavailable": "Google 캘린더에 연결하지 못했어요. 다시 시도해주세요.",
     "reconcilingNoRetry": "일정이 만들어졌는지 확인하고 있어요. 잠시만 기다려주세요.",
     "organizerUnavailable": "확인할 수 없어요",
-    "missingEmail": "이메일 없음",
+    "missingEmail": "이메일이 없어요",
     "excludedTag": "뺌",
     "submitted": "요청을 보냈어요. 결과를 확인하고 있어요.",
     "errors": {

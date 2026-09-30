@@ -16,6 +16,7 @@ const banned=[
  [/구글/,'write "Google"'],
  [/오류가 발생/,'say what happened and what to do next'],
  [/되었습니다|되었어요|생성/,'say what the user did ("만들었어요")'],
+ [/(줌|함|됨|없음)$/,'no memo-style endings ("알려줌"); use 해요체 ("입력했어요")'],
 ];
 test('Korean copy follows the Toss-style writing rules',()=>{
  for(const [key,text] of strings)for(const [pattern,rule] of banned)assert.doesNotMatch(text,pattern,`${key}: ${rule} — "${text}"`);
