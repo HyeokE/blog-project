@@ -1,12 +1,7 @@
-:root[data-mode=dark] .wwm-tz-popover{background:#36372d;color:#d6cdb3;border-color:#d8ccaf55}
-:root[data-mode=dark] .wwm-tz-popover .wwm-tz-search-row input{background:#36372d;color:#d6cdb3;border-color:#d8ccaf55}
-:root[data-mode=dark] .wwm-tz-popover .wwm-tz-search-row input::placeholder{color:#beb6a1;opacity:1}
-:root[data-mode=dark] .wwm-tz-popover .wwm-tz-option{color:#d6cdb3}
-:root[data-mode=dark] .wwm-tz-popover .wwm-tz-option small{color:#beb6a1}
-:root[data-mode=dark] .wwm-tz-popover .wwm-tz-option[data-active=true],:root[data-mode=dark] .wwm-tz-popover .wwm-tz-option:hover{background:#d8ccaf24}
-.wwm-tz-trigger{width:100%;min-height:44px;height:auto;justify-content:space-between;text-align:left;white-space:normal;border-radius:4px;background:var(--craft-surface,#f1eee2);color:var(--craft-ink,#514e40)}
-.wwm-tz-trigger span{overflow-wrap:anywhere}.wwm-tz-trigger svg{flex:none}
-.wwm-tz-popover{width:min(var(--radix-popover-trigger-width),calc(100vw - 16px));max-height:var(--radix-popover-content-available-height);padding:8px;border-radius:4px;background:var(--craft-surface,#f1eee2);color:var(--craft-ink,#514e40);animation:none!important;transform:none!important;box-shadow:0 8px 24px #20211c22;display:flex;flex-direction:column;gap:4px}
-.wwm-tz-search-row{flex:none}.wwm-tz-search-row input{min-height:44px;border-radius:4px}.wwm-tz-scroll{min-height:0;height:min(280px,calc(var(--radix-popover-content-available-height) - 120px));overflow:auto;overscroll-behavior:contain}
-.wwm-tz-option,.wwm-tz-device{width:100%;min-height:44px;border:0;border-radius:4px;padding:8px 10px;text-align:left;cursor:pointer;background:transparent;color:inherit;display:flex;align-items:center;justify-content:space-between;gap:8px}
-.wwm-tz-scroll [data-radix-scroll-area-viewport]>div{width:100%;min-width:0!important;display:block!important}.wwm-tz-scroll [role=listbox]{min-width:0}.wwm-tz-option span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.wwm-tz-option small{flex:none;color:var(--craft-muted,#635f52)}.wwm-tz-option[data-active=true],.wwm-tz-option:hover,.wwm-tz-device:hover{background:var(--craft-rule,#81775b30)}.wwm-tz-option[aria-selected=true]{font-weight:700}.wwm-tz-option:focus-visible,.wwm-tz-device:focus-visible{outline:2px solid var(--craft-focus,#514e40);outline-offset:-2px}.wwm-tz-device{flex:none;border-top:1px solid var(--craft-rule,#81775b30)}.wwm-tz-device:disabled{opacity:.5;cursor:not-allowed}.wwm-tz-empty{margin:8px;padding:8px;color:var(--craft-muted,#635f52)}
+/* Timezone combobox: shared Popover + Command; only sizing lives here. */
+[data-slot='popover-content'].wwm-tz-popover{display:flex;flex-direction:column;width:var(--radix-popover-trigger-width);max-width:calc(100vw - 32px);max-height:min(400px,var(--radix-popover-content-available-height));padding:var(--craft-space-2)}
+.wwm-tz-popover [data-slot='command']{min-height:0;flex:1 1 auto}
+.wwm-tz-scroll{height:min(280px,calc(var(--radix-popover-content-available-height) - 72px));min-height:132px}
+.wwm-tz-popover [data-slot='command-item'] .wwm-tz-name{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wwm-tz-popover [data-slot='command-item'] small{flex:none;font-size:var(--craft-fs-14);color:var(--craft-muted)}
+.wwm-tz-popover [data-slot='command-item']>svg,.wwm-tz-check{margin-left:0;width:16px;height:16px;flex:none}

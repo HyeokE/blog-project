@@ -2,6 +2,10 @@
 
 Official basis: https://ui.shadcn.com/docs/installation/next , https://ui.shadcn.com/docs/components-json , https://ui.shadcn.com/docs/theming . This is an **existing** Next 16.3.6 / React 19 / Tailwind 4 project. `components.json` points at the existing global stylesheet and `@/*` aliases; generated shadcn Radix primitives live in `src/components/ui/`. Craft-only tokens in `src/app/craft/design-system.css` preserve SUIT/Pretendard, warm ink/surfaces and four-pixel bounded corners. The round profile image remains round. The homepage is not being restyled.
 
+## Tokens and primitives (2026-10-01)
+
+Tokens live on `:root[data-craft]` (light) and `:root[data-craft][data-mode='dark']` in `src/app/craft/design-system.css`, so Radix portals inherit them; dialogs/popovers must not redeclare palettes. Scale: type 12/14/16/20/28 (+40 display on /craft), weights 400/500/600; space 4/8/12/16/24/32/48; `--craft-h-md` 44px for every field and button, `--craft-h-sm` 32px for in-grid toolbars; one 4px radius (avatar 50%); layers sticky 20 / popover 60 / dialog 80 / popover-in-dialog 90 / toast 100. The same file holds the Craft look of the `src/components/ui` primitives (Input, FieldTrigger, Select, Checkbox, Command, Popover, Dialog, Calendar, Button), keyed on `data-slot`. Participant colours are `--craft-person-1…8` + `--craft-person-you`, mirrored and contrast-tested in `participant-palette.mjs`.
+
 ## Information hierarchy / purpose
 
 | Surface | User task and primary information | Primary action | Secondary / state |

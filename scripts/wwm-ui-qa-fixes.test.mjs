@@ -61,7 +61,8 @@ test('P2-10 read-only calendars do not describe editing',()=>{
 
 test('P2-11 fill picker names its popover from the label; Undo toast stays ~10s',()=>{
  const picker=read('src/features/when-we-meet/DateRangePicker.tsx');
- assert.match(picker,/aria-label=\{ariaLabel\?\?\(label==='Dates'\?'Choose meeting dates':`Choose \$\{label\.toLowerCase\(\)\}`\)\}/);
+ assert.match(picker,/const panelLabel=ariaLabel\?\?\(label==='Dates'\?'Choose meeting dates':`Choose \$\{label\.toLowerCase\(\)\}`\);/);
+ assert.match(picker,/<PopoverContent[^>]*aria-label=\{panelLabel\}/);
  const fill=read('src/features/when-we-meet/CalendarFill.tsx');
  assert.match(fill,/const UNDO_TOAST_MS=10_000;/);
  assert.match(fill,/\{duration:UNDO_TOAST_MS,action:\{label:'Undo'/);

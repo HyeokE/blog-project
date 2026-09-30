@@ -3,15 +3,16 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const css = readFileSync(new URL('../src/features/when-we-meet/time-picker.css', import.meta.url), 'utf8');
+const tokens = readFileSync(new URL('../src/app/craft/design-system.css', import.meta.url), 'utf8');
+const source = readFileSync(new URL('../src/features/when-we-meet/DateTimePicker.tsx', import.meta.url), 'utf8');
 
-test('time popup width respects its trigger and Radix collision width, not only the viewport', () => {
-  // Popup is a fixed 260px menu bounded by Radix collision width and the viewport (no longer capped at trigger width).
-  assert.match(css, /\.wwm-time-panel\[data-slot='popover-content'\]\{[^}]*width:min\(260px,var\(--radix-popper-available-width\)\);min-width:0;max-width:calc\(100vw - 16px\)/);
-  assert.match(css, /grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
-  assert.match(css, /min-height:44px/);
+test('time list is the shared Select, exactly as wide as its trigger', () => {
+  assert.match(source, /<Select value=\{selected\} onValueChange=\{onChange\} required>/);
+  assert.match(source, /<SelectContent className="wwm-time-panel"/);
+  assert.match(css, /\[data-slot='select-content'\]\.wwm-time-panel\{width:var\(--radix-select-trigger-width\)\}/);
+  assert.match(tokens, /\[data-slot='select-item'\],\[data-slot='command-item'\]\)\{[^}]*min-height:var\(--craft-h-md\)/);
 });
 
-test('time popup scroll viewport is capped by Radix actual collision height after panel chrome', () => {
-  assert.match(css, /--radix-popper-available-height/);
-  assert.match(css, /\.wwm-time-scroll\{[^}]*height:min\(228px,calc\(var\(--radix-popper-available-height[^)]*\) - 18px\)\)/);
+test('time list height is capped by the collision-aware available height', () => {
+  assert.match(tokens, /\[data-slot='select-content'\]\{[^}]*max-height:min\(320px,var\(--radix-select-content-available-height\)\)/);
 });

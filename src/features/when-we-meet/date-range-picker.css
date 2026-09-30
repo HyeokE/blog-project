@@ -1,14 +1,7 @@
-/* Scoped adaptations of the installed shadcn Calendar + Radix Popover. */
-.wwm-create-body .wwm-range .wwm-picker-trigger{justify-content:flex-start;gap:9px;display:flex;align-items:center;text-align:left;min-width:0}.wwm-create-body .wwm-range .wwm-picker-trigger svg{flex:none;display:block;width:18px;height:18px}.wwm-create-body .wwm-range #wwm-range-value{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-[data-slot='popover-content'].wwm-range-popover{width:min(592px,calc(100vw - 16px));max-width:calc(100vw - 16px);padding:8px}
-
-[data-slot='popover-content'].wwm-range-popover .wwm-range-calendar{--cell-size:36px;width:100%}.wwm-range-popover .wwm-range-calendar .rdp-months{gap:12px}.wwm-range-popover .wwm-range-calendar .rdp-month{min-width:0}
-.wwm-range-popover .wwm-range-calendar .rdp-day:has(> button[data-range-middle=true]),.wwm-range-popover .wwm-range-calendar .rdp-day:has(> button[data-range-start=true]),.wwm-range-popover .wwm-range-calendar .rdp-day:has(> button[data-range-end=true]){background:#dcd6c4}
-.wwm-range-popover .wwm-range-calendar .rdp-day:has(> button[data-range-middle=true]){border-radius:0}.wwm-range-popover .wwm-range-calendar .rdp-day:has(> button[data-range-start=true]){border-radius:4px 0 0 4px}.wwm-range-popover .wwm-range-calendar .rdp-day:has(> button[data-range-end=true]){border-radius:0 4px 4px 0}
-.wwm-range-popover .wwm-range-calendar .rdp-day:has(> button[data-range-middle=true]) button{border-radius:0;background:transparent;color:inherit}.wwm-range-popover .wwm-range-calendar .rdp-day:has(> button[data-range-start=true]) button,.wwm-range-popover .wwm-range-calendar .rdp-day:has(> button[data-range-end=true]) button{border-radius:4px;background:#514e40;color:#fff9e7}
-
-:root[data-mode='dark'] .wwm-range-popover .wwm-range-calendar .rdp-day:has(> button[data-range-middle=true]),:root[data-mode='dark'] .wwm-range-popover .wwm-range-calendar .rdp-day:has(> button[data-range-start=true]),:root[data-mode='dark'] .wwm-range-popover .wwm-range-calendar .rdp-day:has(> button[data-range-end=true]){background:#545348}:root[data-mode='dark'] .wwm-range-popover .wwm-range-calendar .rdp-day:has(> button[data-range-start=true]) button,:root[data-mode='dark'] .wwm-range-popover .wwm-range-calendar .rdp-day:has(> button[data-range-end=true]) button{background:#d6cdb3;color:#20211c}
-@media(max-width:759px){[data-slot='popover-content'].wwm-range-popover{width:min(360px,calc(100vw - 16px))}[data-slot='popover-content'].wwm-range-popover .wwm-range-calendar{--cell-size:40px}.wwm-range-popover .wwm-range-calendar .rdp-months{gap:0}}
-@media(max-width:375px){[data-slot='popover-content'].wwm-range-popover .wwm-range-calendar{--cell-size:38px}}
-.wwm-range-popover .wwm-range-calendar .rdp-day:has(> button[data-range-start=true][data-range-end=true]){border-radius:4px}
-.wwm-range-popover .wwm-range-calendar button[data-selected-single=true]{border-radius:4px;background:#514e40;color:#fff9e7}:root[data-mode='dark'] .wwm-range-popover .wwm-range-calendar button[data-selected-single=true]{background:#d6cdb3;color:#20211c}
+/* Range picker sizing only. Trigger = ui FieldTrigger; calendar colours/shape = ui Calendar (design-system.css). */
+[data-slot='popover-content'].wwm-range-popover{width:min(592px,calc(100vw - 32px));max-width:calc(100vw - 32px);max-height:min(calc(100dvh - 32px),var(--radix-popover-content-available-height,calc(100dvh - 32px)));overflow-y:auto;overscroll-behavior:contain;padding:var(--craft-space-2)}
+.wwm-range-calendar{width:100%}.wwm-range-calendar .rdp-months{gap:var(--craft-space-3)}.wwm-range-calendar .rdp-month{min-width:0}
+@media(max-width:759px){[data-slot='popover-content'].wwm-range-popover{width:min(360px,calc(100vw - 32px))}.wwm-range-calendar .rdp-months{gap:0}}
+/* Phone-width sheet: the calendar sits inline under its trigger, inside the sheet's scroll area. */
+.wwm-range-inline{margin-top:var(--craft-space-2);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:var(--craft-surface)}
+.wwm-range-inline [data-slot='calendar']{--cell-size:min(44px,calc((100vw - 74px)/7));margin:0 auto}

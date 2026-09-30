@@ -1,26 +1,4 @@
-/* The dialog is portaled; scope all control tokens to its actual root. */
-.wwm-create-dialog{--wwm-control-border:#81775b70;--wwm-control-ink:#514e40;--wwm-control-hover:#81775b16;--wwm-control-error:#b43f3f;--wwm-control-focus:#514e40}
-.wwm-create-dialog .wwm-create-body :is(input,.wwm-picker-trigger,.wwm-tz-trigger){box-sizing:border-box;width:100%;height:44px;min-height:44px;border:1px solid var(--wwm-control-border);border-radius:4px;background:transparent;color:var(--wwm-control-ink);padding:0 12px;font:400 16px/22px 'SUIT','Pretendard',sans-serif;box-shadow:none;transition:border-color .16s ease,background-color .16s ease}
-.wwm-create-dialog .wwm-create-body :is(input,.wwm-picker-trigger,.wwm-tz-trigger):hover:not(:disabled){background:var(--wwm-control-hover)}
-.wwm-create-dialog .wwm-create-body :is(input,.wwm-picker-trigger,.wwm-tz-trigger):focus-visible{outline:2px solid var(--wwm-control-focus);outline-offset:2px;box-shadow:none}
-.wwm-create-dialog .wwm-create-body :is(input,.wwm-picker-trigger,.wwm-tz-trigger):disabled{opacity:.5;cursor:not-allowed}
-.wwm-create-dialog .wwm-create-body :is(input,.wwm-picker-trigger,.wwm-tz-trigger)[aria-invalid=true]{border-color:var(--wwm-control-error);box-shadow:inset 0 0 0 1px var(--wwm-control-error)}
-.wwm-create-dialog .wwm-create-body :is(input,.wwm-picker-trigger,.wwm-tz-trigger)[aria-invalid=true]:focus-visible{outline-color:var(--wwm-control-error)}
-.wwm-create-dialog .wwm-create-body .wwm-tz-trigger{display:flex;align-items:center;justify-content:space-between;text-align:left;white-space:nowrap;gap:8px}
-.wwm-create-dialog .wwm-create-body .wwm-tz-trigger span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wwm-create-dialog .wwm-create-body .wwm-picker-trigger{justify-content:flex-start;gap:9px}
-:root .wwm-create-dialog .wwm-create-body .wwm-range .wwm-picker-trigger[aria-invalid=true],:root[data-mode=dark] .wwm-create-dialog .wwm-create-body .wwm-range .wwm-picker-trigger[aria-invalid=true]{border-color:var(--wwm-control-error)!important;box-shadow:inset 0 0 0 1px var(--wwm-control-error)}
-.wwm-create-dialog .wwm-field-error,.wwm-create-dialog #wwm-create-status[role=alert]{color:var(--wwm-control-error);overflow-wrap:anywhere}
-.wwm-create-dialog .wwm-field-error{margin:4px 0 0;font-size:13px;line-height:1.45}
-.wwm-create-dialog .wwm-create-body .wwm-labeled-field{row-gap:0}
-.wwm-create-dialog .wwm-labeled-field>.craft-field-label{margin-bottom:7px}
+/* Create dialog layout only. Fields are ui primitives styled by the root Craft tokens (design-system.css). */
 .wwm-create-dialog .wwm-create-body .wwm-fields{row-gap:0}
 .wwm-create-dialog .wwm-fields>.wwm-field-error{grid-column:1/-1}
-:root[data-mode=dark] .wwm-create-dialog{--wwm-control-border:#d8ccaf55;--wwm-control-ink:#d6cdb3;--wwm-control-hover:#d8ccaf16;--wwm-control-error:#ff9e96;--wwm-control-focus:#d6cdb3}
-.wwm-tz-popover{--wwm-tz-surface:#f1eee2;--wwm-tz-ink:#514e40;--wwm-tz-muted:#635f52;--wwm-tz-rule:#81775b70;--wwm-tz-hover:#81775b30;background:var(--wwm-tz-surface);color:var(--wwm-tz-ink);border:1px solid var(--wwm-tz-rule);border-radius:4px;box-shadow:none}
-.wwm-tz-popover .wwm-tz-search-row input{height:44px;min-height:44px;border:1px solid var(--wwm-tz-rule);border-radius:4px;background:transparent;color:var(--wwm-tz-ink);padding:0 12px;font-size:16px;line-height:22px;box-shadow:none}
-.wwm-tz-popover .wwm-tz-search-row input:focus-visible{outline:2px solid var(--wwm-tz-ink);outline-offset:1px}
-.wwm-tz-popover .wwm-tz-option,.wwm-tz-popover .wwm-tz-device{color:var(--wwm-tz-ink);border-radius:4px}
-.wwm-tz-popover .wwm-tz-option small,.wwm-tz-popover .wwm-tz-empty{color:var(--wwm-tz-muted)}
-.wwm-tz-popover .wwm-tz-option:hover,.wwm-tz-popover .wwm-tz-option[data-active=true],.wwm-tz-popover .wwm-tz-device:hover{background:var(--wwm-tz-hover)}
-:root[data-mode=dark] .wwm-tz-popover{--wwm-tz-surface:#36372d;--wwm-tz-ink:#d6cdb3;--wwm-tz-muted:#beb6a1;--wwm-tz-rule:#d8ccaf55;--wwm-tz-hover:#d8ccaf24}
+.wwm-create-dialog #wwm-create-status[role=alert]{overflow-wrap:anywhere}

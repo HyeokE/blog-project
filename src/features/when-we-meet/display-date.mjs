@@ -3,6 +3,13 @@ export function formatCraftDate(value) {
   return value.replaceAll('-', '.');
 }
 
+/** A date range as `yyyy.mm.dd – yyyy.mm.dd` (spaced en dash); a single day shows once. */
+export function formatCraftRange(start, end) {
+  if (!start && !end) return '';
+  if (start && start === end) return formatCraftDate(start);
+  return `${formatCraftDate(start)} – ${formatCraftDate(end)}`;
+}
+
 export function formatCraftInstant(value, timezone) {
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: timezone, year: 'numeric', month: '2-digit', day: '2-digit',

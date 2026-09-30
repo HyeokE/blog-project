@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 
 import "./dialog-sheet.css"
 import { releaseSheet, sheetDragFrame } from "./sheet-gesture.mjs"
+import { FloatingLayerContext } from "./layer"
 
 function Dialog({
   ...props
@@ -179,7 +180,8 @@ function DialogContent({
             <DialogPrimitive.Close ref={sheet.closeRef} tabIndex={-1} aria-hidden="true" hidden />
           </>
         )}
-        {children}
+        {/* Popovers and selects opened from inside the dialog stack above it. */}
+        <FloatingLayerContext.Provider value="dialog">{children}</FloatingLayerContext.Provider>
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot="dialog-close"

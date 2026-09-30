@@ -2,21 +2,21 @@
 @keyframes craft-surface-enter { from { opacity: 0 } to { opacity: 1 } }
 @keyframes craft-surface-exit { from { opacity: 1 } to { opacity: 0 } }
 
-:is(.wwm-create-dialog,.wwm-login-dialog,.wwm-settings-dialog,.wwm-range-popover,.wwm-time-panel,.wwm-tz-popover,.wwm-week-detail,.craft-account-menu)[data-state='open'] {
+:is(.wwm-create-dialog,.wwm-login-dialog,.wwm-settings-dialog,.wwm-range-popover,.wwm-time-panel,.wwm-date-panel,.wwm-tz-popover,.wwm-week-detail,.craft-account-menu)[data-state='open'] {
   animation: craft-surface-enter 180ms ease-out both !important;
 }
-:is(.wwm-create-dialog,.wwm-login-dialog,.wwm-settings-dialog,.wwm-range-popover,.wwm-time-panel,.wwm-tz-popover,.wwm-week-detail,.craft-account-menu)[data-state='closed'] {
+:is(.wwm-create-dialog,.wwm-login-dialog,.wwm-settings-dialog,.wwm-range-popover,.wwm-time-panel,.wwm-date-panel,.wwm-tz-popover,.wwm-week-detail,.craft-account-menu)[data-state='closed'] {
   animation: craft-surface-exit 140ms ease-in both !important;
   pointer-events: none;
 }
 /* Keep dialog centering and popper collision transforms unchanged at every frame. */
 .wwm-room-calendar { animation: craft-surface-enter 180ms ease-out both; }
 
-:where(.wwm,.craft-chrome,.wwm-create-dialog,.wwm-login-dialog,.wwm-settings-dialog,.wwm-range-popover,.wwm-time-panel,.wwm-tz-popover,.wwm-week-detail,.craft-account-menu) :is(button:not(:disabled):not([aria-disabled='true']),a[href]:not([aria-disabled='true']),[role='button']:not([aria-disabled='true']),[role='tab']:not([aria-disabled='true']),[role='menuitem']:not([aria-disabled='true']):not([data-disabled]),[data-slot='dropdown-menu-item']:not([data-disabled]),input[type='checkbox']:not(:disabled),input[type='radio']:not(:disabled)) { cursor: pointer !important; }
-:where(.wwm,.craft-chrome,.wwm-create-dialog,.wwm-login-dialog,.wwm-settings-dialog,.wwm-range-popover,.wwm-time-panel,.wwm-tz-popover,.wwm-week-detail,.craft-account-menu) :is(button:disabled,button[aria-disabled='true'],[role='button'][aria-disabled='true'],[role='tab'][aria-disabled='true'],[role='menuitem'][aria-disabled='true'],[role='menuitem'][data-disabled],[data-slot='dropdown-menu-item'][data-disabled],input[type='checkbox']:disabled,input[type='radio']:disabled) { cursor: not-allowed !important; }
-:where(.wwm,.craft-chrome,.wwm-create-dialog,.wwm-login-dialog,.wwm-settings-dialog,.wwm-range-popover,.wwm-time-panel,.wwm-tz-popover,.wwm-week-detail,.craft-account-menu) :is(input:not([type='button']):not([type='checkbox']):not([type='radio']),textarea) { cursor: text; }
+:where(.wwm,.craft-chrome,.wwm-create-dialog,.wwm-login-dialog,.wwm-settings-dialog,.wwm-range-popover,.wwm-time-panel,.wwm-date-panel,.wwm-tz-popover,.wwm-week-detail,.craft-account-menu) :is(button:not(:disabled):not([aria-disabled='true']),a[href]:not([aria-disabled='true']),[role='button']:not([aria-disabled='true']),[role='tab']:not([aria-disabled='true']),[role='menuitem']:not([aria-disabled='true']):not([data-disabled]),[data-slot='dropdown-menu-item']:not([data-disabled]),input[type='checkbox']:not(:disabled),input[type='radio']:not(:disabled)) { cursor: pointer !important; }
+:where(.wwm,.craft-chrome,.wwm-create-dialog,.wwm-login-dialog,.wwm-settings-dialog,.wwm-range-popover,.wwm-time-panel,.wwm-date-panel,.wwm-tz-popover,.wwm-week-detail,.craft-account-menu) :is(button:disabled,button[aria-disabled='true'],[role='button'][aria-disabled='true'],[role='tab'][aria-disabled='true'],[role='menuitem'][aria-disabled='true'],[role='menuitem'][data-disabled],[data-slot='dropdown-menu-item'][data-disabled],input[type='checkbox']:disabled,input[type='radio']:disabled) { cursor: not-allowed !important; }
+:where(.wwm,.craft-chrome,.wwm-create-dialog,.wwm-login-dialog,.wwm-settings-dialog,.wwm-range-popover,.wwm-time-panel,.wwm-date-panel,.wwm-tz-popover,.wwm-week-detail,.craft-account-menu) :is(input:not([type='button']):not([type='checkbox']):not([type='radio']),textarea) { cursor: text; }
 
 @media (prefers-reduced-motion: reduce) {
-  :is(.wwm-create-dialog,.wwm-login-dialog,.wwm-settings-dialog,.wwm-range-popover,.wwm-time-panel,.wwm-tz-popover,.wwm-week-detail,.craft-account-menu)[data-state],
+  :is(.wwm-create-dialog,.wwm-login-dialog,.wwm-settings-dialog,.wwm-range-popover,.wwm-time-panel,.wwm-date-panel,.wwm-tz-popover,.wwm-week-detail,.craft-account-menu)[data-state],
   .wwm-room-calendar { animation: none !important; transition: none !important; }
 }

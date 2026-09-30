@@ -19,20 +19,8 @@
 .wwm.wwm-room .wwm-view-switch .wwm-tab-indicator[data-ready]{opacity:1}
 .wwm.wwm-room .wwm-view-switch .wwm-tab-indicator[data-animate]{transition:transform .2s ease-out,width .2s ease-out}
 @media(prefers-reduced-motion:reduce){.wwm.wwm-room .wwm-view-switch .wwm-tab-indicator[data-animate]{transition:none}}
-:root[data-mode='dark'] .wwm.wwm-room .wwm-view-switch [data-slot='tabs-trigger']{color:#beb6a1}
-:root[data-mode='dark'] .wwm.wwm-room .wwm-view-switch [data-slot='tabs-trigger'][data-state='active']{color:#d6cdb3;border-bottom-color:transparent}
-:root[data-mode='dark'] .wwm.wwm-room .wwm-view-switch .wwm-tab-indicator{color:#d6cdb3}
-.wwm-settings-dialog{--craft-canvas:#eae6d8;--craft-ink:#514e40;--craft-muted:#635f52;--craft-surface:#f1eee2;--craft-rule:#81775b70;--craft-focus:#514e40;--craft-required:#b4232d;max-width:min(420px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow-y:auto;background:var(--craft-surface);color:var(--craft-ink);border:1px solid var(--craft-rule);border-radius:4px;font-family:'SUIT','Pretendard',sans-serif;animation:none!important;translate:0 0!important;transform:translate(-50%,-50%)}
-:root[data-mode='dark'] .wwm-settings-dialog{--craft-canvas:#292a23;--craft-ink:#d6cdb3;--craft-muted:#beb6a1;--craft-surface:#36372d;--craft-rule:#d8ccaf55;--craft-focus:#d6cdb3;--craft-required:#ff7379;color-scheme:dark}
-.wwm-settings-dialog form{display:grid;gap:24px}.wwm-settings-dialog label{font-size:14px}.wwm-settings-dialog input{margin-top:8px;min-height:44px;border:1px solid var(--craft-rule);border-radius:4px;font-size:16px;background:transparent;color:var(--craft-ink);box-shadow:none}.wwm-settings-dialog button{min-height:44px;border-radius:4px}.wwm-settings-dialog [data-slot='dialog-description']{color:var(--craft-muted)}
-.wwm-settings-dialog [data-slot='button']{background:var(--craft-ink);color:var(--craft-surface);border:1px solid var(--craft-ink)}
-.wwm-settings-dialog [data-variant='outline']{background:transparent;color:var(--craft-ink);border-color:var(--craft-rule)}
-.wwm-settings-dialog [data-slot='button']:hover{background:var(--craft-muted);color:var(--craft-surface)}
-.wwm-settings-dialog [data-variant='outline']:hover{background:var(--craft-rule);color:var(--craft-ink)}
-.wwm-settings-dialog [data-slot='button']:focus-visible,.wwm-settings-dialog [data-slot='input']:focus-visible{outline:2px solid var(--craft-focus);outline-offset:2px;box-shadow:none}
-.wwm-settings-dialog [data-slot='button']:disabled{opacity:.5;cursor:not-allowed}
+/* Settings dialog: tokens, controls and focus come from the shared Craft primitives. */
+.wwm-settings-dialog{max-width:min(420px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow-y:auto;animation:none!important;translate:0 0!important;transform:translate(-50%,-50%)}
+.wwm-settings-dialog form{display:grid;gap:var(--craft-space-6)}
 .wwm-settings-dialog [data-slot='dialog-header']{text-align:left}
-.wwm-settings-dialog .wwm-field-error{margin:6px 0 0;font-size:13px;line-height:1.45;color:var(--craft-required);overflow-wrap:anywhere}
-.wwm-settings-dialog [data-slot='input'][aria-invalid='true']{border-color:var(--craft-required)}
-.wwm-settings-dialog [data-slot='input']:disabled{opacity:.6}
 @media(max-width:600px){.wwm.wwm-room .wwm-hero-row{gap:8px}.wwm.wwm-room .wwm-hero-row h1{font-size:24px}.wwm.wwm-room .wwm-view-switch{gap:16px}.wwm.wwm-room .wwm-header-actions button{padding-inline:8px;font-size:12px}}

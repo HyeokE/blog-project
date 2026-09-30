@@ -10,7 +10,7 @@ test('range picker composes the installed Calendar and Popover rather than a cus
  assert.doesNotMatch(source,/calendarDays|moveCalendarDate|role="gridcell"|AnimatePresence/);
 });
 test('popup bounds native scroll on a short viewport without footer actions',()=>{
- const css=readFileSync(new URL('../src/features/when-we-meet/when-we-meet.css',import.meta.url),'utf8');
+ const css=readFileSync(new URL('../src/features/when-we-meet/date-range-picker.css',import.meta.url),'utf8');
  assert.match(css,/\.wwm-range-popover[^{}]*\{[^}]*max-height:[^;]*dvh/);
  assert.match(css,/\.wwm-range-popover[^{}]*\{[^}]*overflow-y:auto/);
  assert.doesNotMatch(source,/className="wwm-range-actions"/);

@@ -1,8 +1,7 @@
 // Read-only projection of persisted responses. This module never reads editor state.
-const palette=['#2563eb','#dc2626','#059669','#9333ea','#b45309','#0891b2','#be185d','#4f46e5'];
+import {participantColor} from './participant-palette.mjs';
 const halfHour=30*60*1000;
 const endOf=slot=>new Date(Date.parse(slot.id)+halfHour).toISOString();
-const hashId=id=>{let hash=2166136261;for(const char of id){hash=Math.imul(hash^char.codePointAt(0),16777619)}return hash>>>0};
 const compare=(a,b)=>a<b?-1:a>b?1:0;
 
 /** Room-start anchored weeks; dates are inclusive room dates, not locale weeks. */
@@ -50,7 +49,7 @@ export function projectWeeklyTimeline({slots,responses,currentUserId}){
     const isCurrentUser=response.userId===currentUserId;
     const label=nameCounts.get(key)>1?`${response.displayName} (${isCurrentUser?'You':ordinal})`:isCurrentUser?`${response.displayName} (You)`:response.displayName;
     const selected=new Set(response.slots);
-    return {userId:response.userId,displayName:response.displayName,label,isCurrentUser,color:palette[hashId(response.userId)%palette.length],slotIds:ordered.filter(slot=>selected.has(slot.id)).map(slot=>slot.id),runs:runsFor(ordered,selected)};
+    return {userId:response.userId,displayName:response.displayName,label,isCurrentUser,color:participantColor(response.userId,currentUserId),slotIds:ordered.filter(slot=>selected.has(slot.id)).map(slot=>slot.id),runs:runsFor(ordered,selected)};
   });
   const selectedByRow=sorted.map(response=>new Set(response.slots));
   const countById={};

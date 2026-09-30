@@ -5,7 +5,7 @@ const source=readFileSync(new URL('../src/features/when-we-meet/DateRangePicker.
 test('reference picker has one responsive calendar with an icon trigger and scoped range styling',()=>{
  assert.match(source,/CalendarDays/);
  assert.match(source,/numberOfMonths=\{months\}/);
- assert.match(source,/matchMedia/);
+ assert.match(source,/useMediaQuery\('\(min-width: 760px\)'\)/);
  assert.match(source,/className="wwm-range-calendar"/);
  assert.match(source,/\.\/date-range-picker\.css/);
 });

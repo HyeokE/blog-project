@@ -1,9 +1,121 @@
-.craft-chrome,.craft-page,.wwm,.craft-account{--craft-canvas:#eae6d8;--craft-radius:4px;--craft-ink:#514e40;--craft-muted:#635f52;--craft-surface:#f1eee2;--craft-rule:#81775b70;--craft-focus:#514e40;--craft-required:#b4232d;--craft-control-height:44px;--craft-space:8px;font-family:'SUIT','Pretendard',sans-serif}
-:root[data-mode='dark'] .craft-chrome,:root[data-mode='dark'] .craft-page,:root[data-mode='dark'] .wwm,:root[data-mode='dark'] .craft-account{--craft-canvas:#292a23;--craft-ink:#d6cdb3;--craft-muted:#beb6a1;--craft-surface:#36372d;--craft-rule:#d8ccaf55;--craft-focus:#d6cdb3;--craft-required:#ff7379}
-.craft-field-label{--craft-required:#b4232d;display:block;font:inherit;color:inherit}:root[data-mode='dark'] .craft-field-label{--craft-required:#ff7379}.craft-field-label-text{position:relative;display:inline-block;width:max-content;max-width:100%}.craft-required-dot{position:absolute;top:3px;right:-6px;width:4px;height:4px;border-radius:50%;background:var(--craft-required);pointer-events:none}
-.wwm-create-body .wwm-labeled-field{display:grid;gap:7px;font-size:14px;font-weight:500}.wwm-create-body .wwm-labeled-field .craft-field-label{display:block}
-.craft-page [data-slot='button'],.wwm [data-slot='button'],.craft-account [data-slot='button'],.wwm [data-slot='input'],.wwm [data-slot='tabs-trigger'],.craft-account [data-slot='dropdown-menu-content']{border-radius:var(--craft-radius);font-family:inherit}
-.wwm [data-slot='button'],.craft-account [data-slot='button']{min-height:var(--craft-control-height);font-weight:500}
-.wwm [data-slot='input']{min-height:var(--craft-control-height);border:1px solid var(--craft-rule);color:var(--craft-ink);font-size:16px;box-shadow:none;background:transparent}
-.wwm [data-slot='input']:focus-visible,.wwm [data-slot='button']:focus-visible,.craft-account [data-slot='button']:focus-visible{outline:2px solid var(--craft-focus);outline-offset:2px;box-shadow:none}
+/*
+ * Craft design tokens. Scoped to :root[data-craft] (set before paint on every /craft route and by
+ * CraftAccount) so Radix portals — dialogs, popovers, selects — inherit them without per-dialog copies.
+ * The blog outside /craft never has data-craft, so nothing here reaches it.
+ */
+:root[data-craft]{
+ --craft-font:'SUIT','Pretendard',sans-serif;
+ /* Colour */
+ --craft-canvas:#eae6d8;--craft-surface:#f1eee2;--craft-ink:#514e40;--craft-muted:#635f52;
+ --craft-rule:#81775b70;--craft-rule-soft:#81775b30;--craft-hover:#81775b1c;--craft-selected:#dcd6c4;
+ --craft-on-ink:#fff9e7;--craft-focus:#514e40;--craft-danger:#b4232d;--craft-warning:#8b623d;--craft-accent:#a46e42;--craft-required:var(--craft-danger);
+ /* Type: 12/14/16/20/28 (+40 display on /craft only); weights 400/500/600 */
+ --craft-fs-12:12px;--craft-fs-14:14px;--craft-fs-16:16px;--craft-fs-20:20px;--craft-fs-28:28px;--craft-fs-40:40px;
+ --craft-fw-regular:400;--craft-fw-medium:500;--craft-fw-semibold:600;
+ /* Space 4/8/12/16/24/32/48 */
+ --craft-space-1:4px;--craft-space-2:8px;--craft-space-3:12px;--craft-space-4:16px;--craft-space-6:24px;--craft-space-8:32px;--craft-space-12:48px;--craft-space:var(--craft-space-2);
+ /* Geometry: one radius; 32px in-grid toolbar controls, 44px for every field and button */
+ --craft-radius:4px;--craft-control-radius:var(--craft-radius);--craft-h-sm:32px;--craft-h-md:44px;--craft-control-height:var(--craft-h-md);
+ --craft-shadow-pop:0 8px 24px #20211c24;
+ /* Layers: sticky grid chrome < floating popovers < dialogs < popovers opened from a dialog < toasts */
+ --craft-z-sticky:20;--craft-z-popover:60;--craft-z-dialog:80;--craft-z-dialog-popover:90;--craft-z-toast:100;
+ /* Participants: earthy 8-hue ramp, each >=3:1 against --craft-surface (see participant-palette.mjs) */
+ --craft-person-1:#a85e4a;--craft-person-2:#76702a;--craft-person-3:#946512;--craft-person-4:#4a6a60;
+ --craft-person-5:#7a4a5c;--craft-person-6:#9c3f1f;--craft-person-7:#4f6e3c;--craft-person-8:#7f6a45;--craft-person-you:#5b4e3a;
+}
+:root[data-craft][data-mode='dark']{
+ color-scheme:dark;
+ --craft-canvas:#292a23;--craft-surface:#36372d;--craft-ink:#d6cdb3;--craft-muted:#beb6a1;
+ --craft-rule:#d8ccaf55;--craft-rule-soft:#d8ccaf29;--craft-hover:#d8ccaf1c;--craft-selected:#545348;
+ --craft-on-ink:#20211c;--craft-focus:#d6cdb3;--craft-danger:#ff7379;--craft-warning:#e0b98f;--craft-accent:#e0b98f;
+ --craft-shadow-pop:0 8px 24px #0000004d;
+ --craft-person-1:#d99178;--craft-person-2:#b5ae6a;--craft-person-3:#d6a95a;--craft-person-4:#8fb3a6;
+ --craft-person-5:#c99aab;--craft-person-6:#e08a6a;--craft-person-7:#a3b97e;--craft-person-8:#cdb48a;--craft-person-you:#e6dcc2;
+}
+.craft-chrome,.craft-page,.wwm,.craft-account{font-family:var(--craft-font)}
+
+/* Shared field label + required marker. */
+.craft-field-label{display:block;font:inherit;color:inherit}.craft-field-label-text{position:relative;display:inline-block;width:max-content;max-width:100%}.craft-required-dot{position:absolute;top:3px;right:-6px;width:4px;height:4px;border-radius:50%;background:var(--craft-required);pointer-events:none}
+.wwm-labeled-field{display:grid;gap:var(--craft-space-2);font-size:var(--craft-fs-14);font-weight:var(--craft-fw-medium)}.wwm-labeled-field .craft-field-label{display:block}
+.wwm-field-error{margin:var(--craft-space-1) 0 0;font-size:var(--craft-fs-14);line-height:1.45;color:var(--craft-danger);overflow-wrap:anywhere}.wwm-labeled-field>.wwm-field-error{margin:0}
+
+/*
+ * Primitive layer for src/components/ui (Craft is its only consumer). Selectors are
+ * :root[data-craft] [data-slot=…] (0,3,0) so they hold against legacy feature rules such as `.wwm input`.
+ */
+/* Field: Input, FieldTrigger and SelectTrigger share one geometry, type and focus ring. */
+:root[data-craft] :is([data-slot='input'],[data-slot='field-trigger'],[data-slot='select-trigger']){box-sizing:border-box;width:100%;min-width:0;height:var(--craft-h-md);min-height:var(--craft-h-md);margin:0;padding:0 var(--craft-space-3);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:transparent;color:var(--craft-ink);font:var(--craft-fw-regular) var(--craft-fs-16)/22px var(--craft-font);box-shadow:none;outline:none;transition:border-color .16s ease,background-color .16s ease}
+:root[data-craft] :is([data-slot='field-trigger'],[data-slot='select-trigger']){display:flex;align-items:center;justify-content:space-between;gap:var(--craft-space-2);text-align:left;white-space:nowrap;cursor:pointer;font-variant-numeric:tabular-nums}
+:root[data-craft] :is([data-slot='field-trigger'],[data-slot='select-trigger'])>:is([data-slot='field-trigger-value'],[data-slot='select-value']){flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+:root[data-craft] :is([data-slot='field-trigger'],[data-slot='select-trigger'])>svg{flex:none;width:16px;height:16px;color:var(--craft-muted)}
+:root[data-craft] [data-slot='input']::placeholder{color:var(--craft-muted);opacity:1}
+:root[data-craft] :is([data-slot='field-trigger'][data-placeholder],[data-slot='select-trigger'][data-placeholder]) :is([data-slot='field-trigger-value'],[data-slot='select-value']){color:var(--craft-muted)}
+:root[data-craft] :is([data-slot='input'],[data-slot='field-trigger'],[data-slot='select-trigger']):hover:not(:disabled){background:var(--craft-hover)}
+:root[data-craft] :is([data-slot='input'],[data-slot='field-trigger'],[data-slot='select-trigger'],[data-slot='button']:not(:where(.craft-google-sign-in,.craft-account-avatar)),[data-slot='checkbox']):focus-visible{outline:2px solid var(--craft-focus);outline-offset:2px;box-shadow:none}
+:root[data-craft] :is([data-slot='input'],[data-slot='field-trigger'],[data-slot='select-trigger']):disabled{opacity:.5;cursor:not-allowed}
+:root[data-craft] :is([data-slot='input'],[data-slot='field-trigger'],[data-slot='select-trigger'])[aria-invalid='true']{border-color:var(--craft-danger);box-shadow:inset 0 0 0 1px var(--craft-danger)}
+:root[data-craft] :is([data-slot='input'],[data-slot='field-trigger'],[data-slot='select-trigger'])[aria-invalid='true']:focus-visible{outline-color:var(--craft-danger)}
+
+/* Button: 44px default, 32px `sm` for in-grid toolbars; one radius and focus ring. */
+:root[data-craft] [data-slot='button']:not(:where(.craft-google-sign-in,.craft-account-avatar)){box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:var(--craft-space-2);height:var(--craft-h-md);min-height:var(--craft-h-md);padding:0 var(--craft-space-4);border:1px solid var(--craft-ink);border-radius:var(--craft-radius);background:var(--craft-ink);color:var(--craft-on-ink);font:var(--craft-fw-medium) var(--craft-fs-16)/22px var(--craft-font);box-shadow:none;cursor:pointer;white-space:nowrap;transition:background-color .16s ease,border-color .16s ease,color .16s ease}
+:root[data-craft] [data-slot='button']:not(:where(.craft-google-sign-in,.craft-account-avatar))[data-variant='outline']{background:transparent;color:var(--craft-ink);border-color:var(--craft-rule)}
+:root[data-craft] [data-slot='button']:not(:where(.craft-google-sign-in,.craft-account-avatar)):is([data-variant='ghost'],[data-variant='link']){background:transparent;color:var(--craft-ink);border-color:transparent}
+:root[data-craft] [data-slot='button']:not(:where(.craft-google-sign-in,.craft-account-avatar))[data-variant='destructive']{background:var(--craft-danger);border-color:var(--craft-danger);color:var(--craft-on-ink)}
+:root[data-craft] [data-slot='button']:not(:where(.craft-google-sign-in,.craft-account-avatar)):is([data-variant='outline'],[data-variant='ghost']):hover:not(:disabled){background:var(--craft-hover)}
+:root[data-craft] [data-slot='button']:not(:where(.craft-google-sign-in,.craft-account-avatar)):is([data-size='sm'],[data-size='xs'],[data-size='icon-sm']){height:var(--craft-h-sm);min-height:var(--craft-h-sm);padding:0 var(--craft-space-3);font-size:var(--craft-fs-14)}
+:root[data-craft] [data-slot='button']:not(:where(.craft-google-sign-in,.craft-account-avatar)):is([data-size='icon'],[data-size='icon-lg']){width:var(--craft-h-md);padding:0}
+:root[data-craft] [data-slot='button']:not(:where(.craft-google-sign-in,.craft-account-avatar))[data-size='icon-sm']{width:var(--craft-h-sm);padding:0}
+:root[data-craft] [data-slot='button']:not(:where(.craft-google-sign-in,.craft-account-avatar)) svg:not([class*='size-']){width:16px;height:16px}
+:root[data-craft] [data-slot='button']:not(:where(.craft-google-sign-in,.craft-account-avatar)):disabled{opacity:.5;cursor:not-allowed}
+
+/* Checkbox: 18px box inside a 44px label row. */
+:root[data-craft] [data-slot='checkbox']{box-sizing:border-box;display:inline-grid;place-items:center;flex:none;width:18px;height:18px;margin:0;padding:0;border:1px solid var(--craft-ink);border-radius:var(--craft-radius);background:transparent;color:var(--craft-on-ink);cursor:pointer}
+:root[data-craft] [data-slot='checkbox'][data-state='checked']{background:var(--craft-ink)}
+:root[data-craft] [data-slot='checkbox']:disabled{opacity:.5;cursor:not-allowed}
+:root[data-craft] [data-slot='checkbox-indicator'] svg{width:14px;height:14px}
+.craft-check-row{display:flex;align-items:center;gap:var(--craft-space-2);min-height:var(--craft-h-md);font-size:var(--craft-fs-14);font-weight:var(--craft-fw-medium);cursor:pointer}
+
+/* Floating surfaces: popover, select and command lists share surface, border, radius, shadow and layer. */
+:root[data-craft] :is([data-slot='popover-content'],[data-slot='select-content']){box-sizing:border-box;z-index:var(--craft-z-popover);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:var(--craft-surface);color:var(--craft-ink);font-family:var(--craft-font);box-shadow:var(--craft-shadow-pop);animation:none}
+:root[data-craft] :is([data-slot='popover-content'],[data-slot='select-content'])[data-layer='dialog']{z-index:var(--craft-z-dialog-popover)}
+:root[data-craft] [data-slot='select-content']{min-width:var(--radix-select-trigger-width);max-height:min(320px,var(--radix-select-content-available-height));overflow:hidden}
+:root[data-craft] [data-slot='select-viewport']{padding:var(--craft-space-1);scrollbar-width:thin}
+:root[data-craft] :is([data-slot='select-item'],[data-slot='command-item']){box-sizing:border-box;position:relative;display:flex;align-items:center;gap:var(--craft-space-2);min-height:var(--craft-h-md);padding:0 var(--craft-space-3);border-radius:var(--craft-radius);font-size:var(--craft-fs-16);font-variant-numeric:tabular-nums;cursor:pointer;outline:none;user-select:none}
+:root[data-craft] :is([data-slot='select-item'][data-highlighted],[data-slot='command-item'][data-selected='true']){background:var(--craft-hover);outline:2px solid var(--craft-focus);outline-offset:-2px}
+:root[data-craft] :is([data-slot='select-item'][data-state='checked'],[data-slot='command-item'][data-checked='true']){font-weight:var(--craft-fw-semibold)}
+:root[data-craft] :is([data-slot='select-item'][data-disabled],[data-slot='command-item'][data-disabled='true']){opacity:.5;cursor:not-allowed}
+:root[data-craft] :is([data-slot='select-item'],[data-slot='command-item'])>svg{flex:none;width:16px;height:16px;margin-left:auto}
+:root[data-craft] [data-slot='select-empty'],:root[data-craft] [data-slot='command-empty']{margin:0;padding:var(--craft-space-3);font-size:var(--craft-fs-14);color:var(--craft-muted)}
+:root[data-craft] [data-slot='command']{display:flex;flex-direction:column;min-height:0;gap:var(--craft-space-1);font-family:var(--craft-font)}
+:root[data-craft] [data-slot='command-list']{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+:root[data-craft] [data-slot='command-input-wrapper']{display:flex;align-items:center;gap:var(--craft-space-2);flex:none}
+:root[data-craft] [data-slot='command-input-wrapper']>svg{flex:none;width:16px;height:16px;color:var(--craft-muted)}
+
+/* Dialogs: tokens come from :root, so every dialog is Craft without a per-dialog palette. */
+:root[data-craft] [data-slot='dialog-overlay']{z-index:var(--craft-z-dialog);background:#20211c8c}
+:root[data-craft] [data-slot='dialog-content']{z-index:var(--craft-z-dialog);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:var(--craft-surface);color:var(--craft-ink);font-family:var(--craft-font);box-shadow:var(--craft-shadow-pop)}
+:root[data-craft] [data-slot='dialog-title']{font-size:var(--craft-fs-20);line-height:28px;font-weight:var(--craft-fw-semibold);letter-spacing:-.02em}
+:root[data-craft] [data-slot='dialog-description']{font-size:var(--craft-fs-14);line-height:20px;color:var(--craft-muted)}
+:root[data-craft] [data-slot='dialog-close']{display:grid;place-items:center;width:var(--craft-h-sm);height:var(--craft-h-sm);border-radius:var(--craft-radius);color:var(--craft-ink)}
+:root[data-craft] [data-slot='dialog-close']:focus-visible{outline:2px solid var(--craft-focus);outline-offset:2px;box-shadow:none}
+:root[data-craft] [data-sonner-toaster]{z-index:var(--craft-z-toast)}
+
+/* shadcn Calendar (react-day-picker): one Sunday-first grid for range and single-date pickers. */
+:root[data-craft] [data-slot='calendar']{--cell-size:40px;padding:var(--craft-space-2);background:transparent;color:var(--craft-ink);font-family:var(--craft-font)}
+:root[data-craft] [data-slot='calendar'] .rdp-caption_label{font-size:var(--craft-fs-16);font-weight:var(--craft-fw-semibold)}
+:root[data-craft] [data-slot='calendar'] .rdp-weekday{font-size:var(--craft-fs-12);color:var(--craft-muted)}
+:root[data-craft] [data-slot='calendar'] [data-slot='button']{height:var(--cell-size);min-height:0;width:var(--cell-size);min-width:0;padding:0;border:0;background:transparent;color:var(--craft-ink);font-size:var(--craft-fs-14);font-weight:var(--craft-fw-regular);font-variant-numeric:tabular-nums}
+:root[data-craft] [data-slot='calendar'] .rdp-day [data-slot='button']{width:100%}
+:root[data-craft] [data-slot='calendar'] [data-slot='button']:hover:not(:disabled){background:var(--craft-hover)}
+:root[data-craft] [data-slot='calendar'] [data-slot='button']:focus-visible{outline-offset:-2px}
+:root[data-craft] [data-slot='calendar'] .rdp-today:not([data-selected='true']) [data-slot='button']{font-weight:var(--craft-fw-semibold)}
+:root[data-craft] [data-slot='calendar'] .rdp-disabled [data-slot='button']{opacity:.35}
+:root[data-craft] [data-slot='calendar'] .rdp-day:has(>button:is([data-range-middle='true'],[data-range-start='true'],[data-range-end='true'])){background:var(--craft-selected)}
+:root[data-craft] [data-slot='calendar'] .rdp-day:has(>button[data-range-middle='true']){border-radius:0}
+:root[data-craft] [data-slot='calendar'] .rdp-day:has(>button[data-range-start='true']){border-radius:var(--craft-radius) 0 0 var(--craft-radius)}
+:root[data-craft] [data-slot='calendar'] .rdp-day:has(>button[data-range-end='true']){border-radius:0 var(--craft-radius) var(--craft-radius) 0}
+:root[data-craft] [data-slot='calendar'] .rdp-day:has(>button[data-range-start='true'][data-range-end='true']){border-radius:var(--craft-radius)}
+:root[data-craft] [data-slot='calendar'] button[data-range-middle='true']{border-radius:0;background:transparent;color:inherit}
+:root[data-craft] [data-slot='calendar'] button:is([data-range-start='true'],[data-range-end='true'],[data-selected-single='true']){border-radius:var(--craft-radius);background:var(--craft-ink);color:var(--craft-on-ink)}
+
 .craft-rolling{display:inline-block;white-space:nowrap;font-variant-numeric:tabular-nums;line-height:1.1}.craft-rolling-visual{display:inline-block}.craft-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}

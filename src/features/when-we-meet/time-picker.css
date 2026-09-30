@@ -1,10 +1,4 @@
-.wwm-time-panel[data-slot='popover-content']{position:relative;z-index:60;top:auto;left:auto;width:min(260px,var(--radix-popper-available-width));min-width:0;max-width:calc(100vw - 16px);padding:8px;border-radius:var(--craft-control-radius);animation:none;transform:none;box-shadow:0 8px 24px #332f231c}
-.wwm-time-scroll{height:min(228px,calc(var(--radix-popper-available-height, 100dvh) - 18px));min-height:0}
-.wwm-time-panel .wwm-time-options{max-height:none;overflow:visible;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px}
-.wwm-time-panel .wwm-time-options button{min-height:44px;border:0;border-radius:var(--craft-control-radius);background:transparent;color:inherit;padding:6px;font:inherit;cursor:pointer}
-.wwm-time-panel .wwm-time-options button:hover{background:#81775b30}
-.wwm-time-panel .wwm-time-options button[aria-selected=true]{background:#514e40;color:#fff9e7}
-:root[data-mode='dark'] .wwm-time-panel .wwm-time-options button[aria-selected=true]{background:#d6cdb3;color:#20211c}
-.wwm-time-panel .wwm-time-options button[data-focused=true]{outline:2px solid currentColor;outline-offset:-2px}
-.wwm-time-empty{margin:4px;font-size:13px;line-height:1.4}
-:root[data-mode='dark'] .wwm-time-panel{background:#36372d;color:#d6cdb3;border-color:#d8ccaf55}
+/* Picker panels: surface, border, radius, shadow and layer come from the shared primitives. */
+[data-slot='select-content'].wwm-time-panel{width:var(--radix-select-trigger-width)}
+[data-slot='popover-content'].wwm-date-panel{width:max(var(--radix-popover-trigger-width),296px);max-width:calc(100vw - 32px);padding:var(--craft-space-1)}
+.wwm-date-panel [data-slot='calendar'],.wwm-date-panel .rdp-months,.wwm-date-panel .rdp-month{width:100%}
