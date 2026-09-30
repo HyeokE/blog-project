@@ -390,10 +390,10 @@
     "storageUnavailable": "이 브라우저에서는 로그인하는 동안 초대 정보를 기억하지 못해요. 사이트 데이터 저장을 허용하고 다시 시도해주세요."
   },
   "auth": {
-    "finishing": "Google 로그인을 마무리하고 있어요",
-    "restoring": "로그인을 마치고 모임으로 돌아가고 있어요. 적던 내용은 그대로 있어요.",
+    "finishing": "로그인하고 있어요",
+    "restoring": "곧 모임으로 이동해요. 적던 내용은 그대로 있어요.",
     "failedTitle": "Google 로그인을 마치지 못했어요",
-    "failed": "Google 로그인을 마치지 못했어요. 다시 시도해주세요.",
+    "failed": "잠시 후 다시 시도해주세요.",
     "cancelled": "Google 로그인을 취소했어요.",
     "expired": "로그인 시간이 지났어요. 다시 로그인해주세요.",
     "unavailableHere": "이 주소에서는 로그인할 수 없어요. hyeok.dev에서 로그인해주세요.",

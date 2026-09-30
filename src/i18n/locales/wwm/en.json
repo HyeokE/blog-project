@@ -390,10 +390,10 @@
     "storageUnavailable": "This browser can’t keep the invitation through Google sign-in. Allow storage for this site and try again."
   },
   "auth": {
-    "finishing": "Finishing Google sign-in",
-    "restoring": "Restoring your session and returning to your meeting. Your draft will remain in this tab.",
+    "finishing": "Signing you in",
+    "restoring": "Taking you back to your meeting. Anything you entered is still here.",
     "failedTitle": "Google sign-in could not finish",
-    "failed": "Couldn’t complete Google sign-in. Try again.",
+    "failed": "Please try again in a moment.",
     "cancelled": "Google sign-in was cancelled.",
     "expired": "The sign-in attempt expired. Try Google sign-in again.",
     "unavailableHere": "Google sign-in isn’t available on this address. Open hyeok.dev to sign in.",

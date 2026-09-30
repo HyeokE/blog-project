@@ -1,11 +1,9 @@
 'use client';
-import {ANALYTICS_ELEMENTS,ANALYTICS_SECTIONS} from '@/constants/analytics';
 import {useEffect,useRef,useState} from 'react';
 import {safeReturnPath} from '@/features/when-we-meet/return-path.mjs';
 import {completeCreateReturn} from '@/features/when-we-meet/draft.mjs';
 import {restoreInviteReturn,clearInviteReturn} from '@/features/when-we-meet/invitation.mjs';
-import {useWwmCopy} from '@/features/when-we-meet/i18n/WwmI18nProvider';
-import './auth-callback.css';
+import {AuthReturn} from '@/features/when-we-meet/AuthReturn';
 // The server (/api/craft/auth/google/callback) has already set the session cookies, or failed with an error code.
 // This page only restores tab-scoped drafts/invites from sessionStorage, which the server cannot read.
 // Server error code → dictionary key.
@@ -16,7 +14,6 @@ const ERRORS:Record<string,string>={
   failed:'auth.failed',
 };
 export default function CallbackPage(){
-  const {t}=useWwmCopy();
   const [error,setError]=useState('');
   const handled=useRef(false);
   useEffect(()=>{
@@ -29,5 +26,5 @@ export default function CallbackPage(){
     const destination=next==='/craft/when-we-meet'?(completeCreateReturn(window.sessionStorage,next),next):restoreInviteReturn(window.sessionStorage,next)||next;
     window.location.replace(destination);
   },[]);
-  return <main className="craft-auth-return" aria-busy={!error} data-analytics-section={ANALYTICS_SECTIONS.WWM_AUTH}><h1>{error?t('auth.failedTitle'):t('auth.finishing')}</h1>{error?<><p role="alert">{t(error)}</p><a href="/craft/when-we-meet" data-analytics-label={ANALYTICS_ELEMENTS.AUTH_RETURN}>{t('auth.returnToMeetings')}</a></>:<><p role="status">{t('auth.restoring')}</p><div className="craft-auth-placeholder" aria-hidden="true"/></>}</main>;
+  return <AuthReturn error={error||undefined}/>;
 }
