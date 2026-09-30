@@ -1,6 +1,7 @@
 import {cookies,headers} from 'next/headers';
 import {roomForViewer} from '@/features/when-we-meet/room-permissions.mjs';
 import {createServerClient} from '@supabase/ssr';
+import {requestOrigin} from '@/lib/request-origin.mjs';
 import {normalizeRoom,normalizeResponses,normalizeMeeting,participantCountsByRoom} from '@/features/when-we-meet/normalize.mjs';
 
 export async function serverSupabaseClient({readOnly=false}:{readOnly?:boolean}={}) {
@@ -8,8 +9,7 @@ export async function serverSupabaseClient({readOnly=false}:{readOnly?:boolean}=
   const key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if(!url||!key){throw new Error('Supabase is not configured.');}
   const store=await cookies();
-  const host=(await headers()).get('x-forwarded-host')||(await headers()).get('host');
-  const secure=host==='macmini-home.taile6a871.ts.net:8446'||host==='macmini-home.taile6a871.ts.net';
+  const secure=Boolean(requestOrigin(await headers())?.startsWith('https:'));
   return createServerClient(url,key,{cookies:{
     getAll(){return store.getAll()},
     // Proxy refreshes and forwards request cookies before Server Components render.

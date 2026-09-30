@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import {createServerClient} from '@supabase/ssr';
+import {requestOrigin} from '@/lib/request-origin.mjs';
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -9,10 +10,9 @@ export async function proxy(request: NextRequest) {
   const key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if(!url||!key)return NextResponse.next();
   let response=NextResponse.next({request});
-  // Tailscale terminates HTTPS before forwarding to the local HTTP server.
-  // Only the explicitly approved Tailnet host may override the upstream scheme.
-  const forwardedHost=request.headers.get('x-forwarded-host')||request.headers.get('host');
-  const secure=request.nextUrl.protocol==='https:'||forwardedHost==='macmini-home.taile6a871.ts.net:8446'||forwardedHost==='macmini-home.taile6a871.ts.net';
+  // Tailscale terminates HTTPS before forwarding to the local HTTP server, so only a
+  // trusted https origin (Tailnet, production, Vercel preview) may override the upstream scheme.
+  const secure=request.nextUrl.protocol==='https:'||Boolean(requestOrigin(request.headers)?.startsWith('https:'));
   const client=createServerClient(url,key,{cookies:{
     getAll(){return request.cookies.getAll()},
     setAll(values){
