@@ -15,6 +15,7 @@ export function confirmedChip(confirmation:{startsAt:string;endsAt?:string;timez
 export const RSVP_LABELS:Readonly<{accepted:string;declined:string;tentative:string;needsAction:string}>;
 export function rsvpSummary(counts:{accepted:number;declined:number;tentative:number;needsAction:number}):string;
 export function bestTimeLine(window:{count:number;total:number;missing:string[]}):string;
+export function unavailableNames(missing:string[]):string;
 export function dayTime(input:{date:string;start?:string;end?:string}):string;
 export function scheduleWarning(impact:{removedSlots:number;people:string[]},confirmed:boolean):string;
 export function deleteMeetingCopy(title:string,confirmed:boolean):{title:string;description:string};
@@ -28,7 +29,7 @@ export type MeetingCopy={
  confirmedWhen:typeof confirmedWhen;confirmedChip:typeof confirmedChip;RSVP_LABELS:typeof RSVP_LABELS;rsvpSummary:typeof rsvpSummary;
  saveStatus:typeof saveStatus;fillButtonLabel:typeof fillButtonLabel;fillToast:typeof fillToast;memberInvitedLine:typeof memberInvitedLine;
  invitationsSentToast:typeof invitationsSentToast;resendQuestion:typeof resendQuestion;MEETING_TOASTS:typeof MEETING_TOASTS;
- bestTimeLine:typeof bestTimeLine;dayTime:typeof dayTime;scheduleWarning:typeof scheduleWarning;deleteMeetingCopy:typeof deleteMeetingCopy;
+ bestTimeLine:typeof bestTimeLine;unavailableNames:typeof unavailableNames;dayTime:typeof dayTime;scheduleWarning:typeof scheduleWarning;deleteMeetingCopy:typeof deleteMeetingCopy;
  loadErrorTitle:typeof loadErrorTitle;organizedBy:typeof organizedBy;MEETING_COPY:typeof MEETING_COPY;
  /** Dictionary message for a failed request (by HTTP status and situation). */
  apiError:(error:unknown,situation:'create'|'join'|'rename'|'schedule'|'delete')=>string;

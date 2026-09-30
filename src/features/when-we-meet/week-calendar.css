@@ -110,10 +110,10 @@
    2.25 days fit so the next day peeks in as a hint that the grid scrolls. Taps vs. scrolls are told apart by the
    touch gesture in WeeklyAvailability (travel > 10px or pointercancel aborts a toggle). */
 @media(max-width:480px){
- .wwm-calendar-frame.is-hscroll{--hday:calc((100vw - 40px - 54px) / 2.25)}
+ .wwm-calendar-frame.is-hscroll{--hday:min(160px,calc(68px + var(--wwm-lanes,1) * 16px))}
  .wwm-calendar-frame.is-hscroll .wwm-calendar-header{overflow:hidden}
  .wwm-calendar-frame.is-hscroll .wwm-week-body{overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;touch-action:pan-x pan-y;scroll-snap-type:x proximity;scrollbar-width:none}
  .wwm-calendar-frame.is-hscroll .wwm-week-body::-webkit-scrollbar{display:none}
- .wwm-calendar-frame.is-hscroll .wwm-week-grid{grid-template-columns:54px repeat(var(--wwm-day-count),var(--hday));width:calc(54px + var(--wwm-day-count) * var(--hday))}
+ .wwm-calendar-frame.is-hscroll .wwm-week-grid{grid-template-columns:54px repeat(var(--wwm-day-count),minmax(var(--hday),1fr));width:max(100%,calc(54px + var(--wwm-day-count) * var(--hday)))}
  .wwm-calendar-frame.is-hscroll .wwm-week-body .wwm-calendar-day{scroll-snap-align:start;scroll-margin-left:54px}
 }

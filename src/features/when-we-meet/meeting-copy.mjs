@@ -69,8 +69,10 @@ export function createMeetingCopy(locale=WWM_DEFAULT_LOCALE){
    linkCopied:t('toast.linkCopied'),copyFailed:t('toast.copyFailed'),renamed:t('toast.renamed'),nameUpdated:t('toast.nameUpdated'),
    editSaved:t('edit.savedToast'),resent:t('resend.toast'),saveFailed:t('toast.saveFailed'),scheduleSaved:t('toast.scheduleSaved'),deleted:t('toast.deleted'),
   }),
-  /** Best-times row: `4/5 available · missing: Taylor`, or `Everyone available`. */
-  bestTimeLine:({count,total,missing})=>count===total?t('confirm.everyoneAvailable'):t('confirm.partlyAvailableLine',{count,total,names:list(missing)}),
+  /** Best-times row: `4/5 available, unavailable: 1` (who is missing is shown on hover, see `unavailableNames`). */
+  bestTimeLine:({count,total,missing})=>t('confirm.partlyAvailableLine',{count,total,unavailable:missing.length}),
+  /** Hover/focus text naming the people who cannot make a suggested time; empty when everyone can. */
+  unavailableNames:missing=>missing.length?t('confirm.warnings.unavailable',{names:list(missing)}):'',
   /** One date+time format for Review, Edit and the confirmed card. */
   dayTime:({date,start,end})=>[shortDay(date),start&&end?`${start}–${end}`:''].filter(Boolean).join(' · '),
   /** Settings warning before saving a narrower schedule. */
@@ -102,4 +104,4 @@ export function createMeetingCopy(locale=WWM_DEFAULT_LOCALE){
 }
 
 const english=createMeetingCopy('en');
-export const {meetingSummary,dayLabel,shortDay,confirmedWhen,confirmedChip,RSVP_LABELS,rsvpSummary,saveStatus,fillButtonLabel,fillToast,memberInvitedLine,invitationsSentToast,resendQuestion,MEETING_TOASTS,bestTimeLine,dayTime,scheduleWarning,deleteMeetingCopy,loadErrorTitle,organizedBy,MEETING_COPY}=english;
+export const {meetingSummary,dayLabel,shortDay,confirmedWhen,confirmedChip,RSVP_LABELS,rsvpSummary,saveStatus,fillButtonLabel,fillToast,memberInvitedLine,invitationsSentToast,resendQuestion,MEETING_TOASTS,bestTimeLine,unavailableNames,dayTime,scheduleWarning,deleteMeetingCopy,loadErrorTitle,organizedBy,MEETING_COPY}=english;

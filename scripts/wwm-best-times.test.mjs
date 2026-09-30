@@ -58,7 +58,7 @@ test('minSlots drops windows shorter than the minimum (default 1 half-hour = 30 
 });
 
 test('the line reads count/total available and who is missing',()=>{
- assert.equal(bestTimeLine({count:4,total:5,missing:['Taylor']}),'4/5 available · missing: Taylor');
- assert.equal(bestTimeLine({count:3,total:3,missing:[]}),'Everyone available');
- assert.equal(bestTimeLine({count:1,total:4,missing:['A','B','C']}),'1/4 available · missing: A, B, C');
+ assert.equal(bestTimeLine({count:4,total:5,missing:['Taylor']}),'4/5 available, unavailable: 1');
+ assert.equal(bestTimeLine({count:3,total:3,missing:[]}),'3/3 available, unavailable: 0');
+ assert.equal(bestTimeLine({count:1,total:4,missing:['A','B','C']}),'1/4 available, unavailable: 3');
 });

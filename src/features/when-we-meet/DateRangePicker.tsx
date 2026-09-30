@@ -35,6 +35,8 @@ export function DateRangePicker({start,end,onChange,minDate,maxDate,error,id='ww
   setOpen(next);
  }
  const display=(value:string)=>value?formatCraftDate(value):t('picker.chooseDates');
+ // Placeholder example: a week starting at the earliest allowed day (today when unbounded).
+ const exampleStart=minDate||new Date().toLocaleDateString('sv-SE'),exampleEnd=new Date(Date.parse(`${exampleStart}T00:00:00Z`)+6*86400000).toISOString().slice(0,10);
  const announcement=draft.error?t('picker.tooLong',{start:display(draft.start)}):draft.phase==='end'?t('picker.startChosen',{start:display(draft.start)}):draft.start&&draft.end?t('picker.currentRange',{start:display(draft.start),end:display(draft.end),days:rangeDays(draft.start,draft.end)}):t('picker.chooseStart');
  // The popover is named for its purpose: meeting dates unless the caller says otherwise (e.g. dates to fill).
  const panelLabel=ariaLabel??t('picker.chooseMeetingDates');
@@ -50,7 +52,7 @@ export function DateRangePicker({start,end,onChange,minDate,maxDate,error,id='ww
   // Escape closes only the inline calendar; the create dialog keeps itself open while aria-expanded is true.
   return <div className="wwm-range" onKeyDown={event=>{if(event.key==='Escape'&&open){event.preventDefault();event.stopPropagation();setOpen(false);trigger.current?.focus()}}}>
    <RequiredFieldLabel required={required} className="wwm-picker-label" htmlFor={`${id}-trigger`}>{fieldLabel}</RequiredFieldLabel>
-   {field({placeholder:t('picker.chooseDates'),'aria-expanded':open,'aria-controls':`${id}-panel`,onClick:()=>openChange(!open)})}
+   {field({placeholder:t('picker.dateRangeExample',{start:formatCraftDate(exampleStart),end:formatCraftDate(exampleEnd)}),'aria-expanded':open,'aria-controls':`${id}-panel`,onClick:()=>openChange(!open)})}
    {open&&<div id={`${id}-panel`} role="group" aria-label={panelLabel} className="wwm-range-inline">{calendar}</div>}
   </div>;
  }
