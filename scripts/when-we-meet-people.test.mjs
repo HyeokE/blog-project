@@ -1,0 +1,8 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const read=path=>readFileSync(new URL(`../${path}`,import.meta.url),'utf8');
+test('roster route uses authenticated member-scoped RPC and no response-derived membership',()=>{const route=read('src/app/api/craft/when-we-meet/[roomId]/people/route.ts');assert.match(route,/uuid\(roomId\)/);assert.match(route,/currentSupabaseUser\(\)/);assert.match(route,/if\(!user\)/);assert.match(route,/client\.rpc\('wwm_room_people',\{p_room_id:roomId\}\)/);assert.doesNotMatch(route,/service.role|craftRoomResponses|\.from\(/i);assert.match(route,/failed\(/);});
+test('People tab renders dedicated roster rather than responses',()=>{const component=read('src/features/when-we-meet/WhenWeMeet.tsx');assert.match(component,/view==='people'\?<PeoplePanel roomId=\{room\.id\}/);assert.doesNotMatch(component,/Participants are temporarily unavailable/);});
+test('roster fetch stays same-origin and has loading error retry empty states',()=>{const panel=read('src/features/when-we-meet/PeoplePanel.tsx');assert.match(panel,/fetch\(`\/api\/craft\/when-we-meet\/\$\{roomId\}\/people`/);assert.match(panel,/AbortController/);assert.match(panel,/Retry/);assert.match(panel,/No one has joined/);assert.match(panel,/has_availability/);assert.match(panel,/is_admin/);assert.doesNotMatch(panel,/supabase|email/i);});
+test('Storybook intercepts only dedicated people endpoint and includes empty-slot member',()=>{const preview=read('.storybook/preview.tsx');assert.match(preview,/mockPeopleFetch/);const fixture=read('src/stories/wwm/mock-api.ts');assert.match(fixture,/has_availability:false/);const stories=read('src/stories/wwm/wwm.stories.tsx');assert.match(stories,/RoomPeople/);});

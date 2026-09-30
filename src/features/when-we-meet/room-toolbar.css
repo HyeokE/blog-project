@@ -1,0 +1,27 @@
+/* Quiet room chrome; calendar remains the primary working surface. */
+.wwm.wwm-room .wwm-header-actions .wwm-share-icon{width:44px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center}
+.wwm.wwm-room .wwm-shell>header{margin-bottom:12px}
+.wwm.wwm-room .wwm-hero-row{flex-direction:row;align-items:center;gap:16px;flex-wrap:wrap}
+.wwm.wwm-room .wwm-hero-row h1{font-size:28px;font-weight:600;letter-spacing:-.04em;line-height:1.25;overflow-wrap:anywhere;flex:1}
+.wwm.wwm-room .wwm-header-actions{display:flex;width:auto;gap:6px;flex-shrink:0}
+.wwm.wwm-room .wwm-header-actions button{min-height:44px;padding:8px 12px;background:transparent;color:inherit;border:1px solid var(--craft-rule);box-shadow:none;font-size:13px;font-weight:500}
+.wwm.wwm-room .wwm-header-actions button[data-variant='ghost']{border-color:transparent}
+.wwm.wwm-room .wwm-room-meta{margin-top:5px;font-size:12px;color:var(--craft-muted)}
+.wwm.wwm-room .wwm-availability{border:0;padding-top:0;margin-top:0}
+.wwm.wwm-room .wwm-save-state{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;font-size:12px;font-weight:400;color:var(--craft-muted);min-height:24px;margin:0 0 12px}
+.wwm.wwm-room .wwm-save-state button{background:transparent;color:inherit;border:0;padding:0 8px;min-height:44px;text-decoration:underline}
+.wwm.wwm-room .wwm-view-switch{display:flex;justify-content:flex-start;gap:20px;border:0;border-bottom:1px solid var(--craft-rule);border-radius:0;background:transparent;margin:0 0 16px;padding:0;height:auto}
+.wwm.wwm-room .wwm-view-switch [data-slot='tabs-trigger']{width:auto;flex:0 0 auto;height:36px;min-height:36px;padding:0 2px;background:transparent;color:var(--craft-muted);border:0;border-bottom:2px solid transparent;border-radius:0;font-size:14px;box-shadow:none}
+.wwm.wwm-room .wwm-view-switch [data-slot='tabs-trigger'][data-state='active']{background:transparent;color:inherit;border-bottom-color:currentColor;font-weight:650}
+:root[data-mode='dark'] .wwm.wwm-room .wwm-view-switch [data-slot='tabs-trigger']{color:#beb6a1}
+:root[data-mode='dark'] .wwm.wwm-room .wwm-view-switch [data-slot='tabs-trigger'][data-state='active']{color:#d6cdb3;border-bottom-color:currentColor}
+.wwm-settings-dialog{--craft-canvas:#eae6d8;--craft-ink:#514e40;--craft-muted:#635f52;--craft-surface:#f1eee2;--craft-rule:#81775b70;--craft-focus:#514e40;--craft-required:#b4232d;max-width:min(420px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow-y:auto;background:var(--craft-surface);color:var(--craft-ink);border:1px solid var(--craft-rule);border-radius:4px;font-family:'SUIT','Pretendard',sans-serif;animation:none!important;translate:0 0!important;transform:translate(-50%,-50%)}
+:root[data-mode='dark'] .wwm-settings-dialog{--craft-canvas:#292a23;--craft-ink:#d6cdb3;--craft-muted:#beb6a1;--craft-surface:#36372d;--craft-rule:#d8ccaf55;--craft-focus:#d6cdb3;--craft-required:#ff7379;color-scheme:dark}
+.wwm-settings-dialog form{display:grid;gap:24px}.wwm-settings-dialog label{font-size:14px}.wwm-settings-dialog input{margin-top:8px;min-height:44px;border:1px solid var(--craft-rule);border-radius:4px;font-size:16px;background:transparent;color:var(--craft-ink);box-shadow:none}.wwm-settings-dialog button{min-height:44px;border-radius:4px}.wwm-settings-dialog [data-slot='dialog-description']{color:var(--craft-muted)}
+.wwm-settings-dialog [data-slot='button']{background:var(--craft-ink);color:var(--craft-surface);border:1px solid var(--craft-ink)}
+.wwm-settings-dialog [data-variant='outline']{background:transparent;color:var(--craft-ink);border-color:var(--craft-rule)}
+.wwm-settings-dialog [data-slot='button']:hover{background:var(--craft-muted);color:var(--craft-surface)}
+.wwm-settings-dialog [data-variant='outline']:hover{background:var(--craft-rule);color:var(--craft-ink)}
+.wwm-settings-dialog [data-slot='button']:focus-visible,.wwm-settings-dialog [data-slot='input']:focus-visible{outline:2px solid var(--craft-focus);outline-offset:2px;box-shadow:none}
+.wwm-settings-dialog [data-slot='button']:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:600px){.wwm.wwm-room .wwm-hero-row{gap:8px}.wwm.wwm-room .wwm-hero-row h1{font-size:24px}.wwm.wwm-room .wwm-view-switch{gap:16px}.wwm.wwm-room .wwm-header-actions button{padding-inline:8px;font-size:12px}}

@@ -10,9 +10,10 @@ import { motion, useIsPresent, useReducedMotion } from 'motion/react';
 import { motionTokens, springs } from './motion-tokens';
 
 const destinations = [
-  { label: 'LOGS', href: '/' },
+  { label: 'LOG', href: '/' },
   { label: 'RESUME', href: '/about' },
   { label: 'GALLERY', href: '/gallery' },
+  { label: 'CRAFT', href: '/craft' },
 ];
 
 export default function FullscreenMenu({ onClose }: { onClose: () => void }) {
@@ -106,7 +107,7 @@ export default function FullscreenMenu({ onClose }: { onClose: () => void }) {
                   data-analytics-id={href}
                   href={href}
                   aria-current={
-                    pathname === href || (href === '/' && pathname === '/2025/light')
+                    pathname === href || (href === '/craft' && pathname?.startsWith('/craft/')) || (href === '/' && pathname === '/2025/light')
                       ? 'page'
                       : undefined
                   }

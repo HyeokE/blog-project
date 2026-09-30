@@ -1,0 +1,36 @@
+/* Google's unmodified multicolor G remains on white in both site themes. */
+.craft-google-sign-in[data-slot='button'],
+.wwm .craft-google-sign-in[data-slot='button'],
+:root[data-mode='dark'] .wwm .craft-google-sign-in[data-slot='button'] {
+  box-sizing:border-box;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  width:auto;
+  min-width:0;
+  min-height:44px;
+  padding:0 12px;
+  border:1px solid #747775;
+  border-radius:4px;
+  background:#fff;
+  color:#1f1f1f;
+  box-shadow:none;
+  font-family:'Google Sans',Roboto,Arial,sans-serif;
+  font-size:14px;
+  font-weight:500;
+  line-height:20px;
+  letter-spacing:0;
+  text-decoration:none;
+  cursor:pointer;
+  transition:background-color 150ms ease,border-color 150ms ease;
+}
+.craft-google-sign-in[data-slot='button'] img { width:18px;height:18px;flex:none;object-fit:contain; }
+.craft-google-sign-in[data-slot='button']:hover:not(:disabled),
+.wwm .craft-google-sign-in[data-slot='button']:hover:not(:disabled) { background:#f8f9fa;border-color:#444746;color:#1f1f1f; }
+.craft-google-sign-in[data-slot='button']:focus-visible,
+.wwm .craft-google-sign-in[data-slot='button']:focus-visible { outline:2px solid var(--craft-focus,#514e40);outline-offset:3px;box-shadow:none; }
+.craft-google-sign-in[data-slot='button']:disabled,
+.wwm .craft-google-sign-in[data-slot='button']:disabled { opacity:.58;cursor:not-allowed; }
+.craft-google-sign-in--header[data-slot='button'] { min-height:44px; }
+@media(prefers-reduced-motion:reduce){.craft-google-sign-in[data-slot='button']{transition:none}}

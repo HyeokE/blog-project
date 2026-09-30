@@ -1,0 +1,7 @@
+# Craft Google sign-in presentation handoff
+
+The shared `GoogleSignInButton` is presentation-only; it takes `onClick`, `disabled`, `pending`, and `context='header'|'standard'` and never changes the OAuth destination. Its image is the unmodified multicolor Google G from Google's identity branding guidelines (`https://developers.google.com/static/identity/images/g-logo.png`). The button uses shadcn `Button` outline, Google's white surface / dark text in both themes, 18px image, 44px minimum height, 4px radius, keyboard focus, and reduced-motion handling.
+
+Integration for auth owner (do not duplicate the handler): replace the header button in `src/app/craft/CraftAccount.tsx` with `<GoogleSignInButton context="header" onClick={()=>void signIn()} />`; replace the returning-user and dialog sign-in buttons in `src/features/when-we-meet/WhenWeMeet.tsx` with `<GoogleSignInButton onClick={login} />`. Retain existing guards/errors and draft handling. If a pending state exists pass `pending`, otherwise do not invent one.
+
+Live pre-change Aside tab `3D155D6DFFB5A4542C4A0E6A1C3A71BE` at `http://localhost:3002/craft/when-we-meet` showed guest header and returning-user buttons. Post-integration screenshots remain required at desktop and 375/390px mobile; this subtask cannot truthfully claim them before auth owner imports the component. Aside REPL's page object did not expose `setViewportSize` for this session.

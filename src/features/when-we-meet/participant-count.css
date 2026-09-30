@@ -1,0 +1,4 @@
+.wwm-meeting-title-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}.wwm-meeting-title-row>strong{min-width:0;overflow-wrap:anywhere}
+.wwm-meetings .wwm-participant-count{display:inline-flex;align-items:center;gap:5px;flex:none;font-size:12px;font-weight:400;line-height:18px;color:var(--craft-muted,#635f52);white-space:nowrap}
+.wwm-participant-count>svg{flex:none}.wwm-meetings .wwm-participant-count>span{font:inherit;color:inherit;margin:0}
+@media(max-width:380px){.wwm-meeting-title-row{gap:8px}.wwm-meetings .wwm-participant-count{font-size:11px}}

@@ -45,3 +45,6 @@ next-env.d.ts
 # Generated responsive gallery previews (created before dev/build)
 /public/_gallery/
 /src/generated/gallery-manifest.json
+
+# storybook build output
+/storybook-static

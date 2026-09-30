@@ -1,0 +1,5 @@
+.wwm-empty-meetings{min-height:clamp(260px,42vh,380px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:32px 16px;text-align:center;color:var(--craft-muted,#635f52)}
+.wwm-empty-meetings>svg{flex:none;opacity:.7;margin-bottom:4px}
+.wwm .wwm-empty-meetings h2{margin:0;font-size:18px;font-weight:550;line-height:24px;letter-spacing:-.025em;color:var(--craft-ink,#514e40)}
+.wwm .wwm-empty-meetings p{margin:0;font-size:13px;line-height:21px;max-width:320px;color:var(--craft-muted,#635f52)}
+@media(max-width:600px){.wwm-empty-meetings{min-height:280px;padding:28px 8px;gap:10px}}

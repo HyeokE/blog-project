@@ -1,0 +1,22 @@
+import type {Meta,StoryObj} from '@storybook/nextjs-vite';
+import {useState} from 'react';
+import {ConfirmationPanel,type ConfirmationPanelProps} from '@/features/when-we-meet/ConfirmationPanel';
+import '@/features/when-we-meet/when-we-meet.css';
+const members:NonNullable<ConfirmationPanelProps['members']>=[{id:'alex',name:'Alex Sample',email:'alex@example.test',response:'available'},{id:'morgan',name:'Morgan Sample',email:'morgan@example.test',response:'unavailable'},{id:'taylor',name:'Taylor Sample',response:'not-responded'}];
+const base:ConfirmationPanelProps={room:{title:'Team coffee',startDate:'2026-09-30',endDate:'2026-10-02',startTime:'09:00',endTime:'18:00',timezone:'Asia/Seoul'},role:'owner',members,slots:[{date:'2026-09-30',time:'09:00',available:1},{date:'2026-09-30',time:'09:30',available:2},{date:'2026-10-01',time:'10:00',available:1}],organizerEmail:'alex@example.test',calendar:'disconnected',status:'draft',onConnectCalendar:()=>undefined,onConfirm:()=>undefined};
+function Fixture({initial,openReview=false}: {initial:ConfirmationPanelProps;openReview?:boolean}){const [log,setLog]=useState<string[]>([]);const [calendar,setCalendar]=useState(initial.calendar);const [status,setStatus]=useState(initial.status);return <div className="light-wall light-page craft-chrome" style={{minHeight:'100vh',padding:'min(5vw,36px)'}}><div style={{maxWidth:920,margin:'auto'}}><ConfirmationPanel {...initial} status={status} calendar={calendar} onConnectCalendar={()=>{setCalendar('connected');setLog(v=>[...v,'Consent callback requested (fixture only)'])}} onConfirm={proposal=>{setLog(v=>[...v,`Callback invoked for ${proposal.date} ${proposal.start}–${proposal.end}; no event or email created`]);if(initial.status==='failed'){setStatus('pending');setTimeout(()=>setStatus('failed'),100)}}}/>{openReview&&<p>Choose a date and times, then open review.</p>}<output aria-label="Fixture callback log">{log.join(' · ')}</output></div></div>}
+const meta={title:'When We Meet/Confirmation (isolated)',parameters:{nextjs:{appDirectory:true},layout:'fullscreen'}} satisfies Meta;
+export default meta;
+type Story=StoryObj<typeof meta>;
+export const OwnerDraft:Story={render:()=> <Fixture initial={base}/>};
+export const ConsentRequired:Story={render:()=> <Fixture initial={base} openReview/>};
+export const Connected:Story={render:()=> <Fixture initial={{...base,calendar:'connected'}}/>};
+export const MissingAddress:Story={render:()=> <Fixture initial={{...base,calendar:'connected'}}/>};
+export const Pending:Story={render:()=> <Fixture initial={{...base,status:'pending',calendar:'connected'}}/>};
+export const Reconciling:Story={render:()=> <Fixture initial={{...base,status:'reconciling',calendar:'connected'}}/>};
+export const Failed:Story={render:()=> <Fixture initial={{...base,status:'failed',calendar:'connected',error:'Google Calendar could not confirm this event.'}}/>};
+export const Confirmed:Story={render:()=> <Fixture initial={{...base,status:'confirmed',confirmation:{date:'2026-10-01',start:'10:00',end:'11:00',timezone:'Asia/Seoul',organizer:'Alex Sample',attendeeNames:['Alex Sample','Morgan Sample']}}}/>};
+export const MemberWaiting:Story={render:()=> <Fixture initial={{...base,role:'member',members:undefined,organizerEmail:undefined}}/>};
+export const MemberConfirmed:Story={render:()=> <Fixture initial={{...base,role:'member',members:undefined,organizerEmail:undefined,status:'confirmed',confirmation:{date:'2026-10-01',start:'10:00',end:'11:00',timezone:'Asia/Seoul',organizer:'Alex Sample',attendeeNames:['Alex Sample','Morgan Sample']}}}/>};
+export const Mobile:Story={...OwnerDraft,globals:{viewport:{value:'mobile',isRotated:false}}};
+export const Dark:Story={...OwnerDraft,globals:{theme:'dark'}};

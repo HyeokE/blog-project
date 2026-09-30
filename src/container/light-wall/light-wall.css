@@ -4,6 +4,9 @@
   --wall-line: #81775b30;
   --row-height: 176px;
   --wall-year-size: clamp(34px, 4.2vw, 64px);
+  --wall-side: 4.5%;
+  --wall-header-top: 34px;
+  --wall-footer-bottom: 30px;
   --wall-scroll-top: 0px;
   --wall-scroll-bottom: 0px;
   position: relative;
@@ -41,14 +44,15 @@
 .wall-footer {
   position: absolute;
   z-index: 5;
-  left: 4.5%;
-  right: 4.5%;
+  left: var(--wall-side);
+  right: var(--wall-side);
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 .wall-header {
-  top: 34px;
+  align-items: flex-start;
+  top: var(--wall-header-top);
 }
 .wall-wordmark {
   font-size: 24px;
@@ -62,14 +66,14 @@
   display: flex;
   gap: 16px;
 }
-.wall-header-actions button {
+.wall-header-actions > .wall-header-icon-button {
   width: 28px;
   height: 32px;
   display: grid;
   place-items: center;
 }
 .wall-footer {
-  bottom: 30px;
+  bottom: var(--wall-footer-bottom);
   font-size: 11px;
   color: var(--wall-muted);
 }
@@ -270,27 +274,9 @@
     padding-top: 4px;
   }
 }
-.wall-pagination {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.wall-pagination button {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--wall-line);
-  border-radius: 50%;
-  transition: background 0.2s;
-}
-.wall-pagination button:not(:disabled):hover {
-  background: var(--wall-line);
-}
 .wall-count {
   display: flex;
   gap: 15px;
-  margin-right: 14px;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
 }
@@ -574,15 +560,18 @@
 }
 @media (max-width: 700px) {
   .light-wall {
+    --wall-side: max(24px, env(safe-area-inset-left));
+    --wall-right: max(20px, env(safe-area-inset-right));
+    --wall-header-top: max(12px, env(safe-area-inset-top));
+    --wall-footer-bottom: calc(16px + env(safe-area-inset-bottom));
     --row-height: 180px;
     --wall-year-size: 36px;
     --wall-scroll-top: calc(180px + env(safe-area-inset-top));
     --wall-scroll-bottom: calc(90px + env(safe-area-inset-bottom));
   }
-  .wall-header {
-    top: max(12px, env(safe-area-inset-top));
-    left: max(24px, env(safe-area-inset-left));
-    right: max(20px, env(safe-area-inset-right));
+  .wall-header,
+  .wall-footer {
+    right: var(--wall-right);
   }
   .wall-wordmark {
     font-size: 20px;
@@ -593,7 +582,7 @@
   .wall-header-actions {
     gap: 4px;
   }
-  .wall-header-actions button {
+  .wall-header-actions > .wall-header-icon-button {
     width: 44px;
     height: 44px;
   }
@@ -660,21 +649,10 @@
   .wall-post-description svg {
     width: 14px;
   }
-  .wall-footer {
-    left: max(24px, env(safe-area-inset-left));
-    right: max(20px, env(safe-area-inset-right));
-    bottom: calc(16px + env(safe-area-inset-bottom));
-  }
+
   .wall-count {
     gap: 9px;
     margin-right: 2px;
-  }
-  .wall-pagination {
-    gap: 6px;
-  }
-  .wall-pagination button {
-    width: 44px;
-    height: 44px;
   }
   .wall-light-source {
     height: 85px;
@@ -704,11 +682,6 @@
   }
 }
 @media (max-width: 900px) and (max-height: 500px) {
-  .wall-header-actions button,
-  .wall-pagination button {
-    width: 44px;
-    height: 44px;
-  }
   .light-wall {
     --row-height: min(160px, calc(100dvh - 140px));
     --wall-year-size: 30px;
@@ -744,3 +717,5 @@
     scroll-behavior: auto !important;
   }
 }
+
+.wall-context-back{display:inline-flex;align-items:center;gap:9px;min-height:44px;color:var(--wall-muted);font-size:12px;letter-spacing:.08em;text-decoration:none}.wall-context-back:hover{color:var(--wall-ink)}

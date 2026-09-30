@@ -1,0 +1,3 @@
+export type AvailabilitySnapshot={name:string;slots:string[];version?:string};
+export type AutosaveState='saved'|'pending'|'saving'|'error';
+export function createAvailabilityAutosave(options:{initial:AvailabilitySnapshot;save:(value:AvailabilitySnapshot,base:AvailabilitySnapshot)=>Promise<AvailabilitySnapshot|void>;onState?:(state:AutosaveState,error?:unknown)=>void;onSaved?:(value:AvailabilitySnapshot)=>void;onDraft?:(value:AvailabilitySnapshot)=>void;delay?:number}):{update(value:AvailabilitySnapshot):void;remote(value:AvailabilitySnapshot):void;retry():void;flush():Promise<void>;pending():boolean;dispose():void};

@@ -4,14 +4,14 @@ import { ANALYTICS_ACTIONS, ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/con
 import { trackInteraction } from '@/utils/analytics';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useDarkMode } from '@/context/DarkModeContext';
 import dynamic from 'next/dynamic';
-import { ArrowDown, ArrowUp, ArrowUpRight, Moon, Search, Sun } from 'lucide-react';
+import { ArrowUpRight, Search } from 'lucide-react';
 import { useReducedMotion } from 'motion/react';
 import type { NotionPosts } from '@/models/NotionPosts';
-import { useDarkMode } from '@/context/DarkModeContext';
 import ProjectedWindowFallback from './ProjectedWindowFallback';
 import RollingNumber from './RollingNumber';
-import WallMenu from './WallMenu';
+import WallChrome from './WallChrome';
 const loadSearch = () => import('./WallSearch');
 const WallSearch = dynamic(loadSearch, { ssr: false });
 import useCircularPosts from './useCircularPosts';
@@ -21,7 +21,7 @@ export default function LightWall({ posts }: { posts: NotionPosts }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const userScrollingRef = useRef(false);
-  const { mode: savedMode, toggleMode } = useDarkMode();
+  const { mode: savedMode } = useDarkMode();
   const mode = savedMode === 'dark' ? 'dark' : 'light';
   const [searchMounted, setSearchMounted] = useState(false);
   const [searching, setSearching] = useState(false);
@@ -92,19 +92,11 @@ export default function LightWall({ posts }: { posts: NotionPosts }) {
     >
       <ProjectedWindowFallback mode={mode} />
       <div className="wall-light-source" aria-hidden="true" />
-      <header className="wall-header">
-        <Link
-          data-analytics-label={ANALYTICS_ELEMENTS.HOME_LINK}
-          data-analytics-section={ANALYTICS_SECTIONS.HEADER}
-          data-analytics-id={'home'}
-          href="/"
-          className="wall-wordmark"
-          aria-label="HYEOK.DEV 홈"
-        >
-          HYEOK<span>.</span>
-        </Link>
-        <div className="wall-header-actions">
+      <WallChrome
+        variant="viewport"
+        search={
           <button
+            className="wall-header-icon-button"
             data-analytics-label={ANALYTICS_ELEMENTS.SEARCH_OPEN}
             data-analytics-section={ANALYTICS_SECTIONS.HEADER}
             ref={searchButtonRef}
@@ -112,16 +104,13 @@ export default function LightWall({ posts }: { posts: NotionPosts }) {
             aria-label="글 검색"
             aria-expanded={searching}
             aria-haspopup="dialog"
-            onPointerEnter={() => {
-              void loadSearch();
-            }}
-            onFocus={() => {
-              void loadSearch();
-            }}
+            onPointerEnter={() => void loadSearch()}
+            onFocus={() => void loadSearch()}
             onClick={() => {
               if (searching) {
                 closeSearch();
-              } else {
+              }
+              else {
                 setSearchMounted(true);
                 setSearching(true);
               }
@@ -129,21 +118,14 @@ export default function LightWall({ posts }: { posts: NotionPosts }) {
           >
             <Search size={18} strokeWidth={1.5} />
           </button>
-          <button
-            data-analytics-label={ANALYTICS_ELEMENTS.COLOR_MODE_TOGGLE}
-            data-analytics-section={ANALYTICS_SECTIONS.HEADER}
-            type="button"
-            aria-label={mode === 'light' ? '어두운 조명으로 전환' : '밝은 조명으로 전환'}
-            onClick={toggleMode}
-          >
-            {mode === 'light' ? (
-              <Moon size={18} strokeWidth={1.5} />
-            ) : (
-              <Sun size={18} strokeWidth={1.5} />
-            )}
-          </button>
-        </div>
-      </header>
+        }
+        trailing={
+          <span className="wall-count" aria-live="polite" aria-atomic="true">
+            <strong><RollingNumber value={filtered.length ? active + 1 : 0} /></strong>
+            <span>/</span>{String(filtered.length).padStart(2, '0')}
+          </span>
+        }
+      />
 
       {searchMounted && (
         <WallSearch
@@ -289,46 +271,7 @@ export default function LightWall({ posts }: { posts: NotionPosts }) {
         </div>
       </main>
 
-      <footer className="wall-footer">
-        <WallMenu />
-        <div className="wall-pagination">
-          <span className="wall-count" aria-live="polite" aria-atomic="true">
-            <strong>
-              <RollingNumber value={filtered.length ? active + 1 : 0} />
-            </strong>
-            <span>/</span>
-            {String(filtered.length).padStart(2, '0')}
-          </span>
-          <button
-            data-analytics-id={selected?.id}
-            data-analytics-label={ANALYTICS_ELEMENTS.POST_PREVIOUS}
-            data-analytics-section={ANALYTICS_SECTIONS.POST_LIST}
-            type="button"
-            aria-label="이전 글"
-            disabled={filtered.length < 2}
-            onClick={() => {
-              userScrollingRef.current = false;
-              list.moveBy(-1);
-            }}
-          >
-            <ArrowUp size={16} />
-          </button>
-          <button
-            data-analytics-id={selected?.id}
-            data-analytics-label={ANALYTICS_ELEMENTS.POST_NEXT}
-            data-analytics-section={ANALYTICS_SECTIONS.POST_LIST}
-            type="button"
-            aria-label="다음 글"
-            disabled={filtered.length < 2}
-            onClick={() => {
-              userScrollingRef.current = false;
-              list.moveBy(1);
-            }}
-          >
-            <ArrowDown size={16} />
-          </button>
-        </div>
-      </footer>
+
     </div>
   );
 }

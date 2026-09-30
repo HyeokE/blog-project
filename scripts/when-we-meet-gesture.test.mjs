@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {createGesture} from '../src/features/when-we-meet/gesture.mjs';
+test('stationary touch selects once and suppresses synthetic click',()=>{const g=createGesture();g.down('touch',10,10,'a');assert.equal(g.up(14,15,'a'),'a');assert.equal(g.click(),'suppress');assert.equal(g.click(),'allow')});
+test('horizontal and vertical swipes never select, including tail click',()=>{for(const [x,y] of [[23,10],[10,23]]){const g=createGesture();g.down('touch',10,10,'a');g.move(x,y);assert.equal(g.up(x,y,'a'),null);assert.equal(g.click(),'suppress')}});
+test('cancel and scroll abort touch and reset for next tap',()=>{const g=createGesture();g.down('touch',0,0,'a');g.cancel();assert.equal(g.up(0,0,'a'),null);g.down('touch',0,0,'b');g.scroll();assert.equal(g.up(0,0,'b'),null);g.down('touch',0,0,'c');assert.equal(g.up(0,0,'c'),'c')});
+test('mouse drag remains separate from touch arbitration',()=>{const g=createGesture();g.down('mouse',0,0,'a');assert.equal(g.pointerType(),'mouse');assert.equal(g.click(),'allow');g.cancel();assert.equal(g.pointerType(),null)});

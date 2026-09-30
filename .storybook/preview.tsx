@@ -1,0 +1,32 @@
+import type {Preview} from '@storybook/nextjs-vite';
+import {reset,MockEventSource,mockPeopleFetch} from '../src/stories/wwm/mock-api';
+import '../src/app/craft/craft.css';
+import '../src/app/craft/design-system.css';
+import '../src/app/globals.css';
+import '../src/container/light-wall/light-wall.css';
+import '../src/container/light-wall/wall-pages.css';
+import '../src/features/when-we-meet/when-we-meet.css';
+import '../src/features/when-we-meet/week-calendar.css';
+import '../src/features/when-we-meet/invitation.css';
+import '../src/features/when-we-meet/room-toolbar.css';
+// Guard against accidentally reaching application APIs from a story.
+if(typeof window!=='undefined'){
+  const originalFetch=window.fetch.bind(window);
+  window.fetch=((input:RequestInfo|URL,init?:RequestInit)=>{
+    const url=String(input instanceof Request?input.url:input);
+    const peopleMock=mockPeopleFetch(url,init);if(peopleMock)return peopleMock;
+    if(url.includes('/api/craft/')||url.includes('supabase'))return Promise.reject(new Error('Storybook blocked application network request'));
+    return originalFetch(input,init);
+  }) as typeof fetch;
+  window.EventSource=MockEventSource as unknown as typeof EventSource;
+  document.addEventListener('click',event=>{if(event.target instanceof Element&&event.target.closest('a'))event.preventDefault();},true);
+}
+const preview:Preview={
+  afterEach:(context)=>{document.documentElement.dataset.wwmStoryVerified=context.id;},
+  beforeEach:()=>{delete document.documentElement.dataset.wwmStoryVerified;reset();for(const key of Object.keys(sessionStorage))if(key.startsWith('wwm:'))sessionStorage.removeItem(key);},
+  globalTypes:{theme:{description:'Craft theme',toolbar:{icon:'circlehollow',items:['light','dark'],dynamicTitle:true}}},
+  initialGlobals:{theme:'light'},
+  parameters:{layout:'fullscreen',viewport:{options:{mobile:{name:'Mobile',styles:{width:'390px',height:'844px'}},desktop:{name:'Desktop',styles:{width:'1440px',height:'900px'}}}}},
+  decorators:[(Story,context)=>{document.documentElement.dataset.mode=context.globals.theme==='dark'?'dark':'light';document.documentElement.dataset.craft='true';return <Story/>;}],
+};
+export default preview;

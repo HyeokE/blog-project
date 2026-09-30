@@ -1,0 +1,62 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {createRequire} from 'node:module';
+import {Writable} from 'node:stream';
+import React, {Suspense, use} from 'react';
+import {renderToPipeableStream} from 'react-dom/server';
+import ts from 'typescript';
+
+// Isolated React SSR probe: execute actual production async section code, inject only the data reader.
+const require=createRequire(import.meta.url);
+const root=new URL('../',import.meta.url);
+function deferred(){let resolve,reject;const promise=new Promise((yes,no)=>{resolve=yes;reject=no});return {promise,resolve,reject}}
+function loadComponent(file,imports){const source=fs.readFileSync(new URL(file,root),'utf8');const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText;const module={exports:{}};vm.runInNewContext(`(function(require,module,exports){${code}\n})`,{},{filename:file})(id=>id.endsWith('.css')?{}:(imports[id]??require(id)),module,module.exports);return module.exports.default?Object.assign(module.exports.default,module.exports):module.exports}
+const fixture={id:'fixture-room',title:'Fixture meeting',start_date:'2026-10-01',end_date:'2026-10-02',start_time:'09:00',end_time:'18:00',timezone:'Asia/Seoul'};
+function stream(element){const chunks=[];const output=new Writable({write(chunk,_encoding,next){chunks.push(chunk.toString());next()}});let ready;const shell=new Promise(r=>ready=r);let finished;const done=new Promise(r=>finished=r);const errors=[];const render=renderToPipeableStream(element,{onShellReady(){render.pipe(output);ready()},onError(error){errors.push(error)}});output.on('finish',finished);return {chunks,shell,done,errors}}
+function section(Section,fallback){let attempt;function Holder(){if(!attempt)attempt=Section({});return use(attempt)}return React.createElement('main',null,React.createElement('h1',null,'When We Meet'),React.createElement(Suspense,{fallback},React.createElement(Holder)))}
+
+test('actual OwnedMeetings streams geometry-matched fallback, then deferred owned row',async()=>{
+ const read=deferred();const OwnedMeetings=loadComponent('src/app/craft/when-we-meet/OwnedMeetings.tsx',{'@/lib/supabase/server':{ownedCraftMeetings:()=>read.promise},'@/features/when-we-meet/ServerSectionRetry':{default:()=>null},'next/navigation':{unstable_rethrow:()=>{}},'@/features/when-we-meet/display-date.mjs':{formatCraftDate:x=>x},'next/link':{default:({href,children})=>React.createElement('a',{href},children)}});
+ const skeleton=loadComponent('src/features/when-we-meet/ServerSkeletons.tsx',{'@/container/light-wall/WallBackLink':{default:({children})=>React.createElement('a',null,children)}});
+ const rendered=stream(section(OwnedMeetings,React.createElement(skeleton.MeetingRowsSkeleton)));
+ await rendered.shell;await new Promise(r=>setTimeout(r,10));assert.match(rendered.chunks.join(''),/Loading meetings/,String(rendered.errors));assert.match(rendered.chunks.join(''),/wwm-skeleton-meeting/);assert.doesNotMatch(rendered.chunks.join(''),/Fixture meeting/);
+ read.resolve({meetings:[fixture],userId:'fixture-user'});await rendered.done;
+ assert.match(rendered.chunks.join(''),/Fixture meeting/);assert.match(rendered.chunks.join(''),/\/craft\/when-we-meet\/fixture-room/);assert.deepEqual(rendered.errors,[]);
+});
+test('actual OwnedMeetings guest resolution returns no private rows',async()=>{
+ const read=deferred();const OwnedMeetings=loadComponent('src/app/craft/when-we-meet/OwnedMeetings.tsx',{'@/lib/supabase/server':{ownedCraftMeetings:()=>read.promise},'@/features/when-we-meet/ServerSectionRetry':{default:()=>null},'next/navigation':{unstable_rethrow:()=>{}},'@/features/when-we-meet/display-date.mjs':{formatCraftDate:x=>x},'next/link':{default:({children})=>React.createElement('a',null,children)}});
+ const result=stream(section(OwnedMeetings,React.createElement('i',null,'waiting')));await result.shell;await new Promise(r=>setTimeout(r,10));assert.match(result.chunks.join(''),/waiting/);read.resolve({meetings:[fixture],userId:null});await result.done;assert.doesNotMatch(result.chunks.join(''),/Fixture meeting/);
+});
+test('room page reaches Suspense before awaiting params',async()=>{
+ const source=fs.readFileSync(new URL('src/app/craft/when-we-meet/[roomId]/page.tsx',root),'utf8');assert.match(source,/export default function Page/);assert.match(source,/async function RoomSection\(\{params\}/);assert.match(source,/const \{roomId\}=await params/);
+});
+
+test('server read failures become explicit section error results, not assumed client SSR catches',async()=>{
+ const source=fs.readFileSync(new URL('src/app/craft/when-we-meet/[roomId]/page.tsx',root),'utf8');
+ assert.match(source,/catch\(error\)/);assert.match(source,/unstable_rethrow\(error\)/);assert.match(source,/ServerSectionRetry/);
+});
+
+test('actual room section resolves failed read into retry payload and recovers on next read',async()=>{
+ let fail=true;const module=loadComponent('src/app/craft/when-we-meet/[roomId]/page.tsx',{
+  'next/navigation':{unstable_rethrow:()=>{}},
+  '@/features/when-we-meet/WhenWeMeet':{default:function WhenWeMeet(){}},
+  '@/lib/supabase/server':{craftRoom:async()=>{if(fail)throw new Error('private database diagnostic');return {room:fixture,responses:[],userId:'u'}}},
+  '@/features/when-we-meet/ServerSkeletons':{RoomSkeleton:()=>null},
+  '@/features/when-we-meet/ServerSectionRetry':{default:function ServerSectionRetry(){}}
+ });
+ const props={params:Promise.resolve({roomId:'fixture-room'})};
+ const failure=await module.RoomSection(props);assert.equal(failure.type.name,'ServerSectionRetry');assert.equal(JSON.stringify(failure).includes('private database diagnostic'),false);
+ fail=false;const recovered=await module.RoomSection(props);assert.equal(recovered.type.name,'WhenWeMeet');assert.equal(recovered.props.initialRoom.room.title,'Fixture meeting');
+});
+
+test('owned meeting read failure returns isolated section retry',async()=>{
+ const OwnedMeetings=loadComponent('src/app/craft/when-we-meet/OwnedMeetings.tsx',{
+  '@/lib/supabase/server':{ownedCraftMeetings:async()=>{throw Error('private diagnostic')}},
+  '@/features/when-we-meet/display-date.mjs':{formatCraftDate:x=>x},
+  '@/features/when-we-meet/ServerSectionRetry':{default:function MeetingsRetry(){}},
+  'next/navigation':{unstable_rethrow:()=>{}},'next/link':{default:()=>null}
+ });
+ const result=await OwnedMeetings();assert.equal(result.type.name,'MeetingsRetry');assert.doesNotMatch(JSON.stringify(result),/private diagnostic/);
+});

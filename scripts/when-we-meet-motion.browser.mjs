@@ -1,0 +1,32 @@
+// Browser-frame regression for the shared Popover, including interruption and focus.
+const p=await openTab('https://macmini-home.taile6a871.ts.net:8446/craft/when-we-meet');
+try{
+ const failures=[];
+ const initial=(await snapshot(p,{interactive:true})).tree;
+ const entryNames=['New meeting','Create a room'];
+ const visible=[];
+ for(const name of entryNames){const matches=p.getByRole('button',{name,exact:true});for(let i=0;i<await matches.count();i++)if(await matches.nth(i).isVisible())visible.push({name,element:matches.nth(i)})}
+ if(visible.length!==1)throw new Error(`Expected exactly one visible creation CTA, found ${visible.map(x=>x.name).join(', ') || 'none'}; snapshot: ${initial}`);
+ await visible[0].element.click();
+ const trigger=p.getByRole('button',{name:/Dates · up to 14 days/});
+ const frames=[];
+ for(let cycle=0;cycle<3;cycle++){
+  await trigger.click();
+  const trace=await p.evaluate(async()=>{const out=[];const started=performance.now();await new Promise(resolve=>{function sample(){const el=document.querySelector('.wwm-range-popover');out.push({t:Math.round(performance.now()-started),height:el?.getBoundingClientRect().height??null,opacity:el?Number(getComputedStyle(el).opacity):null,expanded:document.querySelector('.wwm-range>.wwm-picker-trigger')?.getAttribute('aria-expanded')});if(performance.now()-started<240)requestAnimationFrame(sample);else resolve()}requestAnimationFrame(sample)});return out});
+  frames.push(trace);
+  if(!trace.some(x=>x.height>0))failures.push(`cycle ${cycle}: popup absent`);
+  if(trace.some((x,i)=>i&&x.opacity!==null&&trace[i-1].opacity!==null&&x.opacity<trace[i-1].opacity-.15))failures.push(`cycle ${cycle}: opening opacity flash`);
+  await p.keyboard.press('Escape');await sleep(220);
+  if(await trigger.getAttribute('aria-expanded')!=='false')failures.push(`cycle ${cycle}: escape did not close`);
+  if(!await trigger.evaluate(el=>document.activeElement===el))failures.push(`cycle ${cycle}: trigger focus lost`);
+ }
+ await trigger.click();
+ await p.getByRole('button',{name:'Go to the Next Month'}).click();
+ const next=await p.locator('.wwm-range-calendar').innerText();
+ await p.getByRole('button',{name:'Go to the Previous Month'}).click();
+ if(next===await p.locator('.wwm-range-calendar').innerText())failures.push('month navigation stalled');
+ await p.getByRole('textbox',{name:'What are we planning?'}).fill('Motion regression draft');
+ await p.keyboard.press('Escape');await trigger.click();
+ if(await p.getByRole('textbox',{name:'What are we planning?'}).inputValue()!=='Motion regression draft')failures.push('draft lost');
+ console.log('MOTION_RESULT '+JSON.stringify({cycles:3,entry:visible[0].name,frameCounts:frames.map(x=>x.length),frames,failures}));
+}finally{await closeTab(p)}

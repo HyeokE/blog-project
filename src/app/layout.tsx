@@ -12,6 +12,7 @@ import { LayoutGroup } from 'motion/react';
 import CurrentLayoutExtras from '@/container/designs/current/RootLayoutExtras';
 import InitialLightReveal from '@/container/light-wall/InitialLightReveal';
 import WebVitalsReporter from '@/components/WebVitalsReporter';
+import SupabaseHealthOnce from '@/components/SupabaseHealthOnce';
 
 export const revalidate = 3600;
 
@@ -54,6 +55,9 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             __html: `
               (function() {
                 var path = window.location.pathname;
+                if (path === '/craft' || path.indexOf('/craft/') === 0) {
+                  document.documentElement.setAttribute('data-craft', 'true');
+                }
                 if (path === '/2025/light') {
                   document.documentElement.setAttribute('data-design', 'sweet-home');
                 } else if (path === '/2025' || path.indexOf('/2025/') === 0) {
@@ -70,6 +74,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             `,
           }}
         />
+        <style>{`html[data-craft='true'] .initial-light-reveal { display: none !important; }`}</style>
         <link
           rel="preload"
           href="/fonts/pretendard/PretendardVariable.subset.91.woff2"
@@ -85,6 +90,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <noscript><style>{`.initial-light-reveal { display: none !important; }`}</style></noscript>
         <GoogleAnalyticsTracker />
         <WebVitalsReporter />
+        <SupabaseHealthOnce />
         <Analytics />
         <SpeedInsights />
         <div id="portal-root" />

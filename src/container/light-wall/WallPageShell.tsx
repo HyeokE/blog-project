@@ -1,12 +1,9 @@
 'use client';
 
-import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import type { ReactNode } from 'react';
-import Link from 'next/link';
-import { Moon, Sun } from 'lucide-react';
 import { useDarkMode } from '@/context/DarkModeContext';
 import ProjectedWindowFallback from './ProjectedWindowFallback';
-import WallMenu from './WallMenu';
+import WallChrome from './WallChrome';
 import './light-wall.css';
 import './wall-pages.css';
 
@@ -19,7 +16,7 @@ export default function WallPageShell({
   className?: string;
   lighting?: boolean;
 }) {
-  const { mode, toggleMode } = useDarkMode();
+  const { mode } = useDarkMode();
   const wallMode = mode === 'dark' ? 'dark' : 'light';
 
   return (
@@ -33,38 +30,10 @@ export default function WallPageShell({
           <ProjectedWindowFallback mode={wallMode} />
         </div>
       )}
-      <header className="wall-header wall-page-header">
-        <Link
-          data-analytics-label={ANALYTICS_ELEMENTS.HOME_LINK}
-          data-analytics-section={ANALYTICS_SECTIONS.HEADER}
-          data-analytics-id={'home'}
-          href="/"
-          className="wall-wordmark"
-          aria-label="HYEOK 홈"
-        >
-          HYEOK<span>.</span>
-        </Link>
-        <div className="wall-header-actions">
-          <button
-            data-analytics-label={ANALYTICS_ELEMENTS.COLOR_MODE_TOGGLE}
-            data-analytics-section={ANALYTICS_SECTIONS.HEADER}
-            type="button"
-            onClick={toggleMode}
-            aria-label={wallMode === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
-          >
-            {wallMode === 'dark' ? (
-              <Sun size={18} strokeWidth={1.2} />
-            ) : (
-              <Moon size={18} strokeWidth={1.2} />
-            )}
-          </button>
-        </div>
-      </header>
-      <main className="wall-page-content">{children}</main>
-      <footer className="wall-footer wall-page-footer">
-        <WallMenu />
+      <WallChrome variant="document" trailing={
         <span className="wall-page-colophon">© {new Date().getFullYear()} HYEOK.</span>
-      </footer>
+      } />
+      <main className="wall-page-content">{children}</main>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  allowedDevOrigins: ['macmini-home.taile6a871.ts.net'],
   images: { qualities: [75, 92] },
   headers() {
     return [

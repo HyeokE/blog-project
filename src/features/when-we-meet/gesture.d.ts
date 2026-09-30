@@ -1,0 +1,1 @@
+export function createGesture(): {down(type:string,x:number,y:number,id:string):void;move(x:number,y:number):void;up(x:number,y:number,id:string):string|null;cancel():void;scroll():void;click():'allow'|'suppress';pointerType():string|null};

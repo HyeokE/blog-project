@@ -1,0 +1,21 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const root=new URL('../src/features/when-we-meet/',import.meta.url);
+test('other respondents render narrow independent duration rails instead of labeled cards',()=>{
+ const source=readFileSync(new URL('WeeklyAvailability.tsx',root),'utf8');
+ assert.match(source,/wwm-participant-rail/);
+ assert.match(source,/left:readOnly\?/);
+ assert.match(source,/:block\.lane\*16/);
+ assert.match(source,/width:readOnly\?.*:12/);
+ assert.match(source,/<strong>\{block.label\}<\/strong>/);
+ assert.match(source,/aria-label=\{`\$\{block.label\}/);
+});
+test('participant rails occupy a separate left gutter from own editing',()=>{
+ const css=readFileSync(new URL('week-calendar.css',root),'utf8');
+ assert.match(css,/\.wwm-calendar-events\{[^}]*left:4px/);
+ assert.match(css,/\.wwm-calendar-selection\{[^}]*left:calc\(var\(--participant-gutter\)/);
+ assert.match(css,/border:1px solid var\(--rail-color\)/);
+ assert.match(css,/background:var\(--rail-color\)/);
+ assert.match(css,/--rail-color:color-mix\(in srgb,var\(--event-color\) 55%,var\(--calendar-surface\)\)/);
+});

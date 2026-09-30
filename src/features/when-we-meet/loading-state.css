@@ -1,0 +1,7 @@
+.wwm-loading-state{display:flex;align-items:center;gap:14px;padding:24px 0;color:var(--craft-ink,#514e40)}
+.wwm-loading-calendar{display:grid;grid-template-columns:repeat(3,7px);grid-template-rows:repeat(3,7px);gap:3px;flex:none;padding:8px;border:1px solid var(--craft-rule,#81775b55);border-radius:4px;background:var(--craft-surface,#f1eee2)}
+.wwm-loading-calendar span{background:currentColor;border-radius:1px;opacity:.2;animation:wwm-loading-cell 1.8s ease-in-out infinite}
+.wwm-loading-copy{min-width:0}.wwm-loading-copy strong{display:block;font-size:14px;font-weight:550;line-height:20px}
+.wwm .wwm-loading-copy p,.wwm-loading-copy p{margin:4px 0 0;font-size:12px;line-height:18px;color:var(--craft-muted,#635f52)}
+@keyframes wwm-loading-cell{0%,70%,100%{opacity:.2}30%{opacity:.85}}
+@media(prefers-reduced-motion:reduce){.wwm-loading-calendar span{animation:none;opacity:.45}}
