@@ -105,3 +105,15 @@
 :is(.wwm-calendar-event,.wwm-week-legend i)[data-mark='1']{background-image:repeating-linear-gradient(135deg,transparent 0 2px,color-mix(in srgb,var(--calendar-surface,var(--craft-surface)) 75%,transparent) 2px 4px)}
 :is(.wwm-calendar-event,.wwm-week-legend i)[data-mark='2']{background-image:repeating-linear-gradient(45deg,transparent 0 2px,color-mix(in srgb,var(--calendar-surface,var(--craft-surface)) 75%,transparent) 2px 4px)}
 :is(.wwm-calendar-event,.wwm-week-legend i):is([data-mark='3'],[data-mark='4'],[data-mark='5']){background-image:repeating-linear-gradient(0deg,transparent 0 2px,color-mix(in srgb,var(--calendar-surface,var(--craft-surface)) 75%,transparent) 2px 4px)}
+/* Phones: every day in one row, swiped sideways (horizontal only: the grid still flows with the page vertically).
+   The header strip follows the body's scrollLeft; the time rail and corner stay pinned on the left. Roughly
+   2.25 days fit so the next day peeks in as a hint that the grid scrolls. Taps vs. scrolls are told apart by the
+   touch gesture in WeeklyAvailability (travel > 10px or pointercancel aborts a toggle). */
+@media(max-width:480px){
+ .wwm-calendar-frame.is-hscroll{--hday:calc((100vw - 40px - 54px) / 2.25)}
+ .wwm-calendar-frame.is-hscroll .wwm-calendar-header{overflow:hidden}
+ .wwm-calendar-frame.is-hscroll .wwm-week-body{overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;touch-action:pan-x pan-y;scroll-snap-type:x proximity;scrollbar-width:none}
+ .wwm-calendar-frame.is-hscroll .wwm-week-body::-webkit-scrollbar{display:none}
+ .wwm-calendar-frame.is-hscroll .wwm-week-grid{grid-template-columns:54px repeat(var(--wwm-day-count),var(--hday));width:calc(54px + var(--wwm-day-count) * var(--hday))}
+ .wwm-calendar-frame.is-hscroll .wwm-week-body .wwm-calendar-day{scroll-snap-align:start;scroll-margin-left:54px}
+}

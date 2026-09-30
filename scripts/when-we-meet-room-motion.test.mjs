@@ -25,15 +25,23 @@ test('room uses the page-flowing availability calendar instead of the superseded
  assert.match(component,/<WeeklyAvailability\b/);
  assert.doesNotMatch(component,/calendarOpen&&<motion\.div/);
  assert.doesNotMatch(weekly,/aria-label="(?:Previous|Next) week"/);
- // User rule: the calendar never scrolls on its own. The body is a plain block (no scroll handler, no programmatic
- // scrolling); the page scrolls and more days than fit are paged (2 on phones, 7 otherwise).
- assert.match(weekly,/<div className="wwm-week-body" ref=\{scroller\} onPointerUp=\{endPointer\}>/);
- assert.doesNotMatch(weekly,/scrollTop|scrollLeft|scrollIntoView|onScroll=\{/);
- assert.match(weekly,/pageSize=phone\?2:7/);
+ // User rules: the calendar has no vertical scroller of its own (it flows with the page; no scrollTop / scrollIntoView
+ // jumps), larger screens page seven days, and PHONES scroll sideways across all days (horizontal only, header synced).
+ assert.match(weekly,/<div className="wwm-week-body" ref=\{scroller\} onPointerUp=\{endPointer\} onScroll=\{phone\?\(\)=>\{if\(headerScroll\.current&&scroller\.current\)headerScroll\.current\.scrollLeft=scroller\.current\.scrollLeft\}:undefined\}>/);
+ assert.doesNotMatch(weekly,/scrollTop|scrollIntoView/);
+ assert.match(weekly,/pageSize=7/);
+ assert.match(weekly,/const paged=!phone&&allDates\.length>pageSize;/);
  const calendarCss=readFileSync(new URL('../src/features/when-we-meet/week-calendar.css',import.meta.url),'utf8');
+ const phoneStart=calendarCss.indexOf('@media(max-width:480px){\n .wwm-calendar-frame.is-hscroll');
+ assert.ok(phoneStart>0,'phone horizontal-scroll block exists');
+ const desktopCss=calendarCss.slice(0,phoneStart);
  for(const selector of ['.wwm-week-body','.wwm-calendar-header','.wwm-calendar-frame','.wwm-week-grid']){
-  for(const [,body] of calendarCss.matchAll(new RegExp(`(?:^|\\})${selector.replace('.','\\.')}\\{([^}]*)\\}`,'g')))assert.doesNotMatch(body,/overflow|max-height/,`${selector} must not scroll`);
+  for(const [,body] of desktopCss.matchAll(new RegExp(`(?:^|\\})${selector.replace('.','\\.')}\\{([^}]*)\\}`,'g')))assert.doesNotMatch(body,/overflow|max-height/,`${selector} must not scroll outside the phone media query`);
  }
+ const phoneCss=calendarCss.slice(phoneStart);
+ assert.match(phoneCss,/\.wwm-week-body\{overflow-x:auto;overflow-y:hidden;/);
+ assert.match(phoneCss,/touch-action:pan-x pan-y/);
+ assert.doesNotMatch(calendarCss,/max-height:clamp/);
  assert.match(calendarCss,/\.wwm-week-grid\{display:grid;grid-template-columns:64px repeat\(var\(--wwm-day-count\),minmax\(0,1fr\)\);width:100%;/);
  assert.doesNotMatch(calendarCss,/wwm-week-scroll|header-scroll/);
  // Empty leading hours collapse behind one button instead of scrolling to the first hour.

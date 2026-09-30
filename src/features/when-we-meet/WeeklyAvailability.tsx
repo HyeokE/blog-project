@@ -58,9 +58,10 @@ export function WeeklyAvailability({startDate,endDate,timezone,slots,responses,c
  const scroller=useRef<HTMLDivElement>(null);
  const hoverDetail=useMemo(()=>createHoverDetail(setDetail),[]);
  useEffect(()=>()=>hoverDetail.dispose(),[hoverDetail]);
- // Phones: 32px half-hour rows (comfortable tap target). The calendar never scrolls on its own: it flows with the
- // page, and more days than fit are paged (two on phones, seven otherwise) instead of overflowing sideways.
- const phone=useMediaQuery('(max-width: 480px)'),rowHeight=phone?32:24,pageSize=phone?2:7;
+ // Phones: 32px half-hour rows (comfortable tap target). Vertically the calendar flows with the page (no inner
+ // scroller). Phones show every day and swipe sideways, ~2 days per screen; larger screens page seven days at a time.
+ const phone=useMediaQuery('(max-width: 480px)'),rowHeight=phone?32:24,pageSize=7;
+ const headerScroll=useRef<HTMLDivElement>(null);
  const [pagerStart,setPagerStart]=useState<number|null>(null);
  const mineSet=new Set(mine);
  const range=selection?.range??null,rangeIds=new Set(rangeSlotIds(slots,range));
@@ -74,7 +75,7 @@ export function WeeklyAvailability({startDate,endDate,timezone,slots,responses,c
  const rows=useMemo(()=>collapsed?allRows.slice(collapsed):allRows,[allRows,collapsed]);
  const firstRelevantDate=(range?[range.startId]:relevantIds).map(id=>byId.get(id)?.date).filter(Boolean).sort()[0];
  const pager=pagerWindow(allDates,pagerStart??Math.max(0,allDates.indexOf(firstRelevantDate??'')),pageSize);
- const paged=allDates.length>pageSize;
+ const paged=!phone&&allDates.length>pageSize;
  const dates=paged?pager.dates:allDates;
  const gesture=useRef(createGesture()),holdTimer=useRef<number|null>(null),drag=useRef<{value:boolean;seen:Set<string>;last?:Slot}|null>(null);
  function paint(slot:Slot){const d=drag.current;if(!d)return;const segment=dragSegment(d.last,slot,slots) as Slot[];d.last=slot;for(const cell of segment){if(d.seen.has(cell.id))continue;d.seen.add(cell.id);if(mineSet.has(cell.id)!==d.value)onToggle(cell.id)}}
@@ -176,12 +177,12 @@ export function WeeklyAvailability({startDate,endDate,timezone,slots,responses,c
  <span className="wwm-sr-only" id={instructionsId}>{instructions}</span>
  {selecting&&<span className="wwm-sr-only" role="status">{anchor?t('grid.startSet',{time:anchorTime}):''}</span>}
  {paged&&<div className="wwm-day-pager" role="group" aria-label={t('grid.daysShown')}><Button type="button" variant="outline" size="icon" data-analytics-label={ANALYTICS_ELEMENTS.CALENDAR_DAY_PAGER} data-analytics-id="previous" aria-label={t('grid.previousDays')} disabled={!pager.hasPrev} onClick={()=>setPagerStart(pager.start-pageSize)}><ChevronLeft aria-hidden="true"/></Button><span aria-live="polite">{pagerLabel(pager.dates[0],pagerCrossMonth)}{pager.dates.length>1&&<> – {pagerLabel(pager.dates.at(-1)!,pagerCrossMonth)}</>}</span><Button type="button" variant="outline" size="icon" data-analytics-label={ANALYTICS_ELEMENTS.CALENDAR_DAY_PAGER} data-analytics-id="next" aria-label={t('grid.nextDays')} disabled={!pager.hasNext} onClick={()=>setPagerStart(pager.start+pageSize)}><ChevronRight aria-hidden="true"/></Button></div>}
- <div className="wwm-calendar-frame" style={{'--wwm-day-count':dates.length,'--participant-gutter':`min(${participantGutter}px, 40%)`,'--row-height':`${rowHeight}px`} as React.CSSProperties}>
- <div className="wwm-calendar-header"><div className="wwm-week-grid">
+ <div className={`wwm-calendar-frame${phone?' is-hscroll':''}`} style={{'--wwm-day-count':dates.length,'--participant-gutter':`min(${participantGutter}px, 40%)`,'--row-height':`${rowHeight}px`} as React.CSSProperties}>
+ <div className="wwm-calendar-header" ref={headerScroll}><div className="wwm-week-grid">
  <div className="wwm-week-corner" aria-hidden="true">{t('grid.time')}</div>{dates.map((date,index)=>{const month=monthBoundaryLabel(date,dates[index-1],locale);return <div key={date} className="wwm-week-date" aria-label={copy.dayLabel(date)}><span>{month&&<span className="wwm-month-boundary">{month} · </span>}{weekday(date)}</span><strong>{date.slice(-2)}</strong></div>})}
  </div></div>
  {collapsed>0&&<button type="button" className="wwm-calendar-earlier" data-analytics-label={ANALYTICS_ELEMENTS.CALENDAR_SHOW_EARLIER} onClick={()=>{const keep=tabId;setExpanded(true);if(keep){setFocusId(keep);pendingFocus.current=keep}}}>{t('grid.showEarlier',{from:timeLabel(allRows[0].time),to:timeLabel(allRows[collapsed].time)})}</button>}
- <div className="wwm-week-body" ref={scroller} onPointerUp={endPointer}><div className="wwm-week-grid">
+ <div className="wwm-week-body" ref={scroller} onPointerUp={endPointer} onScroll={phone?()=>{if(headerScroll.current&&scroller.current)headerScroll.current.scrollLeft=scroller.current.scrollLeft}:undefined}><div className="wwm-week-grid">
  <div className="wwm-calendar-time-rail" aria-hidden="true">{rows.map(row=><div className={`wwm-week-time ${row.time.endsWith(':00')?'is-hour':''}`} key={row.key}>{row.time.endsWith(':00')&&<span>{hourLabel(row.time,locale)}{row.cycle>0?' ↺':''}</span>}</div>)}</div>
  {dates.map((date,column)=><div className="wwm-calendar-day" key={date} data-date={date} style={{height:rows.length*rowHeight,gridColumn:column+2}}>
  {!readOnly&&<div className="wwm-calendar-selection" aria-hidden="true">{ownBlocks.filter(block=>block.date===date).map(block=><div className="wwm-calendar-own-event" data-density={block.slotIds.length===1?'single':block.slotIds.length===2?'double':'regular'} key={block.startUtc} style={{top:block.top+2,height:block.height-4}}><strong>{you}</strong>{block.slotIds.length>=2&&<small>{shortTime(block.startUtc,timezone)}–{shortTime(block.endUtc,timezone)}</small>}</div>)}</div>}
