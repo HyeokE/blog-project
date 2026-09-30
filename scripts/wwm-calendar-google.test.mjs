@@ -60,3 +60,7 @@ test('event listing follows pages and expands recurring events',async()=>{
  assert.match(urls[0],/singleEvents=true/);
  assert.match(urls[1],/pageToken=p2/);
 });
+
+test('a token issued to a previous OAuth client asks the user to reconnect',async()=>{
+ await assert.rejects(refreshAccessToken('old',config,async()=>json(400,{error:'unauthorized_client'})),e=>e.reconnect===true);
+});

@@ -10,6 +10,17 @@ export async function POST(request:Request,context:Context){
  if(!sameOrigin(request))return failed('Invalid request origin.',403);
  const {roomId}=await context.params;if(!uuid(roomId))return invalid('Invalid room ID.');
  const input=await body(request,64*1024);if(!input)return invalid();
+ // Owner-only meeting rename; the RPC re-checks ownership, trims and bounds the title.
+ if(input.action==='rename'){
+  const title=typeof input.title==='string'?input.title.trim():'';
+  if(!title||title.length>100||/[\u0000-\u001f\u007f]/.test(title))return invalid('Enter a meeting name (1–100 characters).');
+  try{
+   const {client,user}=await currentSupabaseUser();if(!user)return unauthorized();
+   const {data,error}=await client.rpc('wwm_rename_room',{p_room_id:roomId,p_title:title});
+   if(error)return error.code==='42501'?failed('Only the meeting owner can rename it.',403):error.code==='22023'?invalid('Enter a meeting name (1–100 characters).'):failed('Could not rename the meeting.',502);
+   return ok({title:typeof data==='string'?data:title});
+  }catch{return failed('Could not rename the meeting.')}
+ }
  const {action,name}=input;if(typeof name!=='string'||!name.trim()||name.trim().length>50)return invalid('Enter your name.');
  try{
   const {client,user}=await currentSupabaseUser();if(!user)return unauthorized();

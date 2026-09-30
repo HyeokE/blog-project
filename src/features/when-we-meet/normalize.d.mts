@@ -4,7 +4,9 @@ export type NormalizedMeeting=NormalizedRoom&{createdAt:string;participantCount:
 export type NormalizedResponse={userId:string;displayName:string;slots:string[];updatedAt?:string};
 export type NormalizedPerson={userId:string;displayName:string;isAdmin:boolean;hasAvailability:boolean};
 export type NormalizedAttendee={userId:string;displayName:string;email:string|null;hasAvailability:boolean};
-export type NormalizedConfirmation={status:string;title:string;startsAt:string;endsAt:string;timezone:string;googleEventUrl:string|null};
+export type NormalizedConfirmation={status:string;title:string;startsAt:string;endsAt:string;timezone:string;googleEventUrl:string|null;revision?:number};
+export type NormalizedOpenEdit={revision:number;status:string;title:string;startsAt:string;endsAt:string;recipientIds:string[];excludedIds:string[];optionalIds:string[]};
+export type NormalizedConfirmationDetail={revision:number;recipientIds:string[];excludedIds:string[];optionalIds:string[];open:NormalizedOpenEdit|null;lastResentAt:string|null};
 export type NormalizedCredential={googleSubject:string;googleEmail:string;credentialCiphertext:string};
 export function normalizeRoom(row:RoomRow):NormalizedRoom;
 export function participantCountsByRoom(rows:Array<{room_id:string;participant_count:number|string}>|null|undefined):Map<string,number>;
@@ -12,6 +14,7 @@ export function normalizeMeeting(row:RoomRow&{created_at:string},counts?:Map<str
 export function normalizeResponses(rows:Array<{user_id:string;display_name:string;slots:string[]|null;updated_at?:string}>):NormalizedResponse[];
 export function normalizePeople(rows:Array<{user_id:string;display_name:string;is_admin:boolean;has_availability:boolean}>):NormalizedPerson[];
 export function normalizeAttendees(rows:Array<{user_id:string;display_name:string;email:string|null;has_availability:boolean}>):NormalizedAttendee[];
-export function normalizeConfirmation(row:{status:string;title:string|null;starts_at:string;ends_at:string;timezone:string;google_event_url:string|null}|null|undefined):NormalizedConfirmation|null;
+export function normalizeConfirmation(row:{status:string;title:string|null;starts_at:string;ends_at:string;timezone:string;google_event_url:string|null;revision?:number|null}|null|undefined):NormalizedConfirmation|null;
+export function normalizeConfirmationDetail(row:{revision:number;recipient_ids:string[]|null;excluded_ids:string[]|null;optional_ids:string[]|null;open_revision:number|null;open_status:string|null;open_title:string|null;open_starts_at:string|null;open_ends_at:string|null;open_recipient_ids:string[]|null;open_excluded_ids:string[]|null;open_optional_ids:string[]|null;last_resent_at:string|null}|null|undefined):NormalizedConfirmationDetail|null;
 export function normalizeCreatedRoom(value:{id:string;invite_token:string}):{id:string;inviteToken:string};
 export function normalizeCredential(row:{google_subject:string;google_email:string;credential_ciphertext:string}|null|undefined):NormalizedCredential|null;

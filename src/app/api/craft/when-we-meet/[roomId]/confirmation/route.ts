@@ -1,30 +1,13 @@
-import type {User} from '@supabase/supabase-js';
 import {currentSupabaseUser,craftRoomMetadata} from '@/lib/supabase/server';
 import {calendarAccessToken} from '@/features/when-we-meet/calendar-access';
-import {readCredential,finalizeConfirmation} from '@/features/when-we-meet/calendar-db';
+import {finalizeConfirmation} from '@/features/when-we-meet/calendar-db';
 import {getEvent,insertEvent} from '@/features/when-we-meet/calendar-google.mjs';
 import {validateConfirmation,confirmationEventId,confirmationFingerprint} from '@/features/when-we-meet/confirmation-foundation.mjs';
 import {confirmMeeting} from '@/features/when-we-meet/confirmation-flow.mjs';
-import {normalizeAttendees,normalizeConfirmation} from '@/features/when-we-meet/normalize.mjs';
+import {attendees,calendarConnected,confirmationDetail,confirmationStatus} from './shared';
 import {body,failed,invalid,ok,sameOrigin,unauthorized,uuid} from '../../http';
 export const dynamic='force-dynamic';export const runtime='nodejs';
 type Context={params:Promise<{roomId:string}>};
-type Session=Awaited<ReturnType<typeof currentSupabaseUser>>;
-
-async function attendees(session:Session,roomId:string){
- const {data,error}=await session.client.rpc('wwm_confirmation_attendees',{p_room_id:roomId});
- if(error)throw Error('Attendees unavailable');
- return normalizeAttendees(data||[]);
-}
-async function calendarConnected(user:User){
- const subject=user.identities?.find(identity=>identity.provider==='google')?.id;
- return subject?Boolean(await readCredential(user.id,subject).catch(()=>null)):false;
-}
-async function confirmationStatus(session:Session,roomId:string){
- const {data,error}=await session.client.rpc('wwm_confirmation_status',{p_room_id:roomId});
- if(error)throw Error('Status unavailable');
- return normalizeConfirmation(data?.[0]);
-}
 
 // Members see the public status; the owner also receives the attendee review (names + login emails).
 export async function GET(_request:Request,context:Context){
@@ -35,8 +18,8 @@ export async function GET(_request:Request,context:Context){
   if(!metadata)return failed('Room unavailable or you are not a member.',403);
   const confirmation=await confirmationStatus(session,roomId);
   if(metadata.room.ownerId!==session.user.id)return ok({confirmation,review:null});
-  const [rows,connected]=await Promise.all([attendees(session,roomId),calendarConnected(session.user)]);
-  return ok({confirmation,review:{calendarConnected:connected,organizerEmail:session.user.email??null,attendees:rows.map(row=>({userId:row.userId,name:row.displayName,email:row.email,hasAvailability:row.hasAvailability,isOrganizer:row.userId===session.user!.id}))}});
+  const [rows,connected,edit]=await Promise.all([attendees(session,roomId),calendarConnected(session.user),confirmation?confirmationDetail(session,roomId):null]);
+  return ok({confirmation,review:{calendarConnected:connected,organizerEmail:session.user.email??null,attendees:rows.map(row=>({userId:row.userId,name:row.displayName,email:row.email,hasAvailability:row.hasAvailability,isOrganizer:row.userId===session.user!.id})),edit}});
  }catch{return failed('Could not load the confirmation.');}
 }
 

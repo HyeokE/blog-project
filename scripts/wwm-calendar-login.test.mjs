@@ -1,15 +1,29 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {randomBytes} from 'node:crypto';
 import {createServerClient} from '@supabase/ssr';
-import {createLoginExchange,validateCalendarGrant,CALENDAR_SCOPE,FREEBUSY_SCOPE} from '../src/features/when-we-meet/calendar-login.mjs';
-const key=randomBytes(32).toString('base64url');
+import * as login from '../src/features/when-we-meet/calendar-login.mjs';
+const {createLoginExchange}=login;
 const user={id:'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',email:'a@example.org',email_confirmed_at:'today',identities:[{provider:'google',id:'subject'}]};
 const jwt=()=>{const payload=Buffer.from(JSON.stringify({exp:Math.floor(Date.now()/1000)+3600,sub:user.id})).toString('base64url');return `${Buffer.from('{}').toString('base64url')}.${payload}.c2lnbmF0dXJl`};
-function fakeFetch(_url,options){const url=String(_url);if(url.includes('grant_type=pkce'))return Promise.resolve(new Response(JSON.stringify({access_token:jwt(),refresh_token:'supabase-refresh',provider_token:'provider-access-secret',provider_refresh_token:'provider-refresh-secret',token_type:'bearer',expires_in:3600,scope:`openid email ${CALENDAR_SCOPE} ${FREEBUSY_SCOPE}`,user}),{headers:{'content-type':'application/json'}}));if(url.endsWith('/user'))return Promise.resolve(new Response(JSON.stringify(user),{headers:{'content-type':'application/json'}}));throw Error(url)}
+function fakeFetch(_url){const url=String(_url);if(url.includes('grant_type=pkce'))return Promise.resolve(new Response(JSON.stringify({access_token:jwt(),refresh_token:'supabase-refresh',provider_token:'provider-access-secret',provider_refresh_token:'provider-refresh-secret',token_type:'bearer',expires_in:3600,user}),{headers:{'content-type':'application/json'}}));if(url.endsWith('/user'))return Promise.resolve(new Response(JSON.stringify(user),{headers:{'content-type':'application/json'}}));throw Error(url)}
 const makeClient=(sink)=>createServerClient('https://example.supabase.co','anon',{global:{fetch:fakeFetch},cookies:{getAll(){return [{name:'sb-example-auth-token-code-verifier',value:'verifier'}]},setAll(values){sink.push(...values)}}});
-test('exchange stages provider tokens and persists only app session cookies',async()=>{const cookies=[],staged=[];let stored;const result=await createLoginExchange({client:makeClient(staged),createClient:()=>makeClient(cookies),persist:async value=>{stored=value},identity:{code:'test-code',fetchIdentity:async()=>({sub:'subject',email:'a@example.org',email_verified:true})},key});assert.equal(result.authenticated,true);assert.equal(stored.userId,user.id);assert.equal(stored.subject,'subject');assert.equal(stored.refreshToken,'provider-refresh-secret');assert.ok(cookies.some(c=>c.name.includes('auth-token')&&c.value));assert.ok(!JSON.stringify(cookies).includes('provider-access-secret'));assert.ok(!JSON.stringify(cookies).includes('provider-refresh-secret'));assert.ok(!cookies.map(c=>c.value.startsWith('base64-')?Buffer.from(c.value.slice(7),'base64url').toString():c.value).join('').includes('provider-refresh-secret'))});
-test('mismatched Google identity cannot store credentials but app login survives',async()=>{const cookies=[];let writes=0;const result=await createLoginExchange({client:makeClient([]),createClient:()=>makeClient(cookies),persist:async()=>{writes++},identity:{code:'test-code',fetchIdentity:async()=>({sub:'attacker',email:'a@example.org',email_verified:true})},scope:undefined});assert.equal(result.calendar,'not-ready');assert.equal(writes,0);assert.ok(cookies.some(c=>c.name.includes('auth-token')&&c.value))});
-test('replayed authorization code cannot persist app or Calendar state',async()=>{let exchanges=0,writes=0;const client={auth:{exchangeCodeForSession:async()=>{exchanges++;return {error:exchanges>1?Error('already used'):null,data:exchanges>1?null:{session:{access_token:jwt(),refresh_token:'supabase-refresh'},user}}}}};const run=()=>createLoginExchange({client,createClient:()=>makeClient([]),persist:async()=>{writes++},identity:{code:'replayed',fetchIdentity:async()=>({sub:'subject',email:'a@example.org',email_verified:true})},scope:undefined});await run();await assert.rejects(run);assert.equal(writes,0)});
-test('grant rejects wrong subject and missing scope',()=>{assert.throws(()=>validateCalendarGrant(user,{sub:'other',email:'a@example.org',email_verified:true},`${CALENDAR_SCOPE} ${FREEBUSY_SCOPE}`));assert.throws(()=>validateCalendarGrant(user,{sub:'subject',email:'a@example.org',email_verified:true},FREEBUSY_SCOPE));assert.ok(validateCalendarGrant(user,{sub:'subject',email:'a@example.org',email_verified:true},`openid ${CALENDAR_SCOPE}`))});
-test('real Supabase sessions carry no Google scope, so the granted scope is read from Google',async()=>{let stored;const client={auth:{exchangeCodeForSession:async()=>({error:null,data:{session:{access_token:jwt(),refresh_token:'supabase-refresh',provider_token:'provider-access',provider_refresh_token:'provider-refresh'},user}})}};const result=await createLoginExchange({client,createClient:()=>makeClient([]),persist:async value=>{stored=value},identity:{code:'test-code',fetchIdentity:async()=>({sub:'subject',email:'a@example.org',email_verified:true}),fetchScope:async token=>{assert.equal(token,'provider-access');return `openid ${CALENDAR_SCOPE} ${FREEBUSY_SCOPE}`}}});assert.equal(result.calendar,'connected');assert.equal(stored.refreshToken,'provider-refresh')});
+const decoded=cookies=>cookies.map(c=>c.value.startsWith('base64-')?Buffer.from(c.value.slice(7),'base64url').toString():c.value).join('');
+test('plain login persists only the app session and never provider tokens',async()=>{
+ const cookies=[],staged=[];
+ const result=await createLoginExchange({client:makeClient(staged),createClient:()=>makeClient(cookies),code:'test-code'});
+ assert.deepEqual(result,{authenticated:true});
+ assert.ok(cookies.some(c=>c.name.includes('auth-token')&&c.value));
+ assert.ok(!decoded(cookies).includes('provider-access-secret'));
+ assert.ok(!decoded(cookies).includes('provider-refresh-secret'));
+});
+test('login has no Calendar side effects: no credential writer and no scope logic',()=>{
+ assert.equal(login.validateCalendarGrant,undefined);
+ assert.equal(createLoginExchange.length,1);
+});
+test('replayed authorization code cannot persist app state',async()=>{
+ let exchanges=0;const cookies=[];
+ const client={auth:{exchangeCodeForSession:async()=>{exchanges++;return {error:exchanges>1?Error('already used'):null,data:exchanges>1?null:{session:{access_token:jwt(),refresh_token:'supabase-refresh'},user}}}}};
+ const run=()=>createLoginExchange({client,createClient:()=>makeClient(cookies),code:'replayed'});
+ await run();const before=cookies.length;
+ await assert.rejects(run);assert.equal(cookies.length,before);
+});

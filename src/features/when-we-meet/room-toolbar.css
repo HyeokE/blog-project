@@ -32,4 +32,7 @@
 .wwm-settings-dialog [data-slot='button']:focus-visible,.wwm-settings-dialog [data-slot='input']:focus-visible{outline:2px solid var(--craft-focus);outline-offset:2px;box-shadow:none}
 .wwm-settings-dialog [data-slot='button']:disabled{opacity:.5;cursor:not-allowed}
 .wwm-settings-dialog [data-slot='dialog-header']{text-align:left}
+.wwm-settings-dialog .wwm-field-error{margin:6px 0 0;font-size:13px;line-height:1.45;color:var(--craft-required);overflow-wrap:anywhere}
+.wwm-settings-dialog [data-slot='input'][aria-invalid='true']{border-color:var(--craft-required)}
+.wwm-settings-dialog [data-slot='input']:disabled{opacity:.6}
 @media(max-width:600px){.wwm.wwm-room .wwm-hero-row{gap:8px}.wwm.wwm-room .wwm-hero-row h1{font-size:24px}.wwm.wwm-room .wwm-view-switch{gap:16px}.wwm.wwm-room .wwm-header-actions button{padding-inline:8px;font-size:12px}}

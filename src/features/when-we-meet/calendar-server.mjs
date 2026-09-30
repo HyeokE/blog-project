@@ -1,12 +1,12 @@
-import {CALENDAR_SCOPE} from './calendar-connection.mjs';
-const callbackPath='/api/craft/when-we-meet/calendar/callback';
-export function calendarConfig(env=process.env){
- const clientId=env.GOOGLE_CALENDAR_CLIENT_ID,clientSecret=env.GOOGLE_CALENDAR_CLIENT_SECRET,redirectUri=env.GOOGLE_CALENDAR_REDIRECT_URI;
+import {CALENDAR_SCOPE,CALENDAR_CALLBACK_PATH,isCalendarOrigin,consumeConnection,readConnectionRoom,decodeFlowCookie,calendarReturnPath,validateCalendarGrant,encryptCredential} from './calendar-connection.mjs';
+const isKey=value=>typeof value==='string'&&Buffer.from(value,'base64url').length===32;
+/** OAuth settings for the direct Calendar consent. The redirect is derived from the trusted request origin. */
+export function calendarConfig(origin,env=process.env){
+ const clientId=env.GOOGLE_CALENDAR_CLIENT_ID,clientSecret=env.GOOGLE_CALENDAR_CLIENT_SECRET;
  const encryptionKey=env.WWM_CALENDAR_ENCRYPTION_KEY,stateKey=env.WWM_CALENDAR_STATE_KEY;
- if(!clientId||!clientSecret||!redirectUri||!encryptionKey||!stateKey||encryptionKey===stateKey||Buffer.from(encryptionKey,'base64url').length!==32||Buffer.from(stateKey,'base64url').length!==32)throw Error('Calendar configuration unavailable');
- const url=new URL(redirectUri);
- if(url.pathname!==callbackPath||url.search||url.hash||!(url.protocol==='https:'||(url.protocol==='http:'&&['localhost','127.0.0.1'].includes(url.hostname))))throw Error('Invalid Calendar redirect');
- return {clientId,clientSecret,redirectUri,origin:url.origin,encryptionKey,stateKey};
+ if(!clientId||!clientSecret||!isKey(encryptionKey)||!isKey(stateKey)||encryptionKey===stateKey)throw Error('Calendar configuration unavailable');
+ if(!isCalendarOrigin(origin))throw Error('Invalid Calendar redirect');
+ return {clientId,clientSecret,redirectUri:`${origin}${CALENDAR_CALLBACK_PATH}`,origin,encryptionKey,stateKey};
 }
 async function googleJSON(url,options,fetcher){
  const response=await fetcher(url,{...options,signal:AbortSignal.timeout(8000),cache:'no-store'});
@@ -25,8 +25,31 @@ export async function fetchCalendarIdentity(accessToken,fetcher=fetch){
  return data;
 }
 export function calendarStatus(row){return {connected:!!row,email:row?.googleEmail??null};}
-export async function fetchGrantedScope(accessToken,fetcher=fetch){
- const data=await googleJSON(`https://oauth2.googleapis.com/tokeninfo?access_token=${encodeURIComponent(accessToken)}`,{},fetcher);
- if(typeof data.scope!=='string')throw Error('Google scope unavailable');
- return data.scope;
+
+const CODE=/^[\w\-/.~]{8,2048}$/;
+/**
+ * Completes the consent callback. Returns the same-origin room path to redirect to; never applies or sends anything.
+ * The credential is encrypted with the AAD `credential:${userId}:${subject}` that calendar-access.ts decrypts with.
+ */
+export async function completeCalendarConnection({params,cookie,user,config,store,now=Date.now(),fetcher=fetch}){
+ const state=params.get('state');
+ const flow=decodeFlowCookie(cookie);
+ const target=readConnectionRoom(state,config.stateKey)??(flow?{roomId:flow.roomId,returnTo:undefined}:null);
+ const back=outcome=>({outcome,location:calendarReturnPath(target?.roomId??null,target?.returnTo,outcome)});
+ if(params.get('error'))return back(params.get('error')==='access_denied'?'denied':'error');
+ try{
+  if(!flow)throw Error('Calendar consent expired');
+  if(!user?.id)throw Error('Not signed in');
+  consumeConnection({state,key:config.stateKey,userId:user.id,nonce:flow.nonce,verifier:flow.verifier,now});
+  const code=params.get('code');if(typeof code!=='string'||!CODE.test(code))throw Error('Invalid authorization code');
+  const token=await exchangeCalendarCode(code,flow.verifier,config,fetcher);
+  const identity=await fetchCalendarIdentity(token.access_token,fetcher);
+  validateCalendarGrant(user,identity,token.scope);
+  const cipher=encryptCredential({refresh_token:token.refresh_token},config.encryptionKey,`credential:${user.id}:${identity.sub}`);
+  await store(user.id,identity.sub,identity.email,cipher);
+  return back('connected');
+ }catch(error){
+  console.warn('[wwm] Calendar consent failed:',error instanceof Error?error.message:'unknown');
+  return back('error');
+ }
 }

@@ -40,7 +40,7 @@ test('people and attendee RPC rows become camelCase',()=>{
 test('confirmation status, created room and credential rows become camelCase',()=>{
  assert.equal(normalizeConfirmation(null),null);
  const record=normalizeConfirmation({revision:1,status:'confirmed',title:'T',starts_at:'2026-10-01T00:00:00.000Z',ends_at:'2026-10-01T01:00:00.000Z',timezone:'UTC',google_event_url:null});
- assert.deepEqual(record,{status:'confirmed',title:'T',startsAt:'2026-10-01T00:00:00.000Z',endsAt:'2026-10-01T01:00:00.000Z',timezone:'UTC',googleEventUrl:null});
+ assert.deepEqual(record,{status:'confirmed',title:'T',startsAt:'2026-10-01T00:00:00.000Z',endsAt:'2026-10-01T01:00:00.000Z',timezone:'UTC',googleEventUrl:null,revision:1});
  assert.deepEqual(normalizeCreatedRoom({id:'r',invite_token:'t'}),{id:'r',inviteToken:'t'});
  assert.equal(normalizeCredential(undefined),null);
  assert.deepEqual(normalizeCredential({google_subject:'s',google_email:'e@example.org',credential_ciphertext:'c'}),{googleSubject:'s',googleEmail:'e@example.org',credentialCiphertext:'c'});

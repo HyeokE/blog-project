@@ -19,7 +19,8 @@ export async function refreshAccessToken(refreshToken,config,fetcher=fetch){
  const response=await call(fetcher,'https://oauth2.googleapis.com/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()});
  const data=await response.json().catch(()=>({}));
  if(!response.ok){
-  const reconnect=data?.error==='invalid_grant'||response.status===401;
+  // invalid_grant: revoked/expired; unauthorized_client: token issued to a previous OAuth client.
+  const reconnect=data?.error==='invalid_grant'||data?.error==='unauthorized_client'||response.status===401;
   throw new GoogleCalendarError('Google Calendar access expired',{status:response.status,definite:true,reconnect});
  }
  if(typeof data.access_token!=='string'||!data.access_token)throw new GoogleCalendarError('Google Calendar access unavailable');
@@ -34,6 +35,15 @@ export async function getEvent(accessToken,eventId,fetcher=fetch){
 export async function insertEvent(accessToken,event,fetcher=fetch){
  const response=await call(fetcher,`${API}/calendars/primary/events?sendUpdates=all`,{method:'POST',headers:{Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json'},body:JSON.stringify(event)});
  if(!response.ok)throw fail(response,'Google Calendar rejected the event');
+ return response.json();
+}
+/** Edits the SAME event (patch semantics: given arrays replace existing ones) and notifies guests.
+ * https://developers.google.com/workspace/calendar/api/v3/reference/events/patch (sendUpdates=all).
+ * `etag` makes the write conditional (If-Match); a 412 is a definite "nothing changed". */
+export async function patchEvent(accessToken,eventId,patch,fetcher=fetch,{etag}={}){
+ const headers={Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json',...(etag?{'If-Match':etag}:{})};
+ const response=await call(fetcher,`${API}/calendars/primary/events/${encodeURIComponent(eventId)}?sendUpdates=all`,{method:'PATCH',headers,body:JSON.stringify(patch)});
+ if(!response.ok)throw fail(response,'Google Calendar rejected the change');
  return response.json();
 }
 const DAY=86400000;

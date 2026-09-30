@@ -18,7 +18,7 @@ test('validates the camelCase API payload; snake_case rows are converted only at
  assert.throws(()=>normalizeConfirmationResponse({confirmation:null,review:{attendees:'x'}}));
  assert.throws(()=>normalizeConfirmationResponse(null));
  assert.throws(()=>normalizeConfirmationResponse({confirmation:{status:'confirmed',title:'T',starts_at:'2026-10-01T01:00:00.000Z',ends_at:'2026-10-01T02:00:00.000Z',timezone:'Asia/Seoul'},review:null}),/Invalid confirmation/);
- const route=readFileSync(new URL('../src/app/api/craft/when-we-meet/[roomId]/confirmation/route.ts',import.meta.url),'utf8');
+ const route=readFileSync(new URL('../src/app/api/craft/when-we-meet/[roomId]/confirmation/shared.ts',import.meta.url),'utf8');
  assert.match(route,/return normalizeConfirmation\(data\?\.\[0\]\)/);assert.match(route,/return normalizeAttendees\(data\|\|\[\]\)/);
 });
 
@@ -109,7 +109,7 @@ test('Confirm tab is a fourth shadcn tab wired to the panel and existing tabs st
  assert.match(room,/view==='confirm'\?<ConfirmTab [^>]*\/>:view==='people'\?<PeoplePanel /);
  const tab=read('src/features/when-we-meet/ConfirmTab.tsx');
  assert.match(tab,/loadConfirmation\(roomId/);assert.match(tab,/postConfirmation\(roomId/);assert.match(tab,/AbortController/);
- assert.match(tab,/signInWithGoogle\(/);
+ assert.match(tab,/connectGoogleCalendar\(/);
  assert.match(tab,/<ConfirmationPanel\s/);
 });
 test('the review can rename the event and mark recipients optional',()=>{

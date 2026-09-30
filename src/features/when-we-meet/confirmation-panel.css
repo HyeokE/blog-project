@@ -31,3 +31,12 @@
 .wwm-confirm-dialog .wwm-confirm-optional{flex:0 0 auto;min-height:32px;border-radius:4px;color:var(--craft-muted)}
 .wwm-confirm-dialog .wwm-confirm-optional[aria-pressed='true']{background:var(--craft-ink);border-color:var(--craft-ink);color:var(--craft-surface)}
 .wwm-confirm-dialog .wwm-confirm-dialog-body>h3{margin:18px 0 6px}
+/* Confirmed meeting: owner Edit / Resend, update note, edit action bar. */
+.wwm-confirm-record-actions{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 12px}
+:root[data-mode] .wwm .wwm-confirm .wwm-confirm-record-actions button,.wwm .wwm-confirm .wwm-confirm-record-actions button,:root[data-mode] .wwm .wwm-confirm .wwm-confirm-actions button[data-variant='outline'],.wwm .wwm-confirm .wwm-confirm-actions button[data-variant='outline']{min-height:44px;border-radius:var(--craft-control-radius,4px);background:transparent;color:var(--craft-ink);border:1px solid var(--craft-rule);font-weight:500}
+.wwm .wwm-confirm .wwm-confirm-record-actions button:disabled{opacity:.5;cursor:not-allowed}
+.wwm .wwm-confirm .wwm-confirm-record-actions button:focus-visible,.wwm .wwm-confirm .wwm-confirm-actions button:focus-visible{outline:2px solid var(--craft-focus,var(--craft-ink));outline-offset:2px;box-shadow:none}
+.wwm-confirm-updated{margin:8px 0;color:var(--craft-ink,#514e40);font-size:.9rem;font-weight:600}
+.wwm-confirm-action-buttons{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:600px){.wwm-confirm-action-buttons{flex-direction:column-reverse}.wwm-confirm-record-actions [data-slot='button']{flex:1 1 100%}}
+.wwm-confirm-record-actions~p{margin:0 0 16px}

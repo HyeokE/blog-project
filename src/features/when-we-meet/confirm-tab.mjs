@@ -12,7 +12,18 @@ const fail=message=>{throw new Error(message)};
 function normalizeRecord(value){
  if(value===null||value===undefined)return null;
  if(typeof value!=='object'||!isString(value.status)||!isString(value.startsAt)||!isString(value.endsAt)||!isString(value.timezone))fail('Invalid confirmation');
- return {status:value.status,title:isString(value.title)?value.title:'',startsAt:value.startsAt,endsAt:value.endsAt,timezone:value.timezone,googleEventUrl:isString(value.googleEventUrl)?value.googleEventUrl:null};
+ return {status:value.status,title:isString(value.title)?value.title:'',startsAt:value.startsAt,endsAt:value.endsAt,timezone:value.timezone,googleEventUrl:isString(value.googleEventUrl)?value.googleEventUrl:null,...(Number.isSafeInteger(value.revision)?{revision:value.revision}:{})};
+}
+const idList=value=>{if(!Array.isArray(value)||!value.every(isString))fail('Invalid confirmation edit');return [...value];};
+/** Owner-only edit detail (ids only; addresses stay in the attendee review). Null when the server has none. */
+function normalizeEdit(value){
+ if(value===null||value===undefined)return null;
+ if(typeof value!=='object'||!Number.isSafeInteger(value.revision)||value.revision<1)fail('Invalid confirmation edit');
+ const open=value.open;
+ if(open!==null&&open!==undefined&&(typeof open!=='object'||!Number.isSafeInteger(open.revision)||!isString(open.status)||!isString(open.startsAt)||!isString(open.endsAt)))fail('Invalid confirmation edit');
+ return {revision:value.revision,recipientIds:idList(value.recipientIds),excludedIds:idList(value.excludedIds),optionalIds:idList(value.optionalIds),
+  open:open?{revision:open.revision,status:open.status,title:isString(open.title)?open.title:'',startsAt:open.startsAt,endsAt:open.endsAt,recipientIds:idList(open.recipientIds),excludedIds:idList(open.excludedIds),optionalIds:idList(open.optionalIds)}:null,
+  lastResentAt:isString(value.lastResentAt)?value.lastResentAt:null};
 }
 function normalizeReview(value){
  if(value===null||value===undefined)return null;
@@ -20,7 +31,7 @@ function normalizeReview(value){
  return {calendarConnected:value.calendarConnected===true,organizerEmail:isString(value.organizerEmail)&&value.organizerEmail?value.organizerEmail:null,attendees:value.attendees.map(row=>{
   if(!row||!isString(row.userId)||!isString(row.name))fail('Invalid attendee');
   return {userId:row.userId,name:row.name,email:isString(row.email)&&row.email?row.email:null,hasAvailability:row.hasAvailability===true,isOrganizer:row.isOrganizer===true};
- })};
+ }),edit:normalizeEdit(value.edit)};
 }
 /** Validates the (already camelCase) API payload; the server's row normalizer owns the snake_case conversion. */
 export function normalizeConfirmationResponse(raw){
@@ -79,8 +90,12 @@ export function confirmPanelState({data,slots,organizerName,recipientIds}){
  if(status==='failed')state.error='The last confirmation attempt did not finish. Review the details and try again.';
  if(record&&status==='confirmed'){
   const start=localClock(record.startsAt,record.timezone,slots,'start'),end=localClock(record.endsAt,record.timezone,slots,'end');
-  const names=(recipientIds?attendees.filter(row=>recipientIds.includes(row.userId)):attendees).map(row=>row.name);
-  state.confirmation={title:record.title,date:start.date,start:start.time,end:end.time,timezone:record.timezone,organizer:attendees.find(row=>row.isOrganizer)?.name||organizerName||'Organizer',attendeeNames:names,...(record.googleEventUrl?{eventUrl:record.googleEventUrl}:{})};
+  const edit=review?.edit;
+  const shown=edit?edit.recipientIds:recipientIds;
+  const names=(shown?attendees.filter(row=>shown.includes(row.userId)):attendees).map(row=>row.name);
+  state.confirmation={title:record.title,date:start.date,start:start.time,end:end.time,timezone:record.timezone,organizer:attendees.find(row=>row.isOrganizer)?.name||organizerName||'Organizer',attendeeNames:names,...((record.revision??1)>1?{updated:true}:{}),...(record.googleEventUrl?{eventUrl:record.googleEventUrl}:{})};
+  // Edit review starts from the confirmed snapshot; members who joined since then start excluded.
+  if(edit)state.edit={baseRevision:edit.revision,initial:{title:record.title,date:start.date,start:start.time,end:end.time,excludedIds:attendees.map(row=>row.userId).filter(id=>!edit.recipientIds.includes(id)),optionalIds:edit.optionalIds.filter(id=>edit.recipientIds.includes(id))},status:edit.open?'reconciling':'idle',lastResentAt:edit.lastResentAt};
  }
  return state;
 }
@@ -100,4 +115,27 @@ export function confirmFailure(error){
  if(status===409)return {status:'failed',error:message||'This meeting was already confirmed with different details.',retrySame:false};
  if(status===401)return {status:'failed',error:'Your session expired. Sign in again, then review.',retrySame:false};
  return {status:'failed',error:message||'Could not reach the server. Try again to check the invitation status; it will not send twice.',retrySame:true};
+}
+
+/** Edit POST body: the reviewed proposal plus the confirmed revision it was edited from. */
+export function confirmUpdateBody({baseRevision,...input}){
+ if(!Number.isSafeInteger(baseRevision)||baseRevision<1)fail('Reload the meeting and review again.');
+ return {...confirmationBody(input),baseRevision};
+}
+
+/** The server's open (pending/reconciling) edit as the exact body to re-POST: the server reconciles it by read-back. */
+export function openEditBody(data,slots){
+ const open=data?.review?.edit?.open,record=data?.confirmation;
+ if(!open||!record)return null;
+ const day=localClock(open.startsAt,record.timezone,slots,'start').date;
+ return {title:open.title,date:day,start:open.startsAt,end:open.endsAt,recipients:[...open.recipientIds],excluded:[...open.excludedIds],optional:[...open.optionalIds],baseRevision:open.revision-1};
+}
+
+/** Resend failure → inline message at the Resend control. */
+export function resendFailure(error){
+ const status=error&&typeof error.status==='number'?error.status:undefined;
+ const message=error&&typeof error.message==='string'&&status!==undefined?error.message:'';
+ if(status===409&&error.reconnect===true)return {status:'failed',calendar:'disconnected',error:message||'Connect Google Calendar to resend invitations.'};
+ if(status===401)return {status:'failed',error:'Your session expired. Sign in again.'};
+ return {status:'failed',error:message||'Could not reach the server. Try again in a minute.'};
 }

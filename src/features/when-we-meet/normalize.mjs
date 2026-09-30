@@ -15,6 +15,13 @@ export function normalizeMeeting(row,counts=new Map()){return {...normalizeRoom(
 export function normalizeResponses(rows){return rows.map(row=>({userId:row.user_id,displayName:row.display_name,slots:(row.slots||[]).map(instant),...(row.updated_at!==undefined?{updatedAt:row.updated_at}:{})}))}
 export function normalizePeople(rows){return rows.map(row=>({userId:row.user_id,displayName:row.display_name,isAdmin:row.is_admin===true,hasAvailability:row.has_availability===true}))}
 export function normalizeAttendees(rows){return rows.map(row=>({userId:row.user_id,displayName:row.display_name,email:row.email??null,hasAvailability:row.has_availability===true}))}
-export function normalizeConfirmation(row){return row?{status:row.status,title:row.title??'',startsAt:row.starts_at,endsAt:row.ends_at,timezone:row.timezone,googleEventUrl:row.google_event_url??null}:null}
+export function normalizeConfirmation(row){return row?{status:row.status,title:row.title??'',startsAt:row.starts_at,endsAt:row.ends_at,timezone:row.timezone,googleEventUrl:row.google_event_url??null,...(row.revision!==undefined&&row.revision!==null?{revision:Number(row.revision)}:{})}:null}
+/** Owner-only `wwm_confirmation_owner_detail` row → edit review ids, the open edit (if any) and the last resend. */
+export function normalizeConfirmationDetail(row){
+ if(!row)return null;
+ const ids=value=>Array.isArray(value)?value.map(String):[];
+ const open=row.open_revision===null||row.open_revision===undefined?null:{revision:Number(row.open_revision),status:row.open_status,title:row.open_title??'',startsAt:instant(row.open_starts_at),endsAt:instant(row.open_ends_at),recipientIds:ids(row.open_recipient_ids),excludedIds:ids(row.open_excluded_ids),optionalIds:ids(row.open_optional_ids)};
+ return {revision:Number(row.revision),recipientIds:ids(row.recipient_ids),excludedIds:ids(row.excluded_ids),optionalIds:ids(row.optional_ids),open,lastResentAt:row.last_resent_at?instant(row.last_resent_at):null};
+}
 export function normalizeCreatedRoom(value){return {id:value.id,inviteToken:value.invite_token}}
 export function normalizeCredential(row){return row?{googleSubject:row.google_subject,googleEmail:row.google_email,credentialCiphertext:row.credential_ciphertext}:null}

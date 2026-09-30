@@ -33,3 +33,10 @@ export function fillSummaryInRange(preview,slots,range){
  const text=freeCount?`${freeCount} of ${slotCount} half-hours free in your calendar.`:'No free half-hours in your calendar for these dates.';
  return {freeCount,slotCount,canApply:freeCount>0,text};
 }
+/** Announcement for the `?calendar=<outcome>` flag the Calendar consent callback adds. Nothing is fetched or applied. */
+export function calendarReturnNotice(outcome){
+ if(outcome==='connected')return {tone:'success',text:'Google Calendar connected. Use Fill from Google Calendar to preview your free time.'};
+ if(outcome==='denied')return {tone:'info',text:'Google Calendar was not connected. Your selection is unchanged.'};
+ if(outcome==='error')return {tone:'error',text:'Could not connect Google Calendar. Please try again.'};
+ return null;
+}
