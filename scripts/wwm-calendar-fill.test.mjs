@@ -35,14 +35,14 @@ test('Apply goes through the shared draft path and the action is available to ev
  assert.match(sync,/const replace=useCallback\(\(slots:string\[\]\)=>\{update\(\{\.\.\.draft\.current,slots/);
  const fill=read('src/features/when-we-meet/CalendarFill.tsx');
  assert.match(fill,/loadCalendarBusy\(roomId\)/);
- assert.match(fill,/Fill from Google Calendar/);
- assert.match(fill,/>Cancel<\/Button>/);
+ assert.match(fill,/title=t\('fill\.trigger'\)/);
+ assert.match(fill,/>\{t\('common\.cancel'\)\}<\/Button>/);
  // Anchored panel on desktop, the shared Dialog sheet on phones.
  assert.match(fill,/<PopoverAnchor asChild>\{button\}<\/PopoverAnchor>/);
  assert.match(fill,/if\(phone\)return <>\{button\}<Dialog /);
  assert.match(fill,/fillButtonLabel\(summary\.freeCount\)/);
- assert.match(fill,/toast\.success\(fillToast\(summary\.freeCount,changes\.removed\.length\),\{duration:UNDO_TOAST_MS,action:\{label:'Undo'/);
- assert.match(fill,/Connect Google Calendar/);
+ assert.match(fill,/toast\.success\(copy\.fillToast\(summary\.freeCount,changes\.removed\.length\),\{duration:UNDO_TOAST_MS,action:\{label:t\('fill\.undo'\)/);
+ assert.match(fill,/t\('fill\.connectGoogleCalendar'\)/);
  assert.doesNotMatch(fill,/saveResponse|skeleton/i);
  const room=read('src/features/when-we-meet/WhenWeMeet.tsx');
  assert.match(room,/view==='availability'\?<CalendarFill [^>]*onApply=\{sync\.replace\}/);

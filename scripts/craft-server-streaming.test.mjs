@@ -23,15 +23,15 @@ const ownedPresentation={'@/features/when-we-meet/ParticipantCount':{Participant
 function section(Section,fallback){let attempt;function Holder(){if(!attempt)attempt=Section({});return use(attempt)}return React.createElement('main',null,React.createElement('h1',null,'When We Meet'),React.createElement(Suspense,{fallback},React.createElement(Holder)))}
 
 test('actual OwnedMeetings streams geometry-matched fallback, then deferred owned row',async()=>{
- const read=deferred();const OwnedMeetings=loadComponent('src/app/craft/when-we-meet/OwnedMeetings.tsx',{'@/lib/supabase/server':{ownedCraftMeetings:()=>read.promise},'@/features/when-we-meet/ServerSectionRetry':{default:()=>null},'next/navigation':{unstable_rethrow:()=>{}},'@/features/when-we-meet/meeting-copy.mjs':meetingCopy,...ownedPresentation,'next/link':{default:({href,children})=>React.createElement('a',{href},children)}});
- const skeleton=loadComponent('src/features/when-we-meet/ServerSkeletons.tsx',{'@/container/light-wall/WallBackLink':{default:({children})=>React.createElement('a',null,children)},'./LoadingState':{LoadingState:({label})=>React.createElement('span',{role:'status'},label)}});
+ const read=deferred();const OwnedMeetings=loadComponent('src/app/craft/when-we-meet/OwnedMeetings.tsx',{'@/lib/supabase/server':{ownedCraftMeetings:()=>read.promise},'@/features/when-we-meet/ServerSectionRetry':{default:()=>null},'next/navigation':{unstable_rethrow:()=>{}},'@/features/when-we-meet/meeting-copy.mjs':meetingCopy,'@/lib/wwm-locale':{getWwmLocale:async()=>'en'},...ownedPresentation,'next/link':{default:({href,children})=>React.createElement('a',{href},children)}});
+ const skeleton=loadComponent('src/features/when-we-meet/ServerSkeletons.tsx',{'./i18n/WwmI18nProvider':{useWwmCopy:()=>meetingCopy.createMeetingCopy('en')},'@/container/light-wall/WallBackLink':{default:({children})=>React.createElement('a',null,children)},'./LoadingState':{LoadingState:({label})=>React.createElement('span',{role:'status'},label)}});
  const rendered=stream(section(OwnedMeetings,React.createElement(skeleton.MeetingRowsSkeleton)));
  await rendered.shell;await new Promise(r=>setTimeout(r,10));assert.match(rendered.chunks.join(''),/Loading meetings/,String(rendered.errors));assert.match(rendered.chunks.join(''),/wwm-skeleton-meeting/);assert.doesNotMatch(rendered.chunks.join(''),/Fixture meeting/);
  read.resolve({meetings:[{...fixture,confirmationStatus:'confirmed'}],userId:'fixture-user'});await rendered.done;
  assert.match(rendered.chunks.join(''),/Fixture meeting/);assert.match(rendered.chunks.join(''),/wwm-meeting-tag">Confirmed</,'a confirmed meeting carries a quiet tag');assert.match(rendered.chunks.join(''),/data-meeting-id="fixture-room"/);assert.match(rendered.chunks.join('').replaceAll('<!-- -->',''),/2026\.10\.01 – 10\.02 · 09:00–18:00 · Asia\/Seoul/,'camelCase meeting fields render');assert.match(rendered.chunks.join(''),/wwm-participant-count">2</);assert.match(rendered.chunks.join(''),/\/craft\/when-we-meet\/fixture-room/);assert.deepEqual(rendered.errors,[]);
 });
 test('actual OwnedMeetings guest resolution returns no private rows',async()=>{
- const read=deferred();const OwnedMeetings=loadComponent('src/app/craft/when-we-meet/OwnedMeetings.tsx',{'@/lib/supabase/server':{ownedCraftMeetings:()=>read.promise},'@/features/when-we-meet/ServerSectionRetry':{default:()=>null},'next/navigation':{unstable_rethrow:()=>{}},'@/features/when-we-meet/meeting-copy.mjs':meetingCopy,...ownedPresentation,'next/link':{default:({children})=>React.createElement('a',null,children)}});
+ const read=deferred();const OwnedMeetings=loadComponent('src/app/craft/when-we-meet/OwnedMeetings.tsx',{'@/lib/supabase/server':{ownedCraftMeetings:()=>read.promise},'@/features/when-we-meet/ServerSectionRetry':{default:()=>null},'next/navigation':{unstable_rethrow:()=>{}},'@/features/when-we-meet/meeting-copy.mjs':meetingCopy,'@/lib/wwm-locale':{getWwmLocale:async()=>'en'},...ownedPresentation,'next/link':{default:({children})=>React.createElement('a',null,children)}});
  const result=stream(section(OwnedMeetings,React.createElement('i',null,'waiting')));await result.shell;await new Promise(r=>setTimeout(r,10));assert.match(result.chunks.join(''),/waiting/);read.resolve({meetings:[fixture],userId:null});await result.done;assert.doesNotMatch(result.chunks.join(''),/Fixture meeting/);
 });
 test('room page reaches Suspense before awaiting params',async()=>{
@@ -64,9 +64,17 @@ test('actual room section resolves failed read into retry payload and recovers o
 test('owned meeting read failure returns isolated section retry',async()=>{
  const OwnedMeetings=loadComponent('src/app/craft/when-we-meet/OwnedMeetings.tsx',{
   '@/lib/supabase/server':{ownedCraftMeetings:async()=>{throw Error('private diagnostic')}},
-  '@/features/when-we-meet/meeting-copy.mjs':meetingCopy,...ownedPresentation,
+  '@/features/when-we-meet/meeting-copy.mjs':meetingCopy,'@/lib/wwm-locale':{getWwmLocale:async()=>'en'},...ownedPresentation,
   '@/features/when-we-meet/ServerSectionRetry':{default:function MeetingsRetry(){}},
   'next/navigation':{unstable_rethrow:()=>{}},'next/link':{default:()=>null}
  });
  const result=await OwnedMeetings();assert.equal(result.type.name,'MeetingsRetry');assert.doesNotMatch(JSON.stringify(result),/private diagnostic/);
+});
+
+test('OwnedMeetings renders in the request locale (server component: getWwmLocale + createMeetingCopy)',async()=>{
+ const OwnedMeetings=loadComponent('src/app/craft/when-we-meet/OwnedMeetings.tsx',{'@/lib/supabase/server':{ownedCraftMeetings:async()=>({meetings:[{...fixture,startTime:'00:00',endTime:'24:00',confirmationStatus:'confirmed'}],userId:'fixture-user'})},'@/features/when-we-meet/ServerSectionRetry':{default:()=>null},'next/navigation':{unstable_rethrow:()=>{}},'@/features/when-we-meet/meeting-copy.mjs':meetingCopy,'@/lib/wwm-locale':{getWwmLocale:async()=>'ko'},...ownedPresentation,'next/link':{default:({children})=>React.createElement('a',null,children)}});
+ const rendered=stream(section(OwnedMeetings,React.createElement('i',null,'waiting')));await rendered.done;
+ const html=rendered.chunks.join('').replaceAll('<!-- -->','');
+ const {t}=meetingCopy.createMeetingCopy('ko');
+ assert.ok(html.includes(`aria-label="${t('app.yourMeetings')}"`));assert.ok(html.includes(`wwm-meeting-tag">${t('common.confirmed')}<`));assert.ok(html.includes(`2026.10.01 – 10.02 · ${t('common.allDay')} · Asia/Seoul`));assert.match(t('common.confirmed'),/[가-힣]/);
 });

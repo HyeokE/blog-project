@@ -80,13 +80,13 @@ test('resend failures map to inline messages; a rate limit is not an error state
 test('the panel exposes owner-only Edit; Resend moved to the header menu behind a confirm dialog',()=>{
  const s=readFileSync(new URL('../src/features/when-we-meet/ConfirmationPanel.tsx',import.meta.url),'utf8');
  const chrome=readFileSync(new URL('../src/features/when-we-meet/RoomChrome.tsx',import.meta.url),'utf8');
- assert.match(s,/Edit meeting/);assert.doesNotMatch(s,/Resend/);assert.match(s,/Save &amp; notify attendees/);
+ assert.match(s,/t\('confirmed\.editMeeting'\)/);assert.doesNotMatch(s,/Resend|resend\./);assert.match(s,/t\('edit\.save'\)/);
  assert.match(s,/owner&&edit&&/);
  assert.match(s,/ANALYTICS_ELEMENTS\.CONFIRM_EDIT\b/);
- assert.match(chrome,/\{resend&&confirmed&&<DropdownMenuItem data-analytics-label=\{ANALYTICS_ELEMENTS\.CONFIRM_RESEND\} onSelect=\{askResend\}>Resend invitations…<\/DropdownMenuItem>\}/);
+ assert.match(chrome,/\{resend&&confirmed&&<DropdownMenuItem data-analytics-label=\{ANALYTICS_ELEMENTS\.CONFIRM_RESEND\} onSelect=\{askResend\}>\{t\('resend\.menuItem'\)\}<\/DropdownMenuItem>\}/);
  assert.match(chrome,/<AlertDialogTitle>\{resendQuestion\(count\)\}<\/AlertDialogTitle>/);
  // Resend is a confirm: shadcn AlertDialog, Action keeps the dialog open (preventDefault) until the send settles.
  assert.match(chrome,/<AlertDialogAction[^>]*onClick=\{event=>\{event\.preventDefault\(\);void sendResend\(\)\}\}/);
  assert.match(chrome,/toast\.success\(MEETING_TOASTS\.resent\)/);assert.match(s,/ANALYTICS_ELEMENTS\.CONFIRM_EDIT_SAVE\b/);
- assert.match(s,/Updated by the organizer/);
+ assert.match(s,/t\('confirmed\.updatedByOrganizer'\)/);
 });

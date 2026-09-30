@@ -7,7 +7,7 @@ import {Button} from '@/components/ui/button';
 import {ConfirmationPanel} from './ConfirmationPanel';
 import {toast} from 'sonner';
 import {connectGoogleCalendar,loadConfirmation,postConfirmation,postConfirmationUpdate,type Response,type Room} from './api';
-import {invitationsSentToast,MEETING_TOASTS} from './meeting-copy.mjs';
+import {useWwmCopy} from './i18n/WwmI18nProvider';
 import {confirmationBody,confirmFailure,confirmOutcome,confirmPanelState,confirmUpdateBody,normalizeConfirmationResponse,openEditBody,type ConfirmationData,type ConfirmationRecordData,type ConfirmPanelStatus,type ConfirmProposal,type ConfirmRequestBody,type ConfirmUpdateBody} from './confirm-tab.mjs';
 
 type Slot={id:string;utc:string;date:string;time:string};
@@ -24,15 +24,16 @@ const storage={
 
 /** `onConfirmation` keeps the room header's status line in step with the record shown here. */
 export function ConfirmTab({roomId,room,slots,responses,onConfirmation}:{roomId:string;room:Room;slots:Slot[];responses:Response[];onConfirmation?:(record:ConfirmationRecordData|null)=>void}){
- const [data,setData]=useState<ConfirmationData|null>(null),[loadError,setLoadError]=useState(''),[attempt,setAttempt]=useState(0);
+ const {t,invitationsSentToast,MEETING_TOASTS}=useWwmCopy();
+ const [data,setData]=useState<ConfirmationData|null>(null),[loadError,setLoadError]=useState(false),[attempt,setAttempt]=useState(0);
  const [local,setLocal]=useState<Local|null>(null),[recipientIds,setRecipientIds]=useState<string[]|undefined>();
  // Edit of a confirmed meeting: request state lives here; the record itself stays visible (no skeleton on save). Resend lives in the header menu.
  const [editLocal,setEditLocal]=useState<EditLocal|null>(null);
  const reload=useCallback(()=>{setLocal(null);setAttempt(value=>value+1)},[]);
  useEffect(()=>{
   const controller=new AbortController();
-  setData(null);setLoadError('');
-  loadConfirmation(roomId,controller.signal).then(result=>{if(!controller.signal.aborted)setData(result)},()=>{if(!controller.signal.aborted)setLoadError('Couldn’t load the confirmation. Check your connection and try again.')});
+  setData(null);setLoadError(false);
+  loadConfirmation(roomId,controller.signal).then(result=>{if(!controller.signal.aborted)setData(result)},()=>{if(!controller.signal.aborted)setLoadError(true)});
   return()=>controller.abort();
  },[roomId,attempt]);
  const record=data?.confirmation??null,loaded=data!==null;
@@ -49,7 +50,7 @@ export function ConfirmTab({roomId,room,slots,responses,onConfirmation}:{roomId:
    if(outcome.status==='confirmed'){storage.write(sentKey(roomId),null);toast.success(invitationsSentToast(body.recipients.length));if(outcome.confirmation?.status==='confirmed')setLocal(null);else reload();}
    else setLocal({status:'reconciling'});
   }catch(error){
-   const failure=confirmFailure(error);
+   const failure=confirmFailure(error,t);
    if(!failure.retrySame)storage.write(sentKey(roomId),null);
    setLocal({status:'failed',error:failure.error,calendar:failure.calendar});
   }
@@ -57,7 +58,7 @@ export function ConfirmTab({roomId,room,slots,responses,onConfirmation}:{roomId:
  function confirm(proposal:ConfirmProposal){
   if(!data?.review)return;
   let body:ConfirmRequestBody;
-  try{body=confirmationBody({title:room.title,proposal,slots,attendeeIds:data.review.attendees.map(row=>row.userId)})}
+  try{body=confirmationBody({title:room.title,proposal,slots,attendeeIds:data.review.attendees.map(row=>row.userId),t})}
   catch(error){setLocal({status:'failed',error:(error as Error).message});return}
   void send(body);
  }
@@ -75,7 +76,7 @@ export function ConfirmTab({roomId,room,slots,responses,onConfirmation}:{roomId:
    setEditLocal(result.status==='confirmed'?{status:'saved'}:{status:'reconciling'});
    if(result.status==='confirmed')toast.success(MEETING_TOASTS.editSaved);
   }catch(error){
-   const failure=confirmFailure(error);
+   const failure=confirmFailure(error,t,'edit');
    setEditLocal({status:'failed',error:failure.error,calendar:failure.calendar});
   }
  }
@@ -83,17 +84,17 @@ export function ConfirmTab({roomId,room,slots,responses,onConfirmation}:{roomId:
   const baseRevision=data?.review?.edit?.revision;
   if(!data?.review||!baseRevision)return;
   let body:ConfirmUpdateBody;
-  try{body=confirmUpdateBody({title:room.title,proposal,slots,attendeeIds:data.review.attendees.map(row=>row.userId),baseRevision})}
+  try{body=confirmUpdateBody({title:room.title,proposal,slots,attendeeIds:data.review.attendees.map(row=>row.userId),baseRevision,t})}
   catch(error){setEditLocal({status:'failed',error:(error as Error).message});return}
   void sendEdit(body);
  }
  // Re-POSTs the server's own open edit (same payload): the server reads the event back and never notifies twice.
  function checkEdit(){const body=data&&openEditBody(data,slots);if(body)void sendEdit(body);else{setEditLocal(null);reload()}}
- function connectCalendar(){storage.write(confirmReturnKey(roomId),'confirm');void connectGoogleCalendar(roomId,window.location.pathname+window.location.search).catch(()=>{storage.write(confirmReturnKey(roomId),null);setLocal({status:'failed',error:'Google Calendar connection is unavailable. Please try again.',calendar:'disconnected'})})}
+ function connectCalendar(){storage.write(confirmReturnKey(roomId),'confirm');void connectGoogleCalendar(roomId,window.location.pathname+window.location.search).catch(()=>{storage.write(confirmReturnKey(roomId),null);setLocal({status:'failed',error:t('confirm.calendarUnavailable'),calendar:'disconnected'})})}
 
- if(loadError)return <div data-analytics-section={ANALYTICS_SECTIONS.WWM_CONFIRM}><Notice tone="error" className="wwm-confirm-load-error" action={<Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.RETRY} onClick={reload}>Retry</Button>}>{loadError}</Notice></div>;
- if(!data)return <div className="wwm-confirm wwm-confirm-skeleton" role="status" aria-label="Loading confirmation"><span className="wwm-confirm-skeleton-title"/><span className="wwm-confirm-skeleton-line"/><span className="wwm-confirm-skeleton-grid"/></div>;
- const state=confirmPanelState({data,slots,organizerName:ownerName,recipientIds});
+ if(loadError)return <div data-analytics-section={ANALYTICS_SECTIONS.WWM_CONFIRM}><Notice tone="error" className="wwm-confirm-load-error" action={<Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.RETRY} onClick={reload}>{t('common.retry')}</Button>}>{t('confirm.loadFailed')}</Notice></div>;
+ if(!data)return <div className="wwm-confirm wwm-confirm-skeleton" role="status" aria-label={t('confirm.loading')}><span className="wwm-confirm-skeleton-title"/><span className="wwm-confirm-skeleton-line"/><span className="wwm-confirm-skeleton-grid"/></div>;
+ const state=confirmPanelState({data,slots,organizerName:ownerName,recipientIds,t});
  const status=local?.status??state.status;
  return <ConfirmationPanel
   room={{title:room.title,startDate:room.startDate,endDate:room.endDate,startTime:room.startTime,endTime:room.endTime,timezone:room.timezone}}

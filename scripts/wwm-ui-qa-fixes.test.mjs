@@ -9,10 +9,10 @@ const panel=read('src/features/when-we-meet/ConfirmationPanel.tsx');
 const dialog=read('src/components/ui/dialog.tsx');
 
 test('P1-1 review roster and warnings use selected-slot availability',()=>{
- assert.match(panel,/selectionAvailability\(members,responses,slots,range\)/);
+ assert.match(panel,/selectionAvailability\(members,responses,slots,range,t\)/);
  assert.match(panel,/\{reviewed\.map\(member=><li key=\{member\.id\}>/);
- assert.match(panel,/member\.response==='partial'\?member\.availability\|\|'Partly available'/);
- for(const label of ['Unavailable: ','Partly available: ','Not responded: '])assert.ok(panel.includes(label),label);
+ assert.match(panel,/member\.response==='partial'\?member\.availability\|\|t\('confirm\.status\.partial'\)/);
+ for(const key of ['confirm.warnings.unavailable','confirm.warnings.partly','confirm.warnings.notResponded'])assert.ok(panel.includes(`t('${key}'`),key);
  assert.doesNotMatch(panel,/members\.some\(m=>m\.response==='not-responded'\)/);
 });
 
@@ -29,7 +29,7 @@ test('P1-2 closing a controlled dialog returns focus to its opener',()=>{
  assert.match(panel,/onCloseAutoFocus=\{event=>\{event\.preventDefault\(\);reviewTrigger\.current\?\.focus\(\)\}\}/);
  // Settings opens from the ⋯ menu: focus returns to the menu trigger.
  assert.match(readFileSync(new URL('../src/features/when-we-meet/RoomChrome.tsx',import.meta.url),'utf8'),/<Button ref=\{menuTrigger\}[^>]*MEETING_MENU/);
- assert.match(wwm,/className="wwm-settings-dialog" onCloseAutoFocus=\{event=>\{event\.preventDefault\(\);if\(!deleteOpen\)menuTrigger\.current\?\.focus\(\)\}\}/);
+ assert.match(wwm,/className="wwm-settings-dialog"[^>]*? onCloseAutoFocus=\{event=>\{event\.preventDefault\(\);if\(!deleteOpen\)menuTrigger\.current\?\.focus\(\)\}\}/);
 });
 
 test('P2-1 Everyone bar times ellipsize, then drop out on narrow bars',()=>{
@@ -41,7 +41,7 @@ test('P2-1 Everyone bar times ellipsize, then drop out on narrow bars',()=>{
 
 test('P2-6 create dialog keeps the Radix title id (aria-labelledby resolves) and focuses it by ref',()=>{
  assert.doesNotMatch(wwm,/wwm-create-title"/);
- assert.match(wwm,/<DialogTitle ref=\{createTitle\} tabIndex=\{-1\}>New meeting<\/DialogTitle>/);
+ assert.match(wwm,/<DialogTitle ref=\{createTitle\} tabIndex=\{-1\}>\{t\('create\.dialogTitle'\)\}<\/DialogTitle>/);
  assert.match(wwm,/requestAnimationFrame\(\(\)=>createTitle\.current\?\.focus\(\)\)/);
  const css=read('src/features/when-we-meet/when-we-meet.css');
  assert.match(css,/\.wwm-create-dialog \[data-slot='dialog-title'\]\{align-self:flex-start;max-width:calc\(100% - 48px\)/);
@@ -57,16 +57,19 @@ test('P2-8 Create stories seed dates relative to today',()=>{
 
 test('P2-10 read-only calendars do not describe editing',()=>{
  const weekly=read('src/features/when-we-meet/WeeklyAvailability.tsx');
- assert.match(weekly,/:readOnly\?'Read-only view of saved availability\.[^']*'\n\s*:'Click or drag to edit your availability\./);
+ assert.match(weekly,/:readOnly\?t\('grid\.instructions\.readOnly'\)\n\s*:t\('grid\.instructions\.edit'\)/);
+ // The read-only description never talks about editing (checked in both languages).
+ for(const locale of ['en','ko']){const dictionary=JSON.parse(readFileSync(new URL(`../src/i18n/locales/wwm/${locale}.json`,import.meta.url),'utf8'));assert.doesNotMatch(dictionary.grid.instructions.readOnly,/edit|toggle|drag|고쳐|켜고|끌어/i)}
 });
 
 test('P2-11 fill picker names its popover from the label; Undo toast stays ~10s',()=>{
  const picker=read('src/features/when-we-meet/DateRangePicker.tsx');
- assert.match(picker,/const panelLabel=ariaLabel\?\?\(label==='Dates'\?'Choose meeting dates':`Choose \$\{label\.toLowerCase\(\)\}`\);/);
+ assert.match(picker,/const panelLabel=ariaLabel\?\?t\('picker\.chooseMeetingDates'\);/);
+ assert.match(read('src/features/when-we-meet/CalendarFill.tsx'),/ariaLabel=\{t\('picker\.chooseDatesToFill'\)\}/);
  assert.match(picker,/<PopoverContent[^>]*aria-label=\{panelLabel\}/);
  const fill=read('src/features/when-we-meet/CalendarFill.tsx');
  assert.match(fill,/const UNDO_TOAST_MS=10_000;/);
- assert.match(fill,/\{duration:UNDO_TOAST_MS,action:\{label:'Undo'/);
+ assert.match(fill,/\{duration:UNDO_TOAST_MS,action:\{label:t\('fill\.undo'\)/);
 });
 
 test('P2-12 the pre-paint script renders as an inert block on the client',()=>{

@@ -6,10 +6,12 @@ test('other respondents render narrow independent duration rails instead of labe
  const source=readFileSync(new URL('WeeklyAvailability.tsx',root),'utf8');
  assert.match(source,/wwm-participant-rail/);
  assert.match(source,/left:readOnly\?/);
- assert.match(source,/:block\.lane\*16/);
- assert.match(source,/width:readOnly\?.*:12/);
+ // Edit-view rails divide the participant gutter (≤40% of the column) by lane, so they never spill into the next day.
+ assert.match(source,/:`\$\{block\.lane\/railLanes\*100\}%`/);
+ assert.match(source,/width:readOnly\?.*:`calc\(\$\{100\/railLanes\}% - 4px\)`/);
+ assert.match(source,/'--participant-gutter':`min\(\$\{participantGutter\}px, 40%\)`/);
  assert.match(source,/<strong>\{block.label\}<\/strong>/);
- assert.match(source,/aria-label=\{`\$\{block.label\}/);
+ assert.match(source,/aria-label=\{t\('grid\.blockName',\{name:block\.label/);
 });
 test('participant rails occupy a separate left gutter from own editing',()=>{
  const css=readFileSync(new URL('week-calendar.css',root),'utf8');

@@ -41,3 +41,8 @@ test('translator interpolates, pluralises and falls back to English for unknown 
  assert.throws(()=>t('missing.key'),/missing\.key/);
  assert.throws(()=>t('create.readyTitle'),/title/,'missing placeholder values are reported, not printed');
 });
+test('Storybook drops JSON import attributes before the Next SWC plugin rewrites them to legacy `assert`',()=>{
+ const main=readFileSync(new URL('../.storybook/main.ts',import.meta.url),'utf8');
+ assert.match(main,/name:'wwm-json-import-attributes',enforce:'pre'/);
+ assert.match(readFileSync(new URL('../src/i18n/wwm.mjs',import.meta.url),'utf8'),/from '\.\/locales\/wwm\/en\.json' with \{type:'json'\}/,'app code keeps the standard attribute Node needs');
+});

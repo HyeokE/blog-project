@@ -5,7 +5,7 @@ const component=readFileSync(new URL('../src/features/when-we-meet/WeeklyAvailab
 const css=readFileSync(new URL('../src/features/when-we-meet/week-calendar.css',import.meta.url),'utf8');
 test('no repeated month-range heading: the room header has the dates; day headers label a month where it changes',async()=>{
  assert.doesNotMatch(component,/lastMonth|<h3>\{month\}/);
- assert.match(component,/monthBoundaryLabel\(date,dates\[index-1\]\)/);
+ assert.match(component,/monthBoundaryLabel\(date,dates\[index-1\],locale\)/);
  const {monthBoundaryLabel}=await import('../src/features/when-we-meet/month-boundary.mjs');
  assert.equal(monthBoundaryLabel('2026-09-30',undefined),'Sep');
  assert.equal(monthBoundaryLabel('2026-10-01','2026-09-30'),'Oct');

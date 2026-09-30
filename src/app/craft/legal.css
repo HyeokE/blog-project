@@ -13,3 +13,6 @@
 .craft-legal-nav{display:flex;gap:16px;flex-wrap:wrap;padding-top:24px;border-top:1px solid var(--craft-border,#81775b30);font-size:13px}
 .craft-legal-links{display:flex;gap:16px;flex-wrap:wrap;margin-top:48px;padding-top:20px;border-top:1px solid var(--craft-border,#81775b30);font-size:13px;color:var(--craft-muted,#635f52)}
 .craft-legal-links a{color:inherit;text-underline-offset:3px}
+
+/* Craft index: the project list already ends with a rule, so the footer links don't draw a second one. */
+.craft-projects + .craft-legal-links{border-top:0;padding-top:0;margin-top:var(--craft-space-6)}

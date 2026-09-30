@@ -126,6 +126,7 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
+  closeLabel = "Close",
   mobilePresentation = "sheet",
   ref,
   onOpenAutoFocus,
@@ -133,6 +134,8 @@ function DialogContent({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
+  /** Screen-reader name of the corner close button (localized by callers). */
+  closeLabel?: string
   /** Below 640px: "sheet" anchors to the bottom edge (see dialog-sheet.css); "modal" keeps the centered dialog. */
   mobilePresentation?: "sheet" | "modal"
 }) {
@@ -188,7 +191,7 @@ function DialogContent({
             className="absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
           >
             <XIcon />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">{closeLabel}</span>
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Content>

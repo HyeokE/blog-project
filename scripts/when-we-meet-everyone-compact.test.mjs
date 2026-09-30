@@ -1,26 +1,24 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {everyoneDayWidth,eventGeometry} from '../src/features/when-we-meet/everyone-geometry.mjs';
+import {eventGeometry} from '../src/features/when-we-meet/everyone-geometry.mjs';
 const source=readFileSync(new URL('../src/features/when-we-meet/WeeklyAvailability.tsx',import.meta.url),'utf8');
 const css=readFileSync(new URL('../src/features/when-we-meet/week-calendar.css',import.meta.url),'utf8');
-test('regular cards fit in 72px lanes and compact lanes retain 16px pitch',()=>{
- assert.equal(everyoneDayWidth([{lanes:15}],false),1088);
- assert.equal(everyoneDayWidth([{lanes:15}],true),248);
- assert.equal(everyoneDayWidth([],false),120);
+test('regular cards share the column by lane and compact lanes retain 16px pitch',()=>{
  assert.deepEqual(eventGeometry({lane:2,lanes:15},false),{left:'calc(13.333333333333334% + 2px)',width:'calc(6.666666666666667% - 4px)'});
  assert.deepEqual(eventGeometry({lane:2,lanes:15},true),{left:32,width:12});
 });
 test('compact is automatic above six people, switchable, only offered in Everyone, with accessible event details',()=>{
  assert.match(source,/useState<boolean\|null>\(null\)/);assert.match(source,/compactChoice\?\?people\.length>AUTO_COMPACT_PEOPLE/);
  // A quiet Detailed | Compact segmented control in the grid toolbar, only in Everyone.
- assert.match(source,/!selection&&readOnly&&<ToggleGroup type="single"[^>]*className="wwm-segmented" aria-label="Calendar density"/);
+ assert.match(source,/!selection&&readOnly&&<ToggleGroup type="single"[^>]*className="wwm-segmented" aria-label=\{t\('grid\.density'\)\}/);
  assert.match(source,/value=\{compact\?'compact':'detailed'\}/);
- assert.match(source,/\{mode==='compact'\?'Compact':'Detailed'\}/);
+ assert.match(source,/\{mode==='compact'\?t\('grid\.compact'\):t\('grid\.detailed'\)\}/);
  assert.match(source,/readOnly&&compact\?'wwm-everyone-compact'/);
- assert.match(source,/everyoneDayWidth\(savedBlocks,compact\)/);
- assert.match(source,/eventGeometry\(block,compact,phone\)/);
- assert.match(source,/aria-label=\{`\$\{block.label\}/);
+ // Columns always fit the page (no horizontal scroll), so geometry is always the fitted form.
+ assert.doesNotMatch(source,/everyoneDayWidth|--day-width/);
+ assert.match(source,/eventGeometry\(block,compact,true\)/);
+ assert.match(source,/aria-label=\{t\('grid\.blockName',\{name:block\.label/);
  assert.match(source,/onMouseEnter=\{\(\)=>hoverDetail.open/);
  assert.match(source,/tabIndex=\{-1\}/);
  assert.match(source,/onClick=\{\(\)=>hoverDetail.open/);

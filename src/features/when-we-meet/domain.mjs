@@ -1,17 +1,22 @@
+import {createWwmTranslator} from '../../i18n/wwm.mjs';
+const english=createWwmTranslator('en');
 const dateRE=/^\d{4}-\d\d-\d\d$/;
 const timeRE=/^(?:[01]\d|2[0-3]):(?:00|30)$/;
 const minutes=t=>Number(t.slice(0,2))*60+Number(t.slice(3));
-export function validateRoom(r){
-  if(!r.title?.trim()||r.title.trim().length>100)return 'Enter a title (up to 100 characters).';
+/** First problem with a meeting window as a stable code (`validation.<code>` in the When We Meet dictionaries), or null. */
+export function validateRoomCode(r){
+  if(!r.title?.trim()||r.title.trim().length>100)return 'title';
   const validDate=d=>dateRE.test(d)&&Number.isFinite(Date.parse(d+'T00:00:00Z'))&&new Date(d+'T00:00:00Z').toISOString().slice(0,10)===d;
-  if(!validDate(r.startDate)||!validDate(r.endDate))return 'Choose valid dates.';
+  if(!validDate(r.startDate)||!validDate(r.endDate))return 'dates';
   const a=Date.parse(r.startDate+'T00:00:00Z'),b=Date.parse(r.endDate+'T00:00:00Z');
-  if(b<a||b-a>=14*86400000)return 'Choose at most 14 inclusive days.';
-  if(!timeRE.test(r.startTime)||!(r.endTime==='24:00'||timeRE.test(r.endTime)))return 'Use 30-minute aligned times.';
-  if(minutes(r.endTime)<=minutes(r.startTime))return 'End time must be later than start time.';
-  try{new Intl.DateTimeFormat('en-US',{timeZone:r.timezone}).format();}catch{return 'Choose a valid timezone.';}
+  if(b<a||b-a>=14*86400000)return 'maxDays';
+  if(!timeRE.test(r.startTime)||!(r.endTime==='24:00'||timeRE.test(r.endTime)))return 'aligned';
+  if(minutes(r.endTime)<=minutes(r.startTime))return 'endAfterStart';
+  try{new Intl.DateTimeFormat('en-US',{timeZone:r.timezone}).format();}catch{return 'timezone';}
   return null;
 }
+/** The same check as a sentence; English unless a When We Meet translator is passed (server routes stay English). */
+export function validateRoom(r,t=english){const code=validateRoomCode(r);return code?t(`validation.${code}`):null;}
 export function makeSlots(r){
   if(validateRoom(r))return [];
   const formatter=new Intl.DateTimeFormat('en-CA',{timeZone:r.timezone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});

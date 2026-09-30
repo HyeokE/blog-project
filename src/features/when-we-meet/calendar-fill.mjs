@@ -1,3 +1,5 @@
+import {createWwmTranslator} from '../../i18n/wwm.mjs';
+const english=createWwmTranslator('en');
 // "Fill from Google Calendar" preview helpers. Pure: never writes availability.
 // The preview is applied only after an explicit Apply, through the ordinary draft path.
 
@@ -15,9 +17,9 @@ export function fillSummary(preview){
 }
 
 /** 409 + reconnect → connect Google Calendar; anything else is an inline, retryable error. */
-export function fillFailure(error){
+export function fillFailure(error,t){
  if(error&&error.status===409&&error.reconnect===true)return {kind:'reconnect'};
- return {kind:'error',message:'Could not read your calendar.'};
+ return {kind:'error',message:t?t('fill.calendarError'):'Could not read your calendar.'};
 }
 
 const inRange=(slot,range)=>slot.date>=range.start&&slot.date<=range.end;
@@ -34,10 +36,10 @@ export function fillSummaryInRange(preview,slots,range){
  return {freeCount,slotCount,canApply:freeCount>0,text};
 }
 /** Announcement for the `?calendar=<outcome>` flag the Calendar consent callback adds. Nothing is fetched or applied. */
-export function calendarReturnNotice(outcome){
- if(outcome==='connected')return {tone:'success',text:'Google Calendar connected. Use Fill from Google Calendar to preview your free time.'};
- if(outcome==='denied')return {tone:'info',text:'Google Calendar was not connected. Your selection is unchanged.'};
- if(outcome==='error')return {tone:'error',text:'Could not connect Google Calendar. Please try again.'};
+export function calendarReturnNotice(outcome,t=english){
+ if(outcome==='connected')return {tone:'success',text:t('fill.connected')};
+ if(outcome==='denied')return {tone:'info',text:t('fill.denied')};
+ if(outcome==='error')return {tone:'error',text:t('fill.connectFailed')};
  return null;
 }
 /** What an Apply (or Undo) changed: added/removed ids and every changed id in time order. */

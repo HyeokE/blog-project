@@ -13,7 +13,6 @@ export default function CraftPrivacyPage(){
  return <main className="craft-page craft-legal" data-analytics-section={ANALYTICS_SECTIONS.CRAFT_LEGAL}>
   <div className="craft-shell">
    <header className="craft-header">
-    <span className="craft-eyebrow">HYEOK.DEV / CRAFT</span>
     <h1>Privacy Policy</h1>
     <p className="craft-legal-meta">Effective {EFFECTIVE} · Applies to Craft (hyeok.dev/craft) and When We Meet</p>
    </header>

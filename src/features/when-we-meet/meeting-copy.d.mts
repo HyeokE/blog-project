@@ -21,3 +21,16 @@ export function deleteMeetingCopy(title:string,confirmed:boolean):{title:string;
 export function loadErrorTitle(title?:string|null):string;
 export function organizedBy(name?:string|null):string;
 export const MEETING_COPY:Readonly<{titleLabel:string;titlePlaceholder:string;titleError:string;peopleHeading:string;organizerBadge:string;reviewDescription:string;send:string;sendRetry:string;noLongerWorks:string;bestTimes:string;scheduleHeading:string;deleteMeeting:string;deleteHint:string;deleteConfirm:string;deleting:string;invitationHeading:string;loadErrorDetail:string;reconnect:string;reconnectPrompt:string}>;
+import type {WwmLocale,WwmTranslate} from '../../i18n/wwm.mjs';
+export type MeetingCopy={
+ t:WwmTranslate;locale:WwmLocale;
+ compactRange:typeof compactRange;meetingSummary:typeof meetingSummary;dayLabel:typeof dayLabel;shortDay:typeof shortDay;
+ confirmedWhen:typeof confirmedWhen;confirmedChip:typeof confirmedChip;RSVP_LABELS:typeof RSVP_LABELS;rsvpSummary:typeof rsvpSummary;
+ saveStatus:typeof saveStatus;fillButtonLabel:typeof fillButtonLabel;fillToast:typeof fillToast;memberInvitedLine:typeof memberInvitedLine;
+ invitationsSentToast:typeof invitationsSentToast;resendQuestion:typeof resendQuestion;MEETING_TOASTS:typeof MEETING_TOASTS;
+ bestTimeLine:typeof bestTimeLine;dayTime:typeof dayTime;scheduleWarning:typeof scheduleWarning;deleteMeetingCopy:typeof deleteMeetingCopy;
+ loadErrorTitle:typeof loadErrorTitle;organizedBy:typeof organizedBy;MEETING_COPY:typeof MEETING_COPY;
+ /** Dictionary message for a failed request (by HTTP status and situation). */
+ apiError:(error:unknown,situation:'create'|'join'|'rename'|'schedule'|'delete')=>string;
+};
+export function createMeetingCopy(locale?:string):MeetingCopy;

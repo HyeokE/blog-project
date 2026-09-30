@@ -34,7 +34,7 @@ export function projectDraftRow({slots,selectedIds,displayName}){
 }
 
 /** Responses must be normalized, unique per user and represent saved responses only. */
-export function projectWeeklyTimeline({slots,responses,currentUserId}){
+export function projectWeeklyTimeline({slots,responses,currentUserId,youLabel='You'}){
   const ordered=[...slots].sort((a,b)=>compare(a.id,b.id));
   const seen=new Set();
   for(const response of responses){
@@ -50,7 +50,7 @@ export function projectWeeklyTimeline({slots,responses,currentUserId}){
     const key=response.displayName.toLocaleLowerCase();
     const ordinal=(nameOrdinals.get(key)||0)+1;nameOrdinals.set(key,ordinal);
     const isCurrentUser=response.userId===currentUserId;
-    const label=nameCounts.get(key)>1?`${response.displayName} (${isCurrentUser?'You':ordinal})`:isCurrentUser?`${response.displayName} (You)`:response.displayName;
+    const label=nameCounts.get(key)>1?`${response.displayName} (${isCurrentUser?youLabel:ordinal})`:isCurrentUser?`${response.displayName} (${youLabel})`:response.displayName;
     const selected=new Set(response.slots);
     return {userId:response.userId,displayName:response.displayName,label,isCurrentUser,color:palette.get(response.userId).color,mark:palette.get(response.userId).mark,slotIds:ordered.filter(slot=>selected.has(slot.id)).map(slot=>slot.id),runs:runsFor(ordered,selected)};
   });

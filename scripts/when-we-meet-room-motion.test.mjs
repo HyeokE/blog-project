@@ -10,8 +10,8 @@ test('room title owns metadata and header actions without redundant headings',()
  // Compact status shares the tab row (beside the tabs, outside the panels).
  assert.match(component,/<div className="wwm-tabs-row"><TabsList[^\n]*<\/TabsList>\n[^\n]*\n\s*\{\(view==="availability"\|\|save\.tone!=="idle"\)&&<div className="wwm-save-state" data-tone=\{save\.tone\}><span className="wwm-sr-only" role="status">/);
  // One live sentence; the visible line with the rolling count is hidden from AT so the number is not announced twice.
- assert.match(component,/<span aria-hidden="true">\{save\.text&&<>\{save\.text\} · <\/>\}<RollingNumber value=\{mine\.length\}\/> selected<\/span>/);
- assert.match(component,/role="status">\{save\.text\?`\$\{save\.text\} · \$\{mine\.length\} selected`:''\}/);
+ assert.match(component,/<span aria-hidden="true">\{save\.text&&<>\{save\.text\} · <\/>\}\{rich\(t\('room\.selected',\{count:mine\.length\}\),String\(mine\.length\),<RollingNumber value=\{mine\.length\}\/>\)\}<\/span>/);
+ assert.match(component,/role="status">\{save\.text\?`\$\{save\.text\} · \$\{t\('room\.selected',\{count:mine\.length\}\)\}`:''\}/);
  // Metadata line sits directly under the room title (h1).
  const chrome=readFileSync(new URL('../src/features/when-we-meet/RoomChrome.tsx',import.meta.url),'utf8');
  assert.match(chrome,/<h1>\{title\}<\/h1>/);
@@ -20,18 +20,28 @@ test('room title owns metadata and header actions without redundant headings',()
  assert.doesNotMatch(component+chrome,/Live updates|Connecting…/);
  assert.doesNotMatch(component,/<div className="wwm-heading"><div><h2>시간표<\/h2>/);
 });
-test('room uses the continuous scrolling availability calendar instead of the superseded standalone calendar',()=>{
+test('room uses the page-flowing availability calendar instead of the superseded standalone calendar',()=>{
  const weekly=readFileSync(new URL('../src/features/when-we-meet/WeeklyAvailability.tsx',import.meta.url),'utf8');
  assert.match(component,/<WeeklyAvailability\b/);
  assert.doesNotMatch(component,/calendarOpen&&<motion\.div/);
- // Previous/Next week paging was replaced by one horizontally scrolling calendar containing every room date.
  assert.doesNotMatch(weekly,/aria-label="(?:Previous|Next) week"/);
- // The scroller is not a Tab stop of its own: the ARIA grid inside it is the one Tab stop and focus scrolls it.
- assert.match(weekly,/<div className="wwm-week-scroll" ref=\{scroller\} onScroll=\{onScroll\}/);
+ // User rule: the calendar never scrolls on its own. The body is a plain block (no scroll handler, no programmatic
+ // scrolling); the page scrolls and more days than fit are paged (2 on phones, 7 otherwise).
+ assert.match(weekly,/<div className="wwm-week-body" ref=\{scroller\} onPointerUp=\{endPointer\}>/);
+ assert.doesNotMatch(weekly,/scrollTop|scrollLeft|scrollIntoView|onScroll=\{/);
+ assert.match(weekly,/pageSize=phone\?2:7/);
+ const calendarCss=readFileSync(new URL('../src/features/when-we-meet/week-calendar.css',import.meta.url),'utf8');
+ for(const selector of ['.wwm-week-body','.wwm-calendar-header','.wwm-calendar-frame','.wwm-week-grid']){
+  for(const [,body] of calendarCss.matchAll(new RegExp(`(?:^|\\})${selector.replace('.','\\.')}\\{([^}]*)\\}`,'g')))assert.doesNotMatch(body,/overflow|max-height/,`${selector} must not scroll`);
+ }
+ assert.match(calendarCss,/\.wwm-week-grid\{display:grid;grid-template-columns:64px repeat\(var\(--wwm-day-count\),minmax\(0,1fr\)\);width:100%;/);
+ assert.doesNotMatch(calendarCss,/wwm-week-scroll|header-scroll/);
+ // Empty leading hours collapse behind one button instead of scrolling to the first hour.
+ assert.match(weekly,/\{collapsed>0&&<button type="button" className="wwm-calendar-earlier"[^\n]*?>\{t\('grid\.showEarlier'/);
  assert.match(weekly,/role="grid" aria-label=\{label\}/);
  assert.match(weekly,/\{dates\.map\(\(date,column\)=><div className="wwm-calendar-day"/);
  // Scrolling dismisses any open detail popover.
- assert.match(weekly,/const onScroll=\(event:React\.UIEvent<HTMLDivElement>\)=>\{[^\n]*setDetail\(null\)\};/);
+ assert.match(weekly,/const onScroll=\(\)=>\{[^\n]*setDetail\(null\)\};window\.addEventListener\('scroll',onScroll,\{passive:true\}\)/);
 });
 test('room tabs present a visible yet restrained transition',()=>{
  // Radix zeroes animation-duration on TabsContent mount, so the fade lives on an inner wrapper keyed by the tab.

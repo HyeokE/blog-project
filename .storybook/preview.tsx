@@ -1,6 +1,7 @@
 import type {Preview} from '@storybook/nextjs-vite';
 import {reset,MockEventSource,mockPeopleFetch} from '../src/stories/wwm/mock-api';
 import {addons} from 'storybook/preview-api';
+import {WwmI18nProvider} from '../src/features/when-we-meet/i18n/WwmI18nProvider';
 import {PLAY_FUNCTION_THREW_EXCEPTION} from 'storybook/internal/core-events';
 import '../src/app/craft/craft.css';
 import '../src/app/craft/design-system.css';
@@ -28,9 +29,9 @@ if(typeof window!=='undefined'){
 const preview:Preview={
   afterEach:(context)=>{document.documentElement.dataset.wwmStoryVerified=context.id;},
   beforeEach:()=>{delete document.documentElement.dataset.wwmStoryVerified;delete document.documentElement.dataset.wwmPlayError;reset();for(const key of Object.keys(sessionStorage))if(key.startsWith('wwm:'))sessionStorage.removeItem(key);},
-  globalTypes:{theme:{description:'Craft theme',toolbar:{icon:'circlehollow',items:['light','dark'],dynamicTitle:true}}},
-  initialGlobals:{theme:'light'},
+  globalTypes:{theme:{description:'Craft theme',toolbar:{icon:'circlehollow',items:['light','dark'],dynamicTitle:true}},locale:{description:'When We Meet language',toolbar:{icon:'globe',items:[{value:'en',title:'English'},{value:'ko',title:'한국어'}],dynamicTitle:true}}},
+  initialGlobals:{theme:'light',locale:'en'},
   parameters:{layout:'fullscreen',viewport:{options:{mobile:{name:'Mobile',styles:{width:'390px',height:'844px'}},desktop:{name:'Desktop',styles:{width:'1440px',height:'900px'}}}}},
-  decorators:[(Story,context)=>{document.documentElement.dataset.mode=context.globals.theme==='dark'?'dark':'light';document.documentElement.dataset.craft='true';return <Story/>;}],
+  decorators:[(Story,context)=>{document.documentElement.dataset.mode=context.globals.theme==='dark'?'dark':'light';document.documentElement.dataset.craft='true';return <WwmI18nProvider locale={context.globals.locale==='ko'?'ko':'en'}><Story/></WwmI18nProvider>;}],
 };
 export default preview;

@@ -3,7 +3,7 @@
 .wwm.wwm-room .wwm-room-header h1{grid-area:title;min-width:0;margin:0;font-size:var(--craft-fs-28);font-weight:var(--craft-fw-semibold);line-height:36px;letter-spacing:-.02em;overflow-wrap:anywhere}
 .wwm.wwm-room .wwm-header-actions{grid-area:actions;display:flex;flex:none;align-items:center;gap:var(--craft-space-2);width:auto}
 .wwm.wwm-room .wwm-header-actions [data-slot='button']:not([data-size='icon']){width:auto}
-.wwm.wwm-room .wwm-room-meta{grid-area:meta;display:flex;flex-wrap:wrap;align-items:center;gap:var(--craft-space-1) var(--craft-space-3);min-width:0;margin:0;font-size:var(--craft-fs-14);line-height:20px;color:var(--craft-muted)}
+.wwm.wwm-room .wwm-room-meta{grid-area:meta;display:flex;flex-wrap:wrap;align-items:center;gap:var(--craft-space-3);min-width:0;margin:0;font-size:var(--craft-fs-14);line-height:20px;color:var(--craft-muted)}
 /* Confirmed status is the shared Badge (ui/badge, design-system.css); day only, the card on Confirm carries the time. */
 .wwm.wwm-room .wwm-offline{display:inline-flex;align-items:center;gap:var(--craft-space-1);margin:0;color:var(--craft-warning)}
 .wwm.wwm-room .wwm-offline i{width:8px;height:8px;border-radius:50%;background:currentColor}

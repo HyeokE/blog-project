@@ -30,14 +30,15 @@
 .craft-chrome .wall-header-actions{align-items:center}
 .craft-chrome .craft-account{position:relative;inset:auto;z-index:auto}
 .craft-chrome .craft-page{padding-top:88px;background:var(--craft-canvas)}
-.craft-chrome .craft-header{padding-top:var(--craft-space-4);padding-bottom:var(--craft-space-8)}
+/* No eyebrow or back link above Craft index/legal titles: start them where When We Meet titles start (~183px). */
+.craft-chrome .craft-header{padding-top:calc(var(--craft-space-12) * 2);padding-bottom:var(--craft-space-8)}
 .craft-chrome .wwm{padding-top:max(112px,calc(var(--wall-header-top) + 70px));padding-bottom:110px}
 .craft-chrome .wwm .wall-context-back{position:relative;left:0;margin-bottom:24px}
 @media(max-width:700px){
   .craft-chrome .wall-header-actions{gap:4px}
   .craft-chrome .craft-account-login{padding:0 var(--craft-space-2);min-height:var(--craft-h-md)}
   .craft-chrome .craft-page{padding-top:86px}
-  .craft-chrome .craft-header{padding-top:var(--craft-space-3);padding-bottom:var(--craft-space-6)}
+  .craft-chrome .craft-header{padding-top:var(--craft-space-6);padding-bottom:var(--craft-space-6)}
   .craft-chrome .wwm{padding-top:calc(var(--wall-header-top) + 52px)}
   .craft-chrome .wwm .wwm-topline{min-height:44px}
   .craft-chrome .wwm .wall-context-back{margin-bottom:6px}

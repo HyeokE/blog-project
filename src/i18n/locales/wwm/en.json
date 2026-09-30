@@ -27,7 +27,10 @@
     "opensInNewTab": "(opens in a new tab)",
     "offline": "Offline",
     "allDay": "All day",
-    "listSeparator": ", "
+    "listSeparator": ", ",
+    "close": "Close",
+    "continueWithGoogle": "Continue with Google",
+    "connectingToGoogle": "Connecting to Google…"
   },
   "guest": {
     "headline": "See everyone’s availability at a glance.",
@@ -37,18 +40,20 @@
     "signInToCreate": "Sign in with Google to create a meeting",
     "draftKept": "Your draft stays in this tab. Sign in, then press Create meeting again.",
     "sampleCalendar": "Sample calendar · illustrative availability",
-    "weekView": "Week view"
+    "weekView": "Week view",
+    "previewHeading": "Availability"
   },
   "list": {
     "newMeeting": "New meeting",
     "emptyTitle": "No meetings yet",
-    "emptyBody": "Create a meeting to find a time together, or join one with an invitation link.",
+    "emptyBody": "Create a meeting to find a time together,\nor join one with an invitation link.",
     "loading": "Loading your meetings",
     "loadingShort": "Loading meetings",
     "loadFailed": "Couldn’t load your meetings",
     "memberCountUnavailable": "Member count unavailable",
     "checkingAccount": "Checking your account",
-    "gettingReady": "Getting your meetings ready."
+    "gettingReady": "Getting your meetings ready.",
+    "memberCount": { "one": "{count} member", "other": "{count} members" }
   },
   "create": {
     "dialogTitle": "New meeting",
@@ -82,7 +87,12 @@
     "searchTimezones": "Search city or timezone",
     "searchTimezonesLabel": "Search timezones",
     "timezones": "Timezones",
-    "noTimezones": "No matching timezones."
+    "noTimezones": "No matching timezones.",
+    "tooLong": "That end date is more than 14 days after {start}. Choose an earlier end date.",
+    "startChosen": "Start {start}. Choose an end date.",
+    "currentRange": "Current range {start} to {end}, {days} days. Choose a new start date to replace it.",
+    "timeList": "{label} time",
+    "calendar": "{label} calendar"
   },
   "room": {
     "views": "Meeting views",
@@ -108,7 +118,8 @@
     "selected": { "one": "{count} selected", "other": "{count} selected" },
     "connectionRequired": "Connection required",
     "notConfigured": "This service is not connected to Supabase yet. No meeting or availability can be saved. Ask the site owner to configure the shared project and review the migration. Google login must be enabled before meeting actions can work.",
-    "findingTimes": "Finding the times you’re planning together."
+    "findingTimes": "Finding the times you’re planning together.",
+    "savedDataSafe": "Your saved data is safe."
   },
   "save": {
     "saving": "Saving…",
@@ -130,14 +141,31 @@
     "selected": "Selected",
     "cellAvailable": "{when}, available",
     "cellNotAvailable": "{when}, not available",
-    "cellPeople": { "one": "{when}, {count} person free: {names}", "other": "{when}, {count} people free: {names}" },
-    "cellNobody": "{when}, nobody free"
+    "cellPeople": "{when}, {count} of {total} available: {names}",
+    "cellNobody": "{when}, nobody available",
+    "cellCount": "{when}, {count} of {total} available",
+    "cellSelectedSuffix": ", selected",
+    "cellStartSuffix": ", start",
+    "when": "{day}, {time}",
+    "labelChoose": "Choose a time · {timezone}",
+    "labelEveryone": "Everyone’s availability · {timezone}",
+    "labelYours": "Your availability · {timezone}",
+    "instructions": {
+      "anchor": "Start set at {time}. Press Enter or Space on a later half-hour of the same day to set the end.",
+      "select": "Arrow keys move between half-hours and days. Enter or Space sets the start, then the end; Shift with Up or Down stretches the range. On touch, tap twice or long-press and drag.",
+      "readOnly": "Read-only view of saved availability. Arrow keys move between half-hours and days; each half-hour names who is free. Enter or Space opens the details of the first person there.",
+      "edit": "Click or drag to edit your availability. Arrow keys move between half-hours and days, Enter or Space toggles one, Shift with an arrow extends. On touch, tap toggles and long-press then drag selects a range."
+    },
+    "startSet": "Start set at {time}.",
+    "pagerDay": "{weekday} {day}",
+    "blockName": "{name}, {date}, {start} to {end}",
+    "blockTime": "{start} to {end}",
+    "showEarlier": "Show {from}–{to}"
   },
   "fill": {
     "trigger": "Fill from Google Calendar",
     "checking": "Checking calendar…",
     "intro": "Preview the half-hours your calendar shows as free, then fill them.",
-    "freeHalfHours": "free half-hours",
     "onlyTheseDates": "Only these dates change",
     "none": "No free half-hours on these dates",
     "button": { "one": "Fill {count} slot", "other": "Fill {count} slots" },
@@ -148,10 +176,11 @@
     "connectGoogleCalendar": "Connect Google Calendar",
     "connectPrompt": "Connect Google Calendar to see when you’re free.",
     "calendarError": "Couldn’t read your calendar.",
-    "connected": "Google Calendar connected",
-    "denied": "Google Calendar access wasn’t granted",
+    "connected": "Google Calendar connected. Use Fill from Google Calendar to preview your free time.",
+    "denied": "Google Calendar wasn’t connected. Your selection is unchanged.",
     "permissionMissing": "Tick the Google Calendar permission to continue",
-    "connectFailed": "Couldn’t connect Google Calendar"
+    "connectFailed": "Couldn’t connect Google Calendar. Try again.",
+    "freeCount": { "one": "{count} free half-hour", "other": "{count} free half-hours" }
   },
   "people": {
     "heading": "People",
@@ -171,7 +200,6 @@
     "start": "Start",
     "end": "End",
     "enterManually": "Enter time manually",
-    "selectionHint": "Drag on one day to choose a time",
     "review": "Review confirmation",
     "reviewTitle": "Review confirmation",
     "reviewDescription": "Check the exact time and recipients before sending invitations.",
@@ -204,7 +232,28 @@
     "invitationsSent": { "one": "Invitations sent to {count} person", "other": "Invitations sent to {count} people" },
     "loadFailed": "Couldn’t load the confirmation. Check your connection and try again.",
     "loading": "Loading confirmation",
-    "calendarUnavailable": "Google Calendar connection is unavailable. Try again."
+    "calendarUnavailable": "Google Calendar connection is unavailable. Try again.",
+    "reconcilingNoRetry": "Checking event status. Please don’t retry yet.",
+    "organizerUnavailable": "Not available",
+    "missingEmail": "Missing email",
+    "excludedTag": "Excluded",
+    "submitted": "Request submitted. Waiting for verified status.",
+    "errors": {
+      "selectionChanged": "The selected time changed. Review again.",
+      "invalidRange": "Choose a valid time range.",
+      "outsideWindow": "That time is outside the meeting window.",
+      "recipientsChanged": "Recipients changed. Review again.",
+      "eventName": "Enter an event name (up to 100 characters).",
+      "reload": "Reload the meeting and review again.",
+      "lastAttemptFailed": "The last confirmation attempt didn’t finish. Review the details and try again.",
+      "reconnect": "Connect Google Calendar to send invitations. Connecting doesn’t send anything; review again afterward.",
+      "changed": "The proposed time or recipients changed. Review again.",
+      "notOwner": "Only the meeting owner can do this.",
+      "conflict": "This meeting changed since you opened it. Reload and review again.",
+      "session": "Your session expired. Sign in again, then review.",
+      "google": "Google Calendar didn’t complete the request. Try again to check the status; nothing is sent twice.",
+      "network": "Couldn’t reach the server. Try again to check the invitation status; it won’t send twice."
+    }
   },
   "confirmed": {
     "status": "Confirmed",
@@ -236,7 +285,8 @@
       "declined": "{count} declined",
       "tentative": "{count} maybe",
       "needsAction": "{count} no reply"
-    }
+    },
+    "invitationsSent": "Invitations sent"
   },
   "edit": {
     "title": "Edit confirmed meeting",
@@ -249,7 +299,12 @@
     "saving": "Saving changes…",
     "reconciling": "Saving your changes to Google Calendar. Checking again never notifies attendees twice.",
     "chooseNewTime": "Choose a new time.",
-    "savedToast": "Changes saved · attendees notified"
+    "savedToast": "Changes saved · attendees notified",
+    "reviewDescription": "Google Calendar updates the same event and emails attendees about the change. Removed recipients receive a cancellation.",
+    "errors": {
+      "google": "Google Calendar didn’t complete the change. Check again to see what was saved; attendees aren’t notified twice.",
+      "network": "Couldn’t reach the server. Check again to see whether your changes were saved; attendees aren’t notified twice."
+    }
   },
   "resend": {
     "menuItem": "Resend invitations…",
@@ -258,7 +313,14 @@
     "body": "Google Calendar sends the same invitation again.",
     "confirm": "Resend",
     "sending": "Resending…",
-    "toast": "Invitations re-sent"
+    "toast": "Invitations re-sent",
+    "errors": {
+      "reconnect": "Connect Google Calendar to resend invitations.",
+      "session": "Your session expired. Sign in again.",
+      "tooSoon": "Invitations were just sent. Try again in a minute.",
+      "notAllowed": "Invitations can be resent only for a confirmed meeting with no pending changes.",
+      "network": "Couldn’t resend invitations. Try again in a minute."
+    }
   },
   "settings": {
     "title": "Settings",
@@ -292,7 +354,9 @@
     "invalid": "This invitation link is incomplete or invalid. Ask the organizer for a new link.",
     "goToMeetings": "Go to your meetings",
     "privacyNote": "Only people with the complete invitation link can join. Keep it private.",
-    "linkUnavailable": "Invitation link unavailable"
+    "linkUnavailable": "Invitation link unavailable",
+    "gettingReady": "Getting your invitation ready.",
+    "storageUnavailable": "This browser can’t keep the invitation through Google sign-in. Allow storage for this site and try again."
   },
   "auth": {
     "finishing": "Finishing Google sign-in",
@@ -318,5 +382,26 @@
     "label": "Language",
     "en": "English",
     "ko": "한국어"
+  },
+  "validation": {
+    "title": "Enter a title (up to 100 characters).",
+    "dates": "Choose valid dates.",
+    "maxDays": "Choose at most 14 inclusive days.",
+    "aligned": "Use 30-minute aligned times.",
+    "endAfterStart": "End time must be later than start time.",
+    "timezone": "Choose a valid timezone.",
+    "datesRequired": "Choose a start and end date.",
+    "pastDates": "Choose dates that are not in the past.",
+    "name": "Enter your name (up to 50 characters)."
+  },
+  "errors": {
+    "session": "Your session expired. Sign in again.",
+    "create": "Couldn’t create the meeting. Try again.",
+    "createInvalid": "Check the meeting details and try again.",
+    "join": "Couldn’t join this meeting. Try again.",
+    "notOwner": "Only the meeting owner can change this.",
+    "conflict": "This meeting changed since you opened it. Reload and try again.",
+    "invalidSchedule": "Check the dates and times and try again.",
+    "generic": "Something went wrong. Try again."
   }
 }

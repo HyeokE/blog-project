@@ -4,7 +4,7 @@ test('calendar uses continuous labeled event blocks instead of per-cell plus and
  const source=readFileSync(new URL('../src/features/when-we-meet/WeeklyAvailability.tsx',import.meta.url),'utf8');
  // Saved-response blocks are wwm-calendar-event buttons (now also styled as participant rails) with a duration label.
  assert.match(source,/className="wwm-calendar-event(?: [^"]*)?"/);
- assert.match(source,/aria-label=\{`\$\{block\.label\}, \$\{formatCraftDate\(date\)\}, \$\{timeAt\(block\.startUtc,timezone\)\} to \$\{timeAt\(block\.endUtc,timezone\)\}`\}/);
+ assert.match(source,/aria-label=\{t\('grid\.blockName',\{name:block\.label,date:formatCraftDate\(date\),start:timeAt\(block\.startUtc,timezone\),end:timeAt\(block\.endUtc,timezone\)\}\)\}/);
  assert.doesNotMatch(source,/selected\?'✓':'\+'/);
  assert.doesNotMatch(source,/className="wwm-week-count"/);
 });

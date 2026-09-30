@@ -1,3 +1,5 @@
+import {createWwmTranslator} from '../../i18n/wwm.mjs';
+const english=createWwmTranslator('en');
 // Confirm-tab range selection. Pure; ranges are one room-local date plus the first and
 // last selected slot ids, so a repeated DST half-hour is never re-derived from a wall clock.
 const HALF_HOUR=30*60*1000;
@@ -53,7 +55,7 @@ export function rangeInstants(range){
 
 /** Each member's saved availability for the selected slots. Not responded = no saved slots at all;
  * partial names the covered time when it is one contiguous run. Without a selection, members pass through. */
-export function selectionAvailability(members,responses,slots,range){
+export function selectionAvailability(members,responses,slots,range,t=english){
  const ids=rangeSlotIds(slots,range);
  if(!ids.length)return members;
  const byId=new Map(slots.map(slot=>[slot.id,slot]));
@@ -66,7 +68,7 @@ export function selectionAvailability(members,responses,slots,range){
   if(!covered.some(Boolean))return {...rest,response:'unavailable'};
   const first=covered.indexOf(true),last=covered.lastIndexOf(true);
   const contiguous=covered.slice(first,last+1).every(Boolean);
-  const label=contiguous?`Available ${byId.get(ids[first]).time}–${clock(minutes(byId.get(ids[last]).time)+30)}`:'Partly available';
+  const label=contiguous?t('confirm.status.availableBetween',{range:`${byId.get(ids[first]).time}–${clock(minutes(byId.get(ids[last]).time)+30)}`}):t('confirm.status.partial');
   return {...rest,response:'partial',availability:label};
  });
 }

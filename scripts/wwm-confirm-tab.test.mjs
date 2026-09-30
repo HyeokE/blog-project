@@ -105,7 +105,7 @@ test('POST outcomes and failures map to panel status without losing the proposal
 
 test('Confirm tab is a fourth shadcn tab wired to the panel and existing tabs stay intact',()=>{
  const room=read('src/features/when-we-meet/WhenWeMeet.tsx');
- assert.match(room,/const tabNames=\{availability:'Availability',everyone:'Everyone',people:'People',confirm:'Confirm'\} as const/);
+ assert.match(room,/const tabNames=\{availability:t\('room\.tabs\.availability'\),everyone:t\('room\.tabs\.everyone'\),people:t\('room\.tabs\.people'\),confirm:t\('room\.tabs\.confirm'\)\} as const/);
  assert.match(room,/view==='confirm'\?<ConfirmTab [^>]*\/>:view==='people'\?<PeoplePanel /);
  const tab=read('src/features/when-we-meet/ConfirmTab.tsx');
  assert.match(tab,/loadConfirmation\(roomId/);assert.match(tab,/postConfirmation\(roomId/);assert.match(tab,/AbortController/);

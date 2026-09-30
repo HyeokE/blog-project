@@ -3,12 +3,14 @@
 import {rangeFields,rangeInstants,rangeSlotIds} from './confirm-selection.mjs';
 import {formatCraftInstant} from './display-date.mjs';
 import {RSVP_STATUSES} from './rsvp.mjs';
+import {createWwmTranslator} from '../../i18n/wwm.mjs';
 
 const HALF_HOUR=30*60*1000;
 const minutes=clock=>Number(clock.slice(0,2))*60+Number(clock.slice(3));
 const clock=total=>`${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`;
 const isString=value=>typeof value==='string';
 const fail=message=>{throw new Error(message)};
+const english=createWwmTranslator('en');
 
 function normalizeRecord(value){
  if(value===null||value===undefined)return null;
@@ -48,26 +50,26 @@ export function normalizeConfirmationResponse(raw){
 
 /** Room-local date + HH:mm range → UTC instants. End = last covered slot + 30 min, so 24:00 is the next local midnight.
  * Calendar selections also carry slot ids; they win over the wall clock (a repeated DST half-hour) but must agree with it. */
-export function proposalInstants({date,start,end,startId,endId},slots){
+export function proposalInstants({date,start,end,startId,endId},slots,t=english){
  if(startId||endId){
   const range={date,startId,endId},fields=rangeFields(slots,range);
-  if(!fields||!rangeSlotIds(slots,range).length||fields.date!==date||fields.start!==start||fields.end!==end||Date.parse(endId)<Date.parse(startId))fail('The selected time changed. Review again.');
+  if(!fields||!rangeSlotIds(slots,range).length||fields.date!==date||fields.start!==start||fields.end!==end||Date.parse(endId)<Date.parse(startId))fail(t('confirm.errors.selectionChanged'));
   return rangeInstants(range);
  }
- if(!isString(date)||!/^\d\d:\d\d$/.test(start||'')||!/^\d\d:\d\d$/.test(end||'')||minutes(end)<=minutes(start))fail('Choose a valid time range.');
+ if(!isString(date)||!/^\d\d:\d\d$/.test(start||'')||!/^\d\d:\d\d$/.test(end||'')||minutes(end)<=minutes(start))fail(t('confirm.errors.invalidRange'));
  const first=slots.find(slot=>slot.date===date&&slot.time===start);
  const last=slots.findLast(slot=>slot.date===date&&slot.time===clock(minutes(end)-30));
- if(!first||!last||Date.parse(last.utc)<Date.parse(first.utc))fail('That time is outside the meeting window.');
+ if(!first||!last||Date.parse(last.utc)<Date.parse(first.utc))fail(t('confirm.errors.outsideWindow'));
  return {start:new Date(Date.parse(first.utc)).toISOString(),end:new Date(Date.parse(last.utc)+HALF_HOUR).toISOString()};
 }
 
 /** POST body; recipients + excluded must partition every attendee exactly once. */
-export function confirmationBody({title,proposal,slots,attendeeIds}){
+export function confirmationBody({title,proposal,slots,attendeeIds,t=english}){
  const recipients=[...proposal.recipientIds],excluded=[...proposal.excludedIds],all=[...recipients,...excluded];
- if(!recipients.length||new Set(all).size!==all.length||all.length!==attendeeIds.length||attendeeIds.some(id=>!all.includes(id)))fail('Recipients changed. Review again.');
- const {start,end}=proposalInstants(proposal,slots);
+ if(!recipients.length||new Set(all).size!==all.length||all.length!==attendeeIds.length||attendeeIds.some(id=>!all.includes(id)))fail(t('confirm.errors.recipientsChanged'));
+ const {start,end}=proposalInstants(proposal,slots,t);
  const eventTitle=(proposal.title??title).trim();
- if(!eventTitle||eventTitle.length>100)fail('Enter an event name (up to 100 characters).');
+ if(!eventTitle||eventTitle.length>100)fail(t('confirm.errors.eventName'));
  const optional=[...new Set(proposal.optionalIds||[])].filter(id=>recipients.includes(id));
  return {title:eventTitle,date:proposal.date,start,end,recipients,excluded,optional};
 }
@@ -83,7 +85,7 @@ function localClock(iso,timezone,slots,edge){
 const panelStatus=status=>status==='confirmed'?'confirmed':status==='pending'||status==='reconciling'?'reconciling':status==='failed'?'failed':'draft';
 
 /** API data → ConfirmationPanel props (minus room/callbacks). recipientIds, when known from this session, narrows attendee names. */
-export function confirmPanelState({data,slots,organizerName,recipientIds}){
+export function confirmPanelState({data,slots,organizerName,recipientIds,t=english}){
  const review=data.review,record=data.confirmation;
  const attendees=review?.attendees||[];
  const status=record?panelStatus(record.status):'draft';
@@ -94,7 +96,7 @@ export function confirmPanelState({data,slots,organizerName,recipientIds}){
   calendar:review?.calendarConnected?'connected':'disconnected',
   status,
  };
- if(status==='failed')state.error='The last confirmation attempt did not finish. Review the details and try again.';
+ if(status==='failed')state.error=t('confirm.errors.lastAttemptFailed');
  if(record&&status==='confirmed'){
   const start=localClock(record.startsAt,record.timezone,slots,'start'),end=localClock(record.endsAt,record.timezone,slots,'end');
   const edit=review?.edit;
@@ -119,8 +121,16 @@ export function confirmOutcome(result){
 }
 
 /** POST failure → panel status. retrySame: resending the same proposal is safe and useful (server reconciles, never double-sends). */
-export function confirmFailure(error){
+export function confirmFailure(error,t,mode='confirm'){
  const status=error&&typeof error.status==='number'?error.status:undefined;
+ // With a translator the UI shows dictionary copy by status; the server's English `error` is never passed through.
+ if(t){
+  const retrySame=!(status===409||status===400||status===403||status===401);
+  if(status===409&&error.reconnect===true)return {status:'failed',calendar:'disconnected',error:t('confirm.errors.reconnect'),retrySame:false};
+  const key=status===400?'changed':status===403?'notOwner':status===409?'conflict':status===401?'session':status===502?'google':'network';
+  // Edits of a confirmed meeting talk about the change and notifications, not new invitations.
+  return {status:'failed',error:t(mode==='edit'&&(key==='google'||key==='network')?`edit.errors.${key}`:`confirm.errors.${key}`),retrySame};
+ }
  const message=error&&typeof error.message==='string'&&status!==undefined?error.message:'';
  if(status===409&&error.reconnect===true)return {status:'failed',calendar:'disconnected',error:`${message||'Connect Google Calendar to send invitations.'} Connecting does not send anything; review again afterward.`,retrySame:false};
  if(status===400)return {status:'failed',error:message||'The proposed time or recipients changed. Review again.',retrySame:false};
@@ -132,7 +142,7 @@ export function confirmFailure(error){
 
 /** Edit POST body: the reviewed proposal plus the confirmed revision it was edited from. */
 export function confirmUpdateBody({baseRevision,...input}){
- if(!Number.isSafeInteger(baseRevision)||baseRevision<1)fail('Reload the meeting and review again.');
+ if(!Number.isSafeInteger(baseRevision)||baseRevision<1)fail((input.t||english)('confirm.errors.reload'));
  return {...confirmationBody(input),baseRevision};
 }
 
@@ -145,8 +155,13 @@ export function openEditBody(data,slots){
 }
 
 /** Resend failure → inline message at the Resend control. */
-export function resendFailure(error){
+export function resendFailure(error,t){
  const status=error&&typeof error.status==='number'?error.status:undefined;
+ if(t){
+  if(status===409&&error.reconnect===true)return {status:'failed',calendar:'disconnected',error:t('resend.errors.reconnect')};
+  const key=status===401?'session':status===429?'tooSoon':status===409?'notAllowed':'network';
+  return {status:'failed',error:t(`resend.errors.${key}`)};
+ }
  const message=error&&typeof error.message==='string'&&status!==undefined?error.message:'';
  if(status===409&&error.reconnect===true)return {status:'failed',calendar:'disconnected',error:message||'Connect Google Calendar to resend invitations.'};
  if(status===401)return {status:'failed',error:'Your session expired. Sign in again.'};

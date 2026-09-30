@@ -6,8 +6,8 @@ const account=readFileSync(new URL('../src/app/craft/CraftAccount.tsx',import.me
 test('Craft uses shadcn controls in live form and room actions',()=>{
  // Availability autosaves via useAvailabilitySync; the explicit Save button was superseded. Room/form actions stay shadcn Buttons.
  assert.doesNotMatch(feature,/onClick=\{save\}/);
- assert.match(feature,/<Button[^>]*onClick=\{sync\.retry\}>Retry<\/Button>/);
- assert.match(feature,/<Button[^>]*disabled=\{!configured\|\|busy\|\|accountLoading\}>\{busy\?'Creating…':'Create meeting'\}<\/Button>/);
+ assert.match(feature,/<Button[^>]*onClick=\{sync\.retry\}>\{t\('common\.retry'\)\}<\/Button>/);
+ assert.match(feature,/<Button[^>]*disabled=\{!configured\|\|busy\|\|accountLoading\}>\{busy\?t\('create\.submitting'\):t\('create\.submit'\)\}<\/Button>/);
  assert.doesNotMatch(feature,/<button\b/,'WhenWeMeet must not render raw <button> controls');
  assert.match(feature,/<Input[^>]*value=\{form\.title\}/);
  assert.match(feature,/<Tabs[^>]*value=\{view\}/);
@@ -19,7 +19,7 @@ test('shared profile uses Radix dropdown and real button',()=>{
 });
 test('shared count rolls in room status and recommendations, not calendar date',()=>{
  // Recommendations tab was removed (tabs: Availability / Everyone / People); the room status selection count still rolls.
- assert.match(feature,/<RollingNumber value=\{mine\.length\}\/> selected/);
+ assert.match(feature,/rich\(t\('room\.selected',\{count:mine\.length\}\),String\(mine\.length\),<RollingNumber value=\{mine\.length\}\/>\)/);
  assert.doesNotMatch(feature,/Suggestions|recommendations:/);
  const weekly=readFileSync(new URL('../src/features/when-we-meet/WeeklyAvailability.tsx',import.meta.url),'utf8');
  const count=readFileSync(new URL('../src/features/when-we-meet/ParticipantCount.tsx',import.meta.url),'utf8');
