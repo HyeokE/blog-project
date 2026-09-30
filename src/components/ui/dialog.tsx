@@ -56,6 +56,46 @@ const INTERACTIVE = "button,a,input,textarea,select,label,[role=combobox],[role=
 
 // Native-style detents for the mobile sheet: drag the grab bar or header to expand, collapse or dismiss.
 // Only the top zone listens, so inner scrolling, inputs and popovers keep their own gestures.
+/**
+ * iOS Safari (and Android with resizes-visual) keep the layout viewport when the on-screen keyboard opens, so a
+ * sheet pinned to `bottom: 0` ends up behind the keyboard. Track the visual viewport and expose how much of the
+ * layout viewport the keyboard covers (--sheet-keyboard) and the visible height (--sheet-visible-height);
+ * dialog-sheet.css lifts and shortens the sheet with them. The focused field is then scrolled into view.
+ */
+function useSheetKeyboard(contentRef: React.RefObject<HTMLDivElement | null>, enabled: boolean) {
+  React.useEffect(() => {
+    const viewport = typeof window === "undefined" ? null : window.visualViewport
+    if (!enabled || !viewport) return
+    let frame = 0
+    const update = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        const sheet = contentRef.current
+        if (!sheet) return
+        const covered = Math.max(0, Math.round(window.innerHeight - viewport.height - viewport.offsetTop))
+        sheet.style.setProperty("--sheet-keyboard", `${covered}px`)
+        sheet.style.setProperty("--sheet-visible-height", `${Math.round(viewport.height)}px`)
+        // Under ~80px is browser chrome (toolbar collapse), not a keyboard.
+        if (covered > 80) sheet.dataset.sheetKeyboard = "true"
+        else delete sheet.dataset.sheetKeyboard
+        const active = document.activeElement
+        if (covered > 80 && active instanceof HTMLElement && sheet.contains(active)) active.scrollIntoView({ block: "nearest" })
+      })
+    }
+    const onFocusIn = () => window.setTimeout(update, 300)
+    update()
+    viewport.addEventListener("resize", update)
+    viewport.addEventListener("scroll", update)
+    document.addEventListener("focusin", onFocusIn)
+    return () => {
+      cancelAnimationFrame(frame)
+      viewport.removeEventListener("resize", update)
+      viewport.removeEventListener("scroll", update)
+      document.removeEventListener("focusin", onFocusIn)
+    }
+  }, [contentRef, enabled])
+}
+
 function useSheetDrag(enabled: boolean) {
   const contentRef = React.useRef<HTMLDivElement>(null)
   const closeRef = React.useRef<HTMLButtonElement>(null)
@@ -140,6 +180,7 @@ function DialogContent({
   mobilePresentation?: "sheet" | "modal"
 }) {
   const sheet = useSheetDrag(mobilePresentation === "sheet")
+  useSheetKeyboard(sheet.contentRef, mobilePresentation === "sheet")
   // Controlled dialogs often have no DialogTrigger, and Radix then has nothing to refocus on close.
   // Remember the element that had focus when the dialog opened (focus has not moved yet) and return to it.
   const opener = React.useRef<HTMLElement | null>(null)

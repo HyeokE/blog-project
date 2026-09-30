@@ -54,6 +54,8 @@
   }
   /* margin-top:auto pins the footer to the bottom edge when the form is taller than its fields (large detent). */
   :root [data-slot='dialog-content'][data-mobile-presentation='sheet'] > form > [data-slot='dialog-footer'] { flex-shrink: 0; margin-top: auto; }
+  /* When the whole form scrolls (no *-body wrapper), keep its actions on screen — above the keyboard too. */
+  :root [data-slot='dialog-content'][data-mobile-presentation='sheet'] > form > [data-slot='dialog-footer'] { position: sticky; bottom: 0; z-index: 1; background: var(--craft-surface, var(--background)); }
   :root [data-slot='dialog-content'][data-mobile-presentation='sheet'] > form > [class*='-body'] { flex: 0 1 auto; min-height: 0; overflow-y: auto; }
 
   /* Full-width grab zone (top 24px); the visible bar is its ::before. The header is also draggable. */
@@ -111,6 +113,19 @@
   :root [data-slot='dialog-content'][data-mobile-presentation='sheet'][data-state='closed'] {
     animation: dialog-sheet-out 180ms cubic-bezier(.4, 0, 1, 1) both !important;
     pointer-events: none;
+  }
+}
+
+/* On-screen keyboard (see useSheetKeyboard): sit on top of the keyboard and fit the visible area.
+   The keyboard covers the home indicator, so the safe-area border is dropped. */
+@media (max-width: 640px) {
+  :root [data-slot='dialog-content'][data-mobile-presentation='sheet'][data-sheet-keyboard] {
+    bottom: var(--sheet-keyboard, 0px) !important;
+    max-height: calc(var(--sheet-visible-height, 100dvh) - 12px) !important;
+    border-bottom-width: 0 !important;
+  }
+  :root [data-slot='dialog-content'][data-mobile-presentation='sheet'][data-sheet-keyboard][data-sheet-expanded='true'] {
+    height: calc(var(--sheet-visible-height, 100dvh) - 12px);
   }
 }
 
