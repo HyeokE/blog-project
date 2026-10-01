@@ -129,3 +129,5 @@
 .wwm-weekly .wwm-week-date[data-weekend='sun'],.wwm-weekly .wwm-calendar-day[data-weekend='sun']{background-color:color-mix(in srgb,var(--weekend-sun) 9%,var(--calendar-surface))}
 :root[data-mode='dark'] .wwm-weekly .wwm-week-date[data-weekend='sat'],:root[data-mode='dark'] .wwm-weekly .wwm-calendar-day[data-weekend='sat']{background-color:color-mix(in srgb,var(--weekend-sat) 14%,var(--calendar-surface))}
 :root[data-mode='dark'] .wwm-weekly .wwm-week-date[data-weekend='sun'],:root[data-mode='dark'] .wwm-weekly .wwm-calendar-day[data-weekend='sun']{background-color:color-mix(in srgb,var(--weekend-sun) 14%,var(--calendar-surface))}
+/* Tinted columns need a touch more line contrast to keep the half-hour grid readable. */
+.wwm-weekly .wwm-calendar-day[data-weekend]{--calendar-line:color-mix(in srgb,currentColor 24%,transparent);--calendar-faint:color-mix(in srgb,currentColor 13%,transparent)}
