@@ -39,5 +39,10 @@
 .wwm .wwm-confirm-ghost-best ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--craft-space-2);margin:0;padding:0;list-style:none}
 
 /* Invitation: the placeholder keeps the button's 44px so the text below does not jump. */
-.wwm .wwm-button-skeleton{display:flex;margin:0}
+.wwm .wwm-button-skeleton{display:block;width:fit-content;margin:0}
 .wwm .wwm-confirm-ghost-label{display:flex;align-items:center;min-height:20px}
+@media(max-width:640px){.wwm .wwm-confirm-ghost-fields{display:none}}
+/* Phones: the real count shows only the number, and the Confirm legend wraps to two lines. */
+@media(max-width:640px){.wwm .wwm-ghost-count .wwm-skel{width:20px!important}.wwm .wwm-confirm-ghost .wwm-week-legend{min-height:44px}}
+@media(max-width:600px){.wwm .wwm-room-header .wwm-header-actions .wwm-skel-field:first-child{width:44px!important}}
+.wwm .wwm-meta-line{display:inline-flex;align-items:center;height:20px}
