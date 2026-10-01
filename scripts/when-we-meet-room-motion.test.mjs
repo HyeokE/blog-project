@@ -97,6 +97,6 @@ test('mouse drags mark a rectangle (days x half-hours) and sample the pointer pa
  assert.match(weekly,/function applyRect\(slot:Slot\)/);
  assert.match(weekly,/applyRect\(slot\)\}\}/);
  assert.match(weekly,/else if\(!readOnly\)applyRect\(slot\)/);
- assert.match(weekly,/d\.applied\.has\(id\)!==want/);
+ assert.match(weekly,/onSetSlots\(on,true\);onSetSlots\(off,false\)/);
  assert.match(weekly,/window\.addEventListener\('pointerup',up\)/);
 });

@@ -26,8 +26,8 @@ type SavedResponse={userId:string;displayName:string;slots:string[]};
 export type ConfirmSelection={memberCount:number;range:ConfirmRange|null;onChange?:(range:ConfirmRange)=>void;rangeLabel?:string};
 /** `toolbar` renders at the right of the grid toolbar (e.g. Fill from Google Calendar); `hint` is one short line at its left. */
 type CalendarProps={startDate:string;endDate:string;timezone:string;slots:Slot[];responses:SavedResponse[];currentUserId:string;toolbar?:React.ReactNode;hint?:string};
-type EditProps={mine:string[];onToggle:(id:string)=>void;dirty:boolean;readOnly?:boolean;selection?:undefined};
-type ConfirmProps={selection:ConfirmSelection;mine?:undefined;onToggle?:undefined;dirty?:undefined;readOnly?:undefined};
+type EditProps={mine:string[];onToggle:(id:string)=>void;onSetSlots?:(ids:string[],value:boolean)=>void;dirty:boolean;readOnly?:boolean;selection?:undefined};
+type ConfirmProps={selection:ConfirmSelection;mine?:undefined;onToggle?:undefined;onSetSlots?:undefined;dirty?:undefined;readOnly?:undefined};
 const NONE:string[]=[],ignore=()=>undefined,LONG_PRESS_MS=450,AUTO_COMPACT_PEOPLE=6;
 const shortTime=(utc:string,timezone:string)=>new Intl.DateTimeFormat('en-GB',{timeZone:timezone,hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(utc));
 const timeAt=(utc:string,timezone:string)=>new Intl.DateTimeFormat('en-US',{timeZone:timezone,hour:'2-digit',minute:'2-digit',hour12:false,timeZoneName:'shortOffset'}).format(new Date(utc));
@@ -39,7 +39,7 @@ const NAV_KEYS=new Set(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Home','E
 /** The slot under a finger during a long-press drag (touch pointers stay captured by the cell they started on). */
 const slotIdAt=(x:number,y:number)=>(document.elementFromPoint(x,y)?.closest('[data-slot-id]') as HTMLElement|null)?.dataset.slotId;
 
-export function WeeklyAvailability({startDate,endDate,timezone,slots,responses,currentUserId,mine=NONE,onToggle=ignore,dirty=false,readOnly:everyoneView=false,selection,toolbar,hint}:CalendarProps&(EditProps|ConfirmProps)){
+export function WeeklyAvailability({startDate,endDate,timezone,slots,responses,currentUserId,mine=NONE,onToggle=ignore,onSetSlots,dirty=false,readOnly:everyoneView=false,selection,toolbar,hint}:CalendarProps&(EditProps|ConfirmProps)){
  // Confirm mode reuses the Everyone view, always compact; its rails are visual only while selecting.
  const copy=useWwmCopy(),{t,locale}=copy;
  const weekday=(date:string)=>weekdayLabel(date,locale);
@@ -152,10 +152,12 @@ export function WeeklyAvailability({startDate,endDate,timezone,slots,responses,c
   if(c1<0||c2<0||r1<0||r2<0)return;
   const inRect=new Set<string>();
   for(let r=Math.min(r1,r2);r<=Math.max(r1,r2);r++)for(let c=Math.min(c1,c2);c<=Math.max(c1,c2);c++){const cell=rows[r].byDate[dates[c]] as Slot|undefined;if(cell)inRect.add(cell.id)}
-  for(const id of new Set([...(d.rect??[]),...inRect])){
-   const want=inRect.has(id)?d.value:d.base.has(id);
-   if(d.applied.has(id)!==want){onToggle(id);if(want)d.applied.add(id);else d.applied.delete(id)}
-  }
+  const previous=d.rect??[];
+  if(previous.length===inRect.size&&previous.every(id=>inRect.has(id)))return;
+  const on:string[]=[],off:string[]=[];
+  for(const id of new Set([...previous,...inRect])){(inRect.has(id)?d.value:d.base.has(id)?true:false)?on.push(id):off.push(id)}
+  if(onSetSlots){onSetSlots(on,true);onSetSlots(off,false)}
+  else for(const id of [...on,...off]){const want=on.includes(id);if(mineSet.has(id)!==want)onToggle(id)}
   d.rect=[...inRect];
   // The dragged box, snapped to the two corner cells, drawn over the grid while the button is down.
   const body=scroller.current,from=body?.querySelector<HTMLElement>(`[data-slot-id="${d.anchor.id}"]`),to=body?.querySelector<HTMLElement>(`[data-slot-id="${slot.id}"]`);

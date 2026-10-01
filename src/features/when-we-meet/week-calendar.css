@@ -122,4 +122,4 @@
 /* Narrow phone columns: the time range may wrap instead of being cut off. */
 @media(max-width:480px){.wwm-calendar-frame.is-hscroll .wwm-calendar-own-event small{white-space:normal;overflow:visible;text-overflow:clip;line-height:14px;overflow-wrap:anywhere}}
 /* Marquee shown while a mouse drag selects a block of cells. */
-.wwm-week-body .wwm-marquee{position:absolute;z-index:6;box-sizing:border-box;pointer-events:none;border:2px solid var(--craft-person-you);border-radius:4px;background:color-mix(in srgb,var(--craft-person-you) 14%,transparent)}
+.wwm-week-body .wwm-marquee{position:absolute;z-index:6;box-sizing:border-box;pointer-events:none;border:0;border-radius:2px;background:color-mix(in srgb,var(--craft-person-you) 16%,transparent)}

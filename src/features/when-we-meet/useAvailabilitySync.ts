@@ -48,8 +48,10 @@ export function useAvailabilitySync(options:Options){
  },[roomId,userId,enabled]);
  const update=useCallback((value:AvailabilitySnapshot)=>{draft.current=value;current.current.onDraft(value);queue.current?.update(value)},[]);
  const toggle=useCallback((id:string)=>{update({...draft.current,slots:toggleSlot(draft.current.slots,id)})},[update]);
+ // Idempotent bulk write for drag selections: every id is set to `value` whatever it was, so a re-sync mid-drag cannot invert cells.
+ const setSlots=useCallback((ids:string[],value:boolean)=>{const next=new Set(draft.current.slots);for(const id of ids){if(value)next.add(id);else next.delete(id)}update({...draft.current,slots:[...next].sort()})},[update]);
  const rename=useCallback((name:string)=>{update({...draft.current,name})},[update]);
  // Whole-selection replacement (e.g. an applied calendar preview); same draft/autosave path as toggles.
  const replace=useCallback((slots:string[])=>{update({...draft.current,slots:[...new Set(slots)].sort()})},[update]);
- return {state,connected,offline,message,toggle,rename,replace,retry:()=>queue.current?.retry()};
+ return {state,connected,offline,message,toggle,setSlots,rename,replace,retry:()=>queue.current?.retry()};
 }
