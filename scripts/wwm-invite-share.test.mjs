@@ -11,19 +11,19 @@ registerHooks({resolve(specifier,context,next){
 const {inviteShareText}=await import(pathToFileURL(`${root}src/features/when-we-meet/invite-share.ts`).href);
 const link='https://hyeok.dev/craft/when-we-meet/room?invite=token';
 
-test('copied invitation is English, Korean, a blank line, then the link',()=>{
- assert.equal(inviteShareText(link,'Jason'),`Jason invited you to this When We Meet. Open the link and plan a time together!\nJason님이 이 When We Meet에 초대했어요. 링크에 접속해서 같이 일정을 정해보세요!\n\n${link}`);
+test('copied invitation follows the sharer\'s language: one sentence, a blank line, then the link',()=>{
+ assert.equal(inviteShareText(link,'Jason','en'),`Jason invited you to this When We Meet. Open the link and plan a time together!\n\n${link}`);
+ assert.equal(inviteShareText(link,'Jason','ko'),`Jason님이 이 When We Meet에 초대했어요. 링크에 접속해서 같이 일정을 정해보세요!\n\n${link}`);
 });
 
 test('a missing or blank name drops the name instead of printing an empty one',()=>{
  for(const name of [undefined,null,'','   ']){
-  const text=inviteShareText(link,name);
-  assert.match(text,/^You're invited to this When We Meet\./);
-  assert.match(text,/\n이 When We Meet에 초대했어요\./);
-  assert.ok(text.endsWith(`\n\n${link}`));
+  assert.equal(inviteShareText(link,name,'en'),`You're invited to this When We Meet. Open the link and plan a time together!\n\n${link}`);
+  assert.equal(inviteShareText(link,name,'ko'),`이 When We Meet에 초대했어요. 링크에 접속해서 같이 일정을 정해보세요!\n\n${link}`);
  }
 });
 
-test('very long names are cut so the sentence stays short',()=>{
- assert.ok(inviteShareText(link,'a'.repeat(200)).split('\n')[0].length<120);
+test('an unknown locale falls back to English; very long names are cut',()=>{
+ assert.match(inviteShareText(link,'Jason','fr'),/^Jason invited you/);
+ assert.ok(inviteShareText(link,'a'.repeat(200),'en').split('\n')[0].length<120);
 });
