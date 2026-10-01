@@ -5,7 +5,9 @@
     "craft": "Craft",
     "meetings": "Meetings",
     "yourMeetings": "Your meetings",
-    "roomTitle": "Meeting | When We Meet"
+    "roomTitle": "Meeting | When We Meet",
+    "inviteShare": "{name} invited you to this When We Meet. Open the link and plan a time together!",
+    "inviteShareAnonymous": "You're invited to this When We Meet. Open the link and plan a time together!"
   },
   "common": {
     "cancel": "Cancel",

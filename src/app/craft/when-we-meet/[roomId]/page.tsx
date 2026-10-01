@@ -3,7 +3,9 @@ import { unstable_rethrow } from 'next/navigation';
 import WhenWeMeet from '@/features/when-we-meet/WhenWeMeet';
 import {createWwmTranslator} from '@/i18n/wwm.mjs';
 import {getWwmLocale} from '@/lib/wwm-locale';
-import {craftRoomConfirmation,craftRoomMetadata,craftRoomResponses,currentSupabaseUser} from '@/lib/supabase/server';
+import {craftRoomConfirmation,craftRoomMetadata,craftRoomResponses,currentSupabaseUser,serverSupabaseClient} from '@/lib/supabase/server';
+import {normalizeInvitationPreview} from '@/features/when-we-meet/normalize.mjs';
+import {uuid} from '@/app/api/craft/when-we-meet/http';
 import type {RoomResponseResult} from '@/features/when-we-meet/RoomResponseLoader';
 import {Suspense} from 'react';
 import {RoomSkeleton} from '@/features/when-we-meet/ServerSkeletons';
@@ -22,9 +24,22 @@ export async function RoomSection({params}:{params:Promise<{roomId:string}>}){
   return <ServerSectionRetry room/>;
  }
 }
-export async function generateMetadata(): Promise<Metadata>{
- const t=createWwmTranslator(await getWwmLocale());
- return {title:t('app.roomTitle'),robots:{index:false,follow:false},description:'Private scheduling invitation.'};
+// Room links are shared in chats: the preview shows the organizer's name (token-gated, same as the invitation screen),
+// in English and Korean, and never the meeting title, dates or people. Never indexed.
+async function invitationOrganizer(roomId:string,token:unknown){
+ if(!uuid(roomId)||!uuid(token))return null;
+ try{
+  const client=await serverSupabaseClient({readOnly:true});
+  const {data,error}=await client.rpc('wwm_invitation_preview',{p_room_id:roomId,p_token:token});
+  return error?null:normalizeInvitationPreview(data)?.organizerName?.trim().slice(0,40)||null;
+ }catch{return null}
+}
+export async function generateMetadata({params,searchParams}:{params:Promise<{roomId:string}>;searchParams:Promise<{invite?:string|string[]}>}): Promise<Metadata>{
+ const [{roomId},{invite},locale]=await Promise.all([params,searchParams,getWwmLocale()]);
+ const t=createWwmTranslator(locale),en=createWwmTranslator('en'),ko=createWwmTranslator('ko');
+ const name=await invitationOrganizer(roomId,Array.isArray(invite)?invite[0]:invite);
+ const title=t('app.roomTitle'),description=name?`${en('app.inviteShare',{name})} ${ko('app.inviteShare',{name})}`:`${en('app.inviteShareAnonymous')} ${ko('app.inviteShareAnonymous')}`;
+ return {title,robots:{index:false,follow:false},description,openGraph:{type:'website',siteName:'HYEOK.DEV',locale:locale==='ko'?'ko_KR':'en_US',title,description},twitter:{card:'summary_large_image',title,description}};
 }
 export default function Page({params}:{params:Promise<{roomId:string}>}){
  return <Suspense fallback={<main className="wwm"><RoomSkeleton/></main>}><RoomSection params={params}/></Suspense>;

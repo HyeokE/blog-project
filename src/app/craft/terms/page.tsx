@@ -4,7 +4,7 @@ import '../craft.css';
 import '../legal.css';
 import {ANALYTICS_ELEMENTS,ANALYTICS_SECTIONS} from '@/constants/analytics';
 
-export const metadata:Metadata={title:'Terms of Service | Craft | HYEOK.DEV',description:'Terms and service information for Craft and When We Meet.'};
+export const metadata:Metadata={title:'Terms of Service | Craft | HYEOK.DEV',description:'Terms and service information for Craft and When We Meet.',alternates:{canonical:'/craft/terms'},openGraph:{type:'website',siteName:'HYEOK.DEV',locale:'en_US',url:'/craft/terms',title:'Terms of Service | Craft | HYEOK.DEV',description:'Terms and service information for Craft and When We Meet.'},twitter:{card:'summary_large_image',title:'Terms of Service | Craft | HYEOK.DEV',description:'Terms and service information for Craft and When We Meet.'}};
 
 const CONTACT='jhjeong00@gmail.com';
 const EFFECTIVE='October 1, 2026';

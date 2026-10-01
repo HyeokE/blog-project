@@ -8,6 +8,9 @@ import {ANALYTICS_ELEMENTS,ANALYTICS_SECTIONS} from '@/constants/analytics';
 export const metadata: Metadata = {
   title: 'Craft | HYEOK.DEV',
   description: 'Small tools and experiments from HYEOK.DEV.',
+  alternates: { canonical: '/craft' },
+  openGraph: { type: 'website', siteName: 'HYEOK.DEV', locale: 'en_US', url: '/craft', title: 'Craft | HYEOK.DEV', description: 'Small tools and experiments from HYEOK.DEV.' },
+  twitter: { card: 'summary_large_image', title: 'Craft | HYEOK.DEV', description: 'Small tools and experiments from HYEOK.DEV.' },
 };
 
 export default function CraftPage() {

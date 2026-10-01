@@ -5,7 +5,9 @@
     "craft": "Craft",
     "meetings": "모임",
     "yourMeetings": "내 모임",
-    "roomTitle": "모임 | When We Meet"
+    "roomTitle": "모임 | When We Meet",
+    "inviteShare": "{name}님이 이 When We Meet에 초대했어요. 링크에 접속해서 같이 일정을 정해보세요!",
+    "inviteShareAnonymous": "이 When We Meet에 초대했어요. 링크에 접속해서 같이 일정을 정해보세요!"
   },
   "common": {
     "cancel": "취소",
