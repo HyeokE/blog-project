@@ -3,7 +3,7 @@
 @keyframes wwm-skel-sweep{from{background-position:100% 0}to{background-position:-100% 0}}
 .wwm .wwm-skel{display:inline-block;vertical-align:middle;max-width:100%;border-radius:4px;background:color-mix(in srgb,var(--craft-ink) 16%,var(--craft-canvas))}
 .wwm .wwm-skel-field{display:block;border-radius:var(--craft-radius)}
-:root[data-mode=dark] .wwm .wwm-skel{background:color-mix(in srgb,#d6cdb3 24%,#20211c)}
+:root[data-mode=dark] .wwm .wwm-skel{background:color-mix(in srgb,#d6cdb3 30%,#20211c)}
 @media(prefers-reduced-motion:no-preference){.wwm .wwm-skel{animation:wwm-skel-pulse 1.5s ease-in-out infinite}}
 
 /* List rows: the bars sit in the real strong/span lines; the real row has no pointer behaviour here. */
@@ -28,8 +28,11 @@
 @media(prefers-reduced-motion:no-preference){.wwm-ghost .wwm-week-body::after{animation:wwm-skel-sweep 1.8s ease-in-out infinite}}
 /* A window not known yet: its placeholder dates and hours are not real, so the labels become bars. */
 .wwm-ghost[data-dummy] .wwm-week-date>span,.wwm-ghost[data-dummy] .wwm-week-date>strong,.wwm-ghost[data-dummy] .wwm-week-time>span{color:transparent;background:color-mix(in srgb,var(--craft-ink) 14%,var(--craft-canvas));border-radius:4px}
-.wwm-ghost[data-dummy] .wwm-week-date>strong{align-self:center;width:26px}
-.wwm-ghost[data-dummy] .wwm-week-date>span{align-self:center;width:34px}
+:root[data-mode=dark] .wwm-ghost[data-dummy] .wwm-week-date>span,:root[data-mode=dark] .wwm-ghost[data-dummy] .wwm-week-date>strong,:root[data-mode=dark] .wwm-ghost[data-dummy] .wwm-week-time>span{background:color-mix(in srgb,#d6cdb3 26%,#20211c)}
+.wwm-ghost[data-dummy] .wwm-week-date>span{height:12px;align-self:center;margin-top:2px}
+.wwm-ghost[data-dummy] .wwm-week-date>strong{height:20px;width:22px;margin-top:4px;line-height:20px}
+.wwm-ghost[data-dummy] .wwm-week-date>strong{align-self:center}
+.wwm-ghost[data-dummy] .wwm-week-date>span{align-self:center;width:32px}
 
 /* Tabs row: the right-hand count is pending data. */
 .wwm .wwm-ghost-count{display:inline-flex;align-items:center}
