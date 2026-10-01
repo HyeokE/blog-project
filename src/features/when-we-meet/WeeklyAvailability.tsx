@@ -141,7 +141,8 @@ export function WeeklyAvailability({startDate,endDate,timezone,slots,responses,c
  function startHold(slot:Slot){clearHold();holdTimer.current=window.setTimeout(()=>{holdTimer.current=null;if(!gesture.current.hold())return;navigator.vibrate?.(8);if(selecting){pick.current.drag=slot.id;setAnchor(null);choose(dragRange(slots,slot.id,slot.id))}else{drag.current={value:!mineSet.has(slot.id),seen:new Set()};paint(slot)}},LONG_PRESS_MS)}
  function holdMove(x:number,y:number){const id=slotIdAt(x,y),slot=id&&byId.get(id);if(!slot)return;if(selecting&&pick.current.drag)choose(dragRange(slots,pick.current.drag,slot.id));else if(!readOnly)paint(slot)}
  const lastMouse=useRef<{x:number;y:number}|null>(null);
- const endPointer=()=>{clearHold();drag.current=null;pick.current.drag=null;lastMouse.current=null};
+ const [marquee,setMarquee]=useState<{left:number;top:number;width:number;height:number}|null>(null);
+ const endPointer=()=>{clearHold();drag.current=null;pick.current.drag=null;lastMouse.current=null;setMarquee(null)};
  // Marquee: a mouse drag marks the whole rectangle between the first cell and the cell under the pointer (days x half-hours).
  // The first cell decides whether the rectangle checks or clears; cells that leave the rectangle go back to how they were.
  function applyRect(slot:Slot){
@@ -156,6 +157,9 @@ export function WeeklyAvailability({startDate,endDate,timezone,slots,responses,c
    if(d.applied.has(id)!==want){onToggle(id);if(want)d.applied.add(id);else d.applied.delete(id)}
   }
   d.rect=[...inRect];
+  // The dragged box, snapped to the two corner cells, drawn over the grid while the button is down.
+  const body=scroller.current,from=body?.querySelector<HTMLElement>(`[data-slot-id="${d.anchor.id}"]`),to=body?.querySelector<HTMLElement>(`[data-slot-id="${slot.id}"]`);
+  if(body&&from&&to){const origin=body.getBoundingClientRect(),a=from.getBoundingClientRect(),b=to.getBoundingClientRect(),left=Math.min(a.left,b.left),top=Math.min(a.top,b.top);setMarquee({left:left-origin.left+body.scrollLeft,top:top-origin.top,width:Math.max(a.right,b.right)-left,height:Math.max(a.bottom,b.bottom)-top})}
  }
  // Mouse drags are tracked by position, not by pointerenter: a fast stroke jumps over cells (and over whole days when it
  // moves sideways), so every move is sampled along the straight line from the previous pointer position.
@@ -173,7 +177,7 @@ export function WeeklyAvailability({startDate,endDate,timezone,slots,responses,c
   lastMouse.current={x:e.clientX,y:e.clientY};
  }
  // Releasing the button outside the grid must still end the drag.
- useEffect(()=>{const up=(event:PointerEvent)=>{if(event.pointerType==='mouse'){drag.current=null;pick.current.drag=null;lastMouse.current=null}};window.addEventListener('pointerup',up);return()=>window.removeEventListener('pointerup',up)},[]);
+ useEffect(()=>{const up=(event:PointerEvent)=>{if(event.pointerType==='mouse'){drag.current=null;pick.current.drag=null;lastMouse.current=null;setMarquee(null)}};window.addEventListener('pointerup',up);return()=>window.removeEventListener('pointerup',up)},[]);
 
  function cellHandlers(slot:Slot):React.HTMLAttributes<HTMLDivElement>{
   if(!interactive)return {};
@@ -216,7 +220,7 @@ export function WeeklyAvailability({startDate,endDate,timezone,slots,responses,c
  </div></div>
  {collapsed>0&&<button type="button" className="wwm-calendar-earlier" data-analytics-label={ANALYTICS_ELEMENTS.CALENDAR_SHOW_EARLIER} onClick={()=>{const keep=tabId;setExpanded(true);if(keep){setFocusId(keep);pendingFocus.current=keep}}}>{t('grid.showEarlier',{from:timeLabel(allRows[0].time),to:timeLabel(allRows[collapsed].time)})}</button>}
  <div className="wwm-week-body" ref={scroller} onPointerUp={endPointer} onPointerMove={mouseDragMove} onScroll={phone?()=>{if(headerScroll.current&&scroller.current)headerScroll.current.scrollLeft=scroller.current.scrollLeft}:undefined}><div className="wwm-week-grid">
- <div className="wwm-calendar-time-rail" aria-hidden="true">{rows.map(row=><div className={`wwm-week-time ${row.time.endsWith(':00')?'is-hour':''}`} key={row.key}>{row.time.endsWith(':00')&&<span>{hourLabel(row.time,locale)}{row.cycle>0?' ↺':''}</span>}</div>)}</div>
+ {marquee&&<div className="wwm-marquee" aria-hidden="true" style={{left:marquee.left,top:marquee.top,width:marquee.width,height:marquee.height}}/>}<div className="wwm-calendar-time-rail" aria-hidden="true">{rows.map(row=><div className={`wwm-week-time ${row.time.endsWith(':00')?'is-hour':''}`} key={row.key}>{row.time.endsWith(':00')&&<span>{hourLabel(row.time,locale)}{row.cycle>0?' ↺':''}</span>}</div>)}</div>
  {dates.map((date,column)=><div className="wwm-calendar-day" key={date} data-date={date} style={{height:rows.length*rowHeight,gridColumn:column+2}}>
  {!readOnly&&<div className="wwm-calendar-selection" aria-hidden="true">{ownBlocks.filter(block=>block.date===date).map(block=><div className="wwm-calendar-own-event" data-density={block.slotIds.length===1?'single':block.slotIds.length===2?'double':'regular'} key={block.startUtc} style={{top:block.top+2,height:block.height-4}}><strong>{you}</strong>{block.slotIds.length>=2&&<small>{shortTime(block.startUtc,timezone)}–{shortTime(block.endUtc,timezone)}</small>}</div>)}</div>}
  {/* Saved blocks are mouse/touch targets for the detail popover; keyboard users read the same facts from the grid cells. */}
