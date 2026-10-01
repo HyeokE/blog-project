@@ -64,7 +64,7 @@
 }
 /* Room time / My time: two quiet 24px segments, the active one inked like the Confirmed chip. */
 .wwm .wwm-tz-switch{display:inline-flex;height:24px;border:1px solid var(--craft-rule);border-radius:var(--craft-radius);overflow:hidden}
-.wwm .wwm-tz-switch button{padding:0 var(--craft-space-3);border:0;background:transparent;color:var(--craft-muted);font:var(--craft-fw-medium) var(--craft-fs-12)/22px var(--craft-font);cursor:pointer;white-space:nowrap}
+.wwm .wwm-tz-switch button{box-sizing:border-box;height:22px;min-height:0;min-width:0;padding:0 var(--craft-space-3);border:0;background:transparent;color:var(--craft-muted);font:var(--craft-fw-medium) var(--craft-fs-12)/20px var(--craft-font);cursor:pointer;white-space:nowrap}
 .wwm .wwm-tz-switch button+button{border-left:1px solid var(--craft-rule)}
 .wwm .wwm-tz-switch button[aria-checked='true']{background:var(--craft-ink);color:var(--craft-on-ink)}
 .wwm .wwm-tz-switch button:focus-visible{outline:2px solid var(--craft-ink);outline-offset:-2px}
