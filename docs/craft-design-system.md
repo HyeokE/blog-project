@@ -41,3 +41,14 @@ Health: root `SupabaseHealthOnce` calls same-origin `GET /api/health/supabase` o
 UI audit rule: on **every** UI update load `kill-ai-slop`, scan changed UI scopes, triage source/visual candidates, rerun after fixes and preserve deliberate palette, 4px geometry, motion, custom scrollbar and accessible labels. Scanner report at `/Users/junhyeok_home/.hermes/cache/scratch/{craft-scan,wwm-scan}.json` (Craft 6 hits; feature 7 hits). Warm radial backgrounds are existing editorial direction; avatar radius and functional numeric section index are deliberate. Guest eyebrow and oversized heading remain hierarchy review candidates; do not automatically strip author styling. Current scan is a triage, not visual approval.
 
 Do not modify hosted SQL/OAuth settings or publish changes as part of UI refactoring. Keep Next Link for room → `/craft/when-we-meet` and main → `/craft`, never `history.back` for direct invites.
+
+## Loading states
+
+A loading state is the loaded screen with its data removed, never a separate drawing (`ServerSkeletons.tsx`, `skeleton.css`). It renders the same components and class names as the loaded screen, so heights and positions are the real ones:
+
+- Meetings list: the real `ul > li` rows, a bar for the title, one for the summary line and one for the count.
+- Room: the real header geometry, the real tabs (disabled) and the real calendar with nothing saved, inside `.wwm-ghost` (inert, data text hidden, a faint sweep over the grid). When the room's dates are known the real dates show; before that, placeholder days are drawn as bars.
+- Confirm: the real heading, three fields, best-times card and calendar; no Fill button (the loaded Confirm tab has none).
+- Invitation: a 190×44 bar where the Continue with Google button will be.
+
+Suspense boundaries: the account in the Craft layout, the meetings list on `/craft/when-we-meet`, and the room (header and calendar chrome stream first; saved responses stream into the calendar). Change a loaded layout and its loading state follows, because they share markup.

@@ -75,7 +75,7 @@ export const InvitationBusy:Story={render:()=> <Invite signedIn busy/>};
 export const InvitationInvalid:Story={render:()=> <Invite valid={false}/>};
 export const InvitationFailed:Story={render:()=> <Invite signedIn error="Unable to join meeting. Please try again."/>};
 export const ListLoading:Story={render:()=> <Frame><WhenWeMeet meetingsSection={<MeetingRowsSkeleton/>}/></Frame>};
-export const RoomLoading:Story={render:()=> <Frame><main className="wwm"><RoomSkeleton/></main></Frame>};
+export const RoomLoading:Story={render:()=> <Frame><main className="wwm wwm-room"><RoomSkeleton/></main></Frame>};
 function BrokenSection():React.ReactNode{throw new Error('Synthetic section failure');}
 export const ListLoadError:Story={render:()=> <Frame><WhenWeMeet meetingsSection={<ServerSectionBoundary><BrokenSection/></ServerSectionBoundary>}/></Frame>};
 export const RoomLoadError:Story={render:()=> <Frame><ServerSectionRetry room/></Frame>};

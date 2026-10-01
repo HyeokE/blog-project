@@ -5,6 +5,7 @@ import {useCraftAccount} from '@/app/craft/CraftAccount';
 import {Notice} from './Notice';
 import {Button} from '@/components/ui/button';
 import {ConfirmationPanel} from './ConfirmationPanel';
+import {ConfirmSkeleton} from './ServerSkeletons';
 import {toast} from 'sonner';
 import {connectGoogleCalendar,loadConfirmation,postConfirmation,postConfirmationUpdate,type Response,type Room} from './api';
 import {funnelComplete,funnelSignal} from './funnel';
@@ -97,7 +98,7 @@ export function ConfirmTab({roomId,room,slots,responses,onConfirmation}:{roomId:
  function connectCalendar(){storage.write(confirmReturnKey(roomId),'confirm');void connectGoogleCalendar(roomId,window.location.pathname+window.location.search).catch(()=>{storage.write(confirmReturnKey(roomId),null);setLocal({status:'failed',error:t('confirm.calendarUnavailable'),calendar:'disconnected'})})}
 
  if(loadError)return <div data-analytics-section={ANALYTICS_SECTIONS.WWM_CONFIRM}><Notice tone="error" className="wwm-confirm-load-error" action={<Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.RETRY} onClick={reload}>{t('common.retry')}</Button>}>{t('confirm.loadFailed')}</Notice></div>;
- if(!data)return <div className="wwm-confirm wwm-confirm-skeleton" role="status" aria-label={t('confirm.loading')}><span className="wwm-confirm-skeleton-title"/><span className="wwm-confirm-skeleton-line"/><span className="wwm-confirm-skeleton-grid"/></div>;
+ if(!data)return <ConfirmSkeleton startDate={room.startDate} endDate={room.endDate} timezone={room.timezone} slots={slots}/>;
  const state=confirmPanelState({data:shown??data,slots,organizerName:ownerName,recipientIds,t});
  const status=local?.status??state.status;
  return <ConfirmationPanel

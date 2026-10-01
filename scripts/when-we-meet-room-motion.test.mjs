@@ -79,8 +79,9 @@ test('Craft and WWM bounded surfaces use a scoped four-pixel token',()=>{
 test('room tab underline slides horizontally (one indicator, transform/width only, reduced-motion aware)',()=>{
  const toolbar=readFileSync(new URL('../src/features/when-we-meet/room-toolbar.css',import.meta.url),'utf8');
  assert.match(component,/<TabIndicator value=\{view\}\/><\/TabsList>/);
- assert.match(component,/bar\.style\.transform=`translateX\(\$\{active\.offsetLeft\}px\)`/);
- assert.doesNotMatch(component,/translateY/);
+ const indicator=readFileSync(new URL('../src/features/when-we-meet/TabIndicator.tsx',import.meta.url),'utf8');
+ assert.match(indicator,/bar\.style\.transform=`translateX\(\$\{active\.offsetLeft\}px\)`/);
+ assert.doesNotMatch(indicator,/translateY/);
  assert.match(toolbar,/\.wwm-tab-indicator\[data-animate\]\{transition:transform \.2s ease-out,width \.2s ease-out\}/);
  assert.match(toolbar,/@media\(prefers-reduced-motion:reduce\)\{\.wwm\.wwm-room \.wwm-view-switch \.wwm-tab-indicator\[data-animate\]\{transition:none\}\}/);
  assert.match(toolbar,/\[data-slot='tabs-trigger'\]\[data-state='active'\]\{background:transparent;color:var\(--craft-ink\);border-bottom-color:transparent;font-weight:var\(--craft-fw-semibold\)\}/);

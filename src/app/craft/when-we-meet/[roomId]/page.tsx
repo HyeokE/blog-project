@@ -44,5 +44,5 @@ export async function generateMetadata({params,searchParams}:{params:Promise<{ro
  return {title,robots:{index:false,follow:false},description,openGraph:{type:'website',siteName:'HYEOK.DEV',locale:locale==='ko'?'ko_KR':'en_US',title,description,images:[CARD]},twitter:{card:'summary_large_image',title,description,images:[CARD.url]}};
 }
 export default function Page({params}:{params:Promise<{roomId:string}>}){
- return <Suspense fallback={<main className="wwm"><RoomSkeleton/></main>}><RoomSection params={params}/></Suspense>;
+ return <Suspense fallback={<main className="wwm wwm-room"><RoomSkeleton/></main>}><RoomSection params={params}/></Suspense>;
 }
