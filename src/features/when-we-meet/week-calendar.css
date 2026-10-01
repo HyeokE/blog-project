@@ -124,8 +124,8 @@
 /* Marquee shown while a mouse drag selects a block of cells. */
 .wwm-week-body .wwm-marquee{position:absolute;z-index:6;box-sizing:border-box;pointer-events:none;border:0;border-radius:2px;background:color-mix(in srgb,var(--craft-person-you) 16%,transparent)}
 /* Weekend tint: Saturday faint blue, Sunday faint red, over the calendar surface (header and day column). */
-.wwm-weekly{--weekend-sat:#4a7bd0;--weekend-sun:#d0504a}
-.wwm-weekly .wwm-week-date[data-weekend='sat'],.wwm-weekly .wwm-calendar-day[data-weekend='sat']{background:color-mix(in srgb,var(--weekend-sat) 8%,var(--calendar-surface))}
-.wwm-weekly .wwm-week-date[data-weekend='sun'],.wwm-weekly .wwm-calendar-day[data-weekend='sun']{background:color-mix(in srgb,var(--weekend-sun) 8%,var(--calendar-surface))}
+.wwm-weekly{--weekend-sat:#2f74ee;--weekend-sun:#e0523f}
+.wwm-weekly .wwm-week-date[data-weekend='sat'],.wwm-weekly .wwm-calendar-day[data-weekend='sat']{background:color-mix(in srgb,var(--weekend-sat) 13%,var(--calendar-surface))}
+.wwm-weekly .wwm-week-date[data-weekend='sun'],.wwm-weekly .wwm-calendar-day[data-weekend='sun']{background:color-mix(in srgb,var(--weekend-sun) 9%,var(--calendar-surface))}
 :root[data-mode='dark'] .wwm-weekly .wwm-week-date[data-weekend='sat'],:root[data-mode='dark'] .wwm-weekly .wwm-calendar-day[data-weekend='sat']{background:color-mix(in srgb,var(--weekend-sat) 14%,var(--calendar-surface))}
 :root[data-mode='dark'] .wwm-weekly .wwm-week-date[data-weekend='sun'],:root[data-mode='dark'] .wwm-weekly .wwm-calendar-day[data-weekend='sun']{background:color-mix(in srgb,var(--weekend-sun) 14%,var(--calendar-surface))}
