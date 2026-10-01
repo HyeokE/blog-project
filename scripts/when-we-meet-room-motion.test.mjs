@@ -27,7 +27,7 @@ test('room uses the page-flowing availability calendar instead of the superseded
  assert.doesNotMatch(weekly,/aria-label="(?:Previous|Next) week"/);
  // User rules: the calendar has no vertical scroller of its own (it flows with the page; no scrollTop / scrollIntoView
  // jumps), larger screens page seven days, and PHONES scroll sideways across all days (horizontal only, header synced).
- assert.match(weekly,/<div className="wwm-week-body" ref=\{scroller\} onPointerUp=\{endPointer\} onScroll=\{phone\?\(\)=>\{if\(headerScroll\.current&&scroller\.current\)headerScroll\.current\.scrollLeft=scroller\.current\.scrollLeft\}:undefined\}>/);
+ assert.match(weekly,/<div className="wwm-week-body" ref=\{scroller\} onPointerUp=\{endPointer\} onPointerMove=\{mouseDragMove\} onScroll=\{phone\?\(\)=>\{if\(headerScroll\.current&&scroller\.current\)headerScroll\.current\.scrollLeft=scroller\.current\.scrollLeft\}:undefined\}>/);
  assert.doesNotMatch(weekly,/scrollTop|scrollIntoView/);
  assert.match(weekly,/pageSize=7/);
  assert.match(weekly,/const paged=!phone&&allDates\.length>pageSize;/);

@@ -140,12 +140,32 @@ export function WeeklyAvailability({startDate,endDate,timezone,slots,responses,c
  useEffect(()=>{const el=scroller.current;if(!el)return;const block=(event:TouchEvent)=>{if(gesture.current.holding()&&event.cancelable)event.preventDefault()};el.addEventListener('touchmove',block,{passive:false});return ()=>{el.removeEventListener('touchmove',block);clearHold()}},[]);
  function startHold(slot:Slot){clearHold();holdTimer.current=window.setTimeout(()=>{holdTimer.current=null;if(!gesture.current.hold())return;navigator.vibrate?.(8);if(selecting){pick.current.drag=slot.id;setAnchor(null);choose(dragRange(slots,slot.id,slot.id))}else{drag.current={value:!mineSet.has(slot.id),seen:new Set()};paint(slot)}},LONG_PRESS_MS)}
  function holdMove(x:number,y:number){const id=slotIdAt(x,y),slot=id&&byId.get(id);if(!slot)return;if(selecting&&pick.current.drag)choose(dragRange(slots,pick.current.drag,slot.id));else if(!readOnly)paint(slot)}
- const endPointer=()=>{clearHold();drag.current=null;pick.current.drag=null};
+ const lastMouse=useRef<{x:number;y:number}|null>(null);
+ const endPointer=()=>{clearHold();drag.current=null;pick.current.drag=null;lastMouse.current=null};
+ // Mouse drags are tracked by position, not by pointerenter: a fast stroke jumps over cells (and over whole days when it
+ // moves sideways), so every move is sampled along the straight line from the previous pointer position.
+ function mouseDragMove(e:React.PointerEvent){
+  if(e.pointerType!=='mouse'||!interactive)return;
+  if(!drag.current&&!pick.current.drag)return;
+  if(!(e.buttons&1)){endPointer();return}
+  const from=lastMouse.current??{x:e.clientX,y:e.clientY},dx=e.clientX-from.x,dy=e.clientY-from.y;
+  const steps=Math.max(1,Math.ceil(Math.hypot(dx,dy)/(rowHeight/4)));
+  let lastId='';
+  for(let i=1;i<=steps;i++){
+   const id=slotIdAt(from.x+dx*i/steps,from.y+dy*i/steps),slot=id&&byId.get(id);
+   if(!slot||id===lastId)continue;
+   lastId=id;
+   if(selecting){const anchorId=pick.current.drag;if(anchorId)choose(dragRange(slots,anchorId,slot.id))}else if(!readOnly)paint(slot);
+  }
+  lastMouse.current={x:e.clientX,y:e.clientY};
+ }
+ // Releasing the button outside the grid must still end the drag.
+ useEffect(()=>{const up=(event:PointerEvent)=>{if(event.pointerType==='mouse'){drag.current=null;pick.current.drag=null;lastMouse.current=null}};window.addEventListener('pointerup',up);return()=>window.removeEventListener('pointerup',up)},[]);
 
  function cellHandlers(slot:Slot):React.HTMLAttributes<HTMLDivElement>{
   if(!interactive)return {};
   return {
-   onPointerDown:e=>{if(e.pointerType==='touch'){gesture.current.down('touch',e.clientX,e.clientY,slot.id);startHold(slot);return}if(e.button!==0)return;setFocusId(slot.id);if(selecting){pick.current.drag=slot.id;setAnchor(null);choose(dragRange(slots,slot.id,slot.id))}else{drag.current={value:!mineSet.has(slot.id),seen:new Set()};paint(slot)}},
+   onPointerDown:e=>{if(e.pointerType==='touch'){gesture.current.down('touch',e.clientX,e.clientY,slot.id);startHold(slot);return}if(e.button!==0)return;lastMouse.current={x:e.clientX,y:e.clientY};setFocusId(slot.id);if(selecting){pick.current.drag=slot.id;setAnchor(null);choose(dragRange(slots,slot.id,slot.id))}else{drag.current={value:!mineSet.has(slot.id),seen:new Set()};paint(slot)}},
    onPointerMove:e=>{if(e.pointerType!=='touch')return;if(gesture.current.holding()){holdMove(e.clientX,e.clientY);return}gesture.current.move(e.clientX,e.clientY);if(gesture.current.pointerType()===null)clearHold()},
    onPointerEnter:e=>{if(e.pointerType!=='mouse'||!e.buttons)return;if(selecting){const from=pick.current.drag;if(from)choose(dragRange(slots,from,slot.id))}else paint(slot)},
    onPointerUp:e=>{if(e.pointerType==='touch'){clearHold();const held=gesture.current.holding();if(gesture.current.up(e.clientX,e.clientY,slot.id)&&!held){setFocusId(slot.id);selecting?tap(slot):onToggle(slot.id)}}endPointer()},
@@ -182,7 +202,7 @@ export function WeeklyAvailability({startDate,endDate,timezone,slots,responses,c
  <div className="wwm-week-corner" aria-hidden="true">{t('grid.time')}</div>{dates.map((date,index)=>{const month=monthBoundaryLabel(date,dates[index-1],locale);return <div key={date} className="wwm-week-date" aria-label={copy.dayLabel(date)}><span>{month&&<span className="wwm-month-boundary">{month} · </span>}{weekday(date)}</span><strong>{date.slice(-2)}</strong></div>})}
  </div></div>
  {collapsed>0&&<button type="button" className="wwm-calendar-earlier" data-analytics-label={ANALYTICS_ELEMENTS.CALENDAR_SHOW_EARLIER} onClick={()=>{const keep=tabId;setExpanded(true);if(keep){setFocusId(keep);pendingFocus.current=keep}}}>{t('grid.showEarlier',{from:timeLabel(allRows[0].time),to:timeLabel(allRows[collapsed].time)})}</button>}
- <div className="wwm-week-body" ref={scroller} onPointerUp={endPointer} onScroll={phone?()=>{if(headerScroll.current&&scroller.current)headerScroll.current.scrollLeft=scroller.current.scrollLeft}:undefined}><div className="wwm-week-grid">
+ <div className="wwm-week-body" ref={scroller} onPointerUp={endPointer} onPointerMove={mouseDragMove} onScroll={phone?()=>{if(headerScroll.current&&scroller.current)headerScroll.current.scrollLeft=scroller.current.scrollLeft}:undefined}><div className="wwm-week-grid">
  <div className="wwm-calendar-time-rail" aria-hidden="true">{rows.map(row=><div className={`wwm-week-time ${row.time.endsWith(':00')?'is-hour':''}`} key={row.key}>{row.time.endsWith(':00')&&<span>{hourLabel(row.time,locale)}{row.cycle>0?' ↺':''}</span>}</div>)}</div>
  {dates.map((date,column)=><div className="wwm-calendar-day" key={date} data-date={date} style={{height:rows.length*rowHeight,gridColumn:column+2}}>
  {!readOnly&&<div className="wwm-calendar-selection" aria-hidden="true">{ownBlocks.filter(block=>block.date===date).map(block=><div className="wwm-calendar-own-event" data-density={block.slotIds.length===1?'single':block.slotIds.length===2?'double':'regular'} key={block.startUtc} style={{top:block.top+2,height:block.height-4}}><strong>{you}</strong>{block.slotIds.length>=2&&<small>{shortTime(block.startUtc,timezone)}–{shortTime(block.endUtc,timezone)}</small>}</div>)}</div>}
