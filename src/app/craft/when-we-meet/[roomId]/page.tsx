@@ -24,6 +24,8 @@ export async function RoomSection({params}:{params:Promise<{roomId:string}>}){
   return <ServerSectionRetry room/>;
  }
 }
+// The card is the When We Meet segment's image; a page-level openGraph replaces the inherited one, so it is named here.
+const CARD={url:'/craft/when-we-meet/opengraph-image',width:1200,height:630,alt:'When We Meet: find a time that works for everyone'};
 // Room links are shared in chats: the preview shows the organizer's name (token-gated, same as the invitation screen),
 // in English and Korean, and never the meeting title, dates or people. Never indexed.
 async function invitationOrganizer(roomId:string,token:unknown){
@@ -39,7 +41,7 @@ export async function generateMetadata({params,searchParams}:{params:Promise<{ro
  const t=createWwmTranslator(locale),en=createWwmTranslator('en'),ko=createWwmTranslator('ko');
  const name=await invitationOrganizer(roomId,Array.isArray(invite)?invite[0]:invite);
  const title=t('app.roomTitle'),description=name?`${en('app.inviteShare',{name})} ${ko('app.inviteShare',{name})}`:`${en('app.inviteShareAnonymous')} ${ko('app.inviteShareAnonymous')}`;
- return {title,robots:{index:false,follow:false},description,openGraph:{type:'website',siteName:'HYEOK.DEV',locale:locale==='ko'?'ko_KR':'en_US',title,description},twitter:{card:'summary_large_image',title,description}};
+ return {title,robots:{index:false,follow:false},description,openGraph:{type:'website',siteName:'HYEOK.DEV',locale:locale==='ko'?'ko_KR':'en_US',title,description,images:[CARD]},twitter:{card:'summary_large_image',title,description,images:[CARD.url]}};
 }
 export default function Page({params}:{params:Promise<{roomId:string}>}){
  return <Suspense fallback={<main className="wwm"><RoomSkeleton/></main>}><RoomSection params={params}/></Suspense>;

@@ -4,7 +4,9 @@ import '../craft.css';
 import '../legal.css';
 import {ANALYTICS_ELEMENTS,ANALYTICS_SECTIONS} from '@/constants/analytics';
 
-export const metadata:Metadata={title:'Terms of Service | Craft | HYEOK.DEV',description:'Terms and service information for Craft and When We Meet.',alternates:{canonical:'/craft/terms'},openGraph:{type:'website',siteName:'HYEOK.DEV',locale:'en_US',url:'/craft/terms',title:'Terms of Service | Craft | HYEOK.DEV',description:'Terms and service information for Craft and When We Meet.'},twitter:{card:'summary_large_image',title:'Terms of Service | Craft | HYEOK.DEV',description:'Terms and service information for Craft and When We Meet.'}};
+// A page-level openGraph replaces the inherited one, so the Craft card is named here.
+const CARD={url:'/craft/opengraph-image',width:1200,height:630,alt:'Craft: small things made to be useful'};
+export const metadata:Metadata={title:'Terms of Service | Craft | HYEOK.DEV',description:'Terms and service information for Craft and When We Meet.',alternates:{canonical:'/craft/terms'},openGraph:{images:[CARD],type:'website',siteName:'HYEOK.DEV',locale:'en_US',url:'/craft/terms',title:'Terms of Service | Craft | HYEOK.DEV',description:'Terms and service information for Craft and When We Meet.'},twitter:{images:[CARD.url],card:'summary_large_image',title:'Terms of Service | Craft | HYEOK.DEV',description:'Terms and service information for Craft and When We Meet.'}};
 
 const CONTACT='jhjeong00@gmail.com';
 const EFFECTIVE='October 1, 2026';

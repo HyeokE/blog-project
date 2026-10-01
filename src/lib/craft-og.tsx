@@ -15,14 +15,14 @@ export async function craftOgImage({eyebrow,title,lines,motif}:{eyebrow:string;t
    <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between',flex:1,minWidth:0}}>
     <div style={{display:'flex',fontSize:30,fontWeight:800,letterSpacing:1,color:PALETTE.muted}}>{eyebrow}</div>
     <div style={{display:'flex',flexDirection:'column',gap:22}}>
-     <div style={{display:'flex',fontSize:motif?104:132,fontWeight:800,lineHeight:1.04,letterSpacing:-2}}>{title}</div>
-     <div style={{display:'flex',flexDirection:'column',gap:8}}>{lines.map(line=><div key={line} style={{display:'flex',fontSize:motif?32:36,color:PALETTE.muted,lineHeight:1.3}}>{line}</div>)}</div>
+     <div style={{display:'flex',fontSize:motif?100:132,fontWeight:800,lineHeight:1.04,letterSpacing:-2,whiteSpace:'pre-wrap'}}>{title}</div>
+     <div style={{display:'flex',flexDirection:'column',gap:8}}>{lines.map(line=><div key={line} style={{display:'flex',fontSize:motif?28:36,color:PALETTE.muted,lineHeight:1.3}}>{line}</div>)}</div>
     </div>
     <div style={{display:'flex',width:96,height:6,background:PALETTE.accent}}/>
    </div>
-   {motif&&<div style={{display:'flex',flexDirection:'column',justifyContent:'center',marginLeft:56}}>
-    <div style={{display:'flex',flexWrap:'wrap',width:7*62+6*10+2*28+4,gap:10,padding:28,background:PALETTE.surface,border:`2px solid ${PALETTE.rule}`,borderRadius:8}}>
-     {GRID.map((cell,index)=><div key={index} style={{display:'flex',width:62,height:62,borderRadius:4,background:cell===2?PALETTE.accent:cell===1?PALETTE.accentSoft:'transparent',border:cell?'none':`2px solid ${PALETTE.rule}`}}/>)}
+   {motif&&<div style={{display:'flex',flexDirection:'column',justifyContent:'center',flex:'none',marginLeft:48}}>
+    <div style={{display:'flex',flexWrap:'wrap',width:7*52+6*8+2*24+4,gap:8,padding:24,background:PALETTE.surface,border:`2px solid ${PALETTE.rule}`,borderRadius:8}}>
+     {GRID.map((cell,index)=><div key={index} style={{display:'flex',width:52,height:52,borderRadius:4,background:cell===2?PALETTE.accent:cell===1?PALETTE.accentSoft:'transparent',border:cell?'none':`2px solid ${PALETTE.rule}`}}/>)}
     </div>
    </div>}
   </div>,

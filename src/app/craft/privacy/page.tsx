@@ -4,7 +4,9 @@ import '../craft.css';
 import '../legal.css';
 import {ANALYTICS_ELEMENTS,ANALYTICS_SECTIONS} from '@/constants/analytics';
 
-export const metadata:Metadata={title:'Privacy Policy | Craft | HYEOK.DEV',description:'How Craft and When We Meet handle your data, including Google user data.',alternates:{canonical:'/craft/privacy'},openGraph:{type:'website',siteName:'HYEOK.DEV',locale:'en_US',url:'/craft/privacy',title:'Privacy Policy | Craft | HYEOK.DEV',description:'How Craft and When We Meet handle your data, including Google user data.'},twitter:{card:'summary_large_image',title:'Privacy Policy | Craft | HYEOK.DEV',description:'How Craft and When We Meet handle your data, including Google user data.'}};
+// A page-level openGraph replaces the inherited one, so the Craft card is named here.
+const CARD={url:'/craft/opengraph-image',width:1200,height:630,alt:'Craft: small things made to be useful'};
+export const metadata:Metadata={title:'Privacy Policy | Craft | HYEOK.DEV',description:'How Craft and When We Meet handle your data, including Google user data.',alternates:{canonical:'/craft/privacy'},openGraph:{images:[CARD],type:'website',siteName:'HYEOK.DEV',locale:'en_US',url:'/craft/privacy',title:'Privacy Policy | Craft | HYEOK.DEV',description:'How Craft and When We Meet handle your data, including Google user data.'},twitter:{images:[CARD.url],card:'summary_large_image',title:'Privacy Policy | Craft | HYEOK.DEV',description:'How Craft and When We Meet handle your data, including Google user data.'}};
 
 const CONTACT='jhjeong00@gmail.com';
 const EFFECTIVE='October 1, 2026';
