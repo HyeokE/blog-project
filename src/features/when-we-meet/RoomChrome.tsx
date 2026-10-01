@@ -59,12 +59,14 @@ type HeaderProps={
  confirmation:ConfirmationRecordData|null;offline:boolean;
  settingsDisabled:boolean;menuTrigger:React.RefObject<HTMLButtonElement|null>;
  onInvite:()=>void;onSettings:()=>void;
+ /** Shown after the dates · time zone when the viewer's own time zone reads differently from the room's. */
+ zoneSwitch?:React.ReactNode;
  /** Owner of a confirmed meeting only. */
  resend?:{recipientCount:()=>Promise<number|undefined>;send:()=>Promise<unknown>};
 };
 /** Room identity: title, one meta line (dates · timezone, the only timezone in the view) with a compact Confirmed chip (day only, on every tab so the header never changes height), Invite and a ⋯ menu.
  * Phones: the title takes the full width; Invite (icon only) and ⋯ share the meta row. */
-export function RoomHeader({title,startDate,endDate,timezone,confirmation,offline,settingsDisabled,menuTrigger,onInvite,onSettings,resend}:HeaderProps){
+export function RoomHeader({title,startDate,endDate,timezone,confirmation,offline,settingsDisabled,menuTrigger,onInvite,onSettings,resend,zoneSwitch}:HeaderProps){
  const {t,compactRange,confirmedChip,MEETING_TOASTS,resendQuestion}=useWwmCopy();
  const [asking,setAsking]=useState(false),[count,setCount]=useState<number|undefined>(),[sending,setSending]=useState(false);
  const confirmed=confirmation?.status==='confirmed';
@@ -87,7 +89,14 @@ export function RoomHeader({title,startDate,endDate,timezone,confirmation,offlin
      </DropdownMenuContent>
     </DropdownMenu>
    </div>
-  <p className="wwm-room-meta"><span>{compactRange(startDate,endDate)}<span aria-hidden="true"> · </span>{timezone}</span>{confirmed&&confirmation&&<Badge variant="outline" className="wwm-room-chip"><Check aria-hidden="true"/>{confirmedChip(confirmation)}</Badge>}{offline&&<span className="wwm-offline" role="status"><i aria-hidden="true"/>{t('common.offline')}</span>}</p>
+  <p className="wwm-room-meta"><span>{compactRange(startDate,endDate)}<span aria-hidden="true"> · </span>{timezone}</span>{confirmed&&confirmation&&<Badge variant="outline" className="wwm-room-chip"><Check aria-hidden="true"/>{confirmedChip(confirmation)}</Badge>}{zoneSwitch}{offline&&<span className="wwm-offline" role="status"><i aria-hidden="true"/>{t('common.offline')}</span>}</p>
   <AlertDialog open={asking} onOpenChange={open=>{if(!sending)setAsking(open)}}><AlertDialogContent className="wwm-resend-dialog" onCloseAutoFocus={event=>{event.preventDefault();menuTrigger.current?.focus()}}><AlertDialogHeader><AlertDialogTitle>{resendQuestion(count)}</AlertDialogTitle><AlertDialogDescription>{t('resend.body')}</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel data-analytics-label={ANALYTICS_ELEMENTS.DIALOG_CANCEL} disabled={sending}>{t('common.cancel')}</AlertDialogCancel><AlertDialogAction data-analytics-label={ANALYTICS_ELEMENTS.CONFIRM_RESEND_SEND} disabled={sending} aria-busy={sending||undefined} onClick={event=>{event.preventDefault();void sendResend()}}>{sending?t('resend.sending'):t('resend.confirm')}</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
  </header>;
+}
+
+/** Room time ⇄ my time. Display only: saved times are UTC instants and never move. */
+export function TimezoneSwitch({value,roomZone,deviceZone,onChange}:{value:'room'|'device';roomZone:string;deviceZone:string;onChange:(next:'room'|'device')=>void}){
+ const {t}=useWwmCopy();
+ const options=[['room',t('room.tzRoom'),roomZone],['device',t('room.tzDevice'),deviceZone]] as const;
+ return <span className="wwm-tz-switch" role="radiogroup" aria-label={t('room.tzViewLabel')}>{options.map(([key,label,zone])=><button key={key} type="button" role="radio" aria-checked={value===key} title={zone} data-analytics-label={ANALYTICS_ELEMENTS.TIMEZONE_VIEW} data-analytics-id={key} onClick={()=>onChange(key)}>{label}</button>)}</span>;
 }

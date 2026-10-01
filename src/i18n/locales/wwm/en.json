@@ -131,7 +131,10 @@
     "connectionRequired": "Connection required",
     "notConfigured": "This service is not connected to Supabase yet. No meeting or availability can be saved. Ask the site owner to configure the shared project and review the migration. Google login must be enabled before meeting actions can work.",
     "findingTimes": "Finding the times you’re planning together.",
-    "savedDataSafe": "Your saved data is safe."
+    "savedDataSafe": "Your saved data is safe.",
+    "tzViewLabel": "Time zone shown",
+    "tzRoom": "Room time",
+    "tzDevice": "My time"
   },
   "save": {
     "saving": "Saving…",
@@ -176,7 +179,9 @@
     "pagerMonthDay": "{weekday} {month} {day}",
     "blockName": "{name}, {date}, {start} to {end}",
     "blockTime": "{start} to {end}",
-    "showEarlier": "Show {from}–{to}"
+    "showEarlier": "Show {from}–{to}",
+    "sideOthers": "Others",
+    "sideMine": "Mine"
   },
   "fill": {
     "trigger": "Fill from Google Calendar",
@@ -376,7 +381,8 @@
     "deleting": "Deleting…",
     "renameFailed": "Couldn’t rename the meeting.",
     "scheduleFailed": "Couldn’t update the dates and times.",
-    "deleteFailed": "Couldn’t delete the meeting."
+    "deleteFailed": "Couldn’t delete the meeting.",
+    "timezoneNote": "Changing the time zone does not move anyone’s saved times. They keep the same moment and show on the new clock, so some may fall outside the new hours."
   },
   "invitation": {
     "heading": "Meeting invitation",

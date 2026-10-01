@@ -62,3 +62,9 @@
  :root[data-craft] .wwm.wwm-room .wwm-save-state [data-slot='button']::before{content:'';width:16px;height:16px;background:currentColor;-webkit-mask:var(--wwm-retry-icon) center/16px no-repeat;mask:var(--wwm-retry-icon) center/16px no-repeat}
  .wwm.wwm-room .wwm-save-state{--wwm-retry-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8'/%3E%3Cpath d='M3 3v5h5'/%3E%3C/svg%3E")}
 }
+/* Room time / My time: two quiet 24px segments, the active one inked like the Confirmed chip. */
+.wwm .wwm-tz-switch{display:inline-flex;height:24px;border:1px solid var(--craft-rule);border-radius:var(--craft-radius);overflow:hidden}
+.wwm .wwm-tz-switch button{padding:0 var(--craft-space-3);border:0;background:transparent;color:var(--craft-muted);font:var(--craft-fw-medium) var(--craft-fs-12)/22px var(--craft-font);cursor:pointer;white-space:nowrap}
+.wwm .wwm-tz-switch button+button{border-left:1px solid var(--craft-rule)}
+.wwm .wwm-tz-switch button[aria-checked='true']{background:var(--craft-ink);color:var(--craft-on-ink)}
+.wwm .wwm-tz-switch button:focus-visible{outline:2px solid var(--craft-ink);outline-offset:-2px}

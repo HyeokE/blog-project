@@ -92,6 +92,7 @@ export const ANALYTICS_WWM_SIGNALS = {
   INVITE_COPY: 'invite_copy',
   SETTINGS_OPEN: 'settings_open',
   CALENDAR_FILL_APPLIED: 'calendar_fill_applied',
+  TIMEZONE_VIEW_CHANGED: 'timezone_view_changed',
   REVIEW_BACK: 'review_back',
   LOGIN_PROMPT: 'login_prompt',
 } as const;
@@ -183,6 +184,7 @@ export const ANALYTICS_ELEMENTS = {
   COMMAND_ITEM: 'command_item',
   AVAILABILITY_CELL: 'availability_cell',
   AVAILABILITY_BLOCK: 'availability_block',
+  TIMEZONE_VIEW: 'timezone_view',
   CALENDAR_COMPACT: 'calendar_compact',
   CALENDAR_DAY_PAGER: 'calendar_day_pager',
   CALENDAR_SHOW_EARLIER: 'calendar_show_earlier',

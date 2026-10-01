@@ -1,6 +1,6 @@
 'use client';
 import {ANALYTICS_ELEMENTS,ANALYTICS_SECTIONS} from '@/constants/analytics';
-import {useCallback,useEffect,useState} from 'react';
+import {useCallback,useEffect,useMemo,useState} from 'react';
 import {useCraftAccount} from '@/app/craft/CraftAccount';
 import {Notice} from './Notice';
 import {Button} from '@/components/ui/button';
@@ -38,6 +38,8 @@ export function ConfirmTab({roomId,room,slots,responses,onConfirmation}:{roomId:
   return()=>controller.abort();
  },[roomId,attempt]);
  const record=data?.confirmation??null,loaded=data!==null;
+ // Times are shown on the clock the slots are labelled with (`room.timezone` here is the viewed zone).
+ const shown=useMemo(()=>data?.confirmation&&data.confirmation.timezone!==room.timezone?{...data,confirmation:{...data.confirmation,timezone:room.timezone}}:data,[data,room.timezone]);
  useEffect(()=>{if(loaded)onConfirmation?.(record)},[loaded,record,onConfirmation]);
  const {user}=useCraftAccount();
  const ownerName=responses.find(row=>row.userId===room.ownerId)?.displayName;
@@ -91,12 +93,12 @@ export function ConfirmTab({roomId,room,slots,responses,onConfirmation}:{roomId:
   void sendEdit(body);
  }
  // Re-POSTs the server's own open edit (same payload): the server reads the event back and never notifies twice.
- function checkEdit(){const body=data&&openEditBody(data,slots);if(body)void sendEdit(body);else{setEditLocal(null);reload()}}
+ function checkEdit(){const body=shown&&openEditBody(shown,slots);if(body)void sendEdit(body);else{setEditLocal(null);reload()}}
  function connectCalendar(){storage.write(confirmReturnKey(roomId),'confirm');void connectGoogleCalendar(roomId,window.location.pathname+window.location.search).catch(()=>{storage.write(confirmReturnKey(roomId),null);setLocal({status:'failed',error:t('confirm.calendarUnavailable'),calendar:'disconnected'})})}
 
  if(loadError)return <div data-analytics-section={ANALYTICS_SECTIONS.WWM_CONFIRM}><Notice tone="error" className="wwm-confirm-load-error" action={<Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.RETRY} onClick={reload}>{t('common.retry')}</Button>}>{t('confirm.loadFailed')}</Notice></div>;
  if(!data)return <div className="wwm-confirm wwm-confirm-skeleton" role="status" aria-label={t('confirm.loading')}><span className="wwm-confirm-skeleton-title"/><span className="wwm-confirm-skeleton-line"/><span className="wwm-confirm-skeleton-grid"/></div>;
- const state=confirmPanelState({data,slots,organizerName:ownerName,recipientIds,t});
+ const state=confirmPanelState({data:shown??data,slots,organizerName:ownerName,recipientIds,t});
  const status=local?.status??state.status;
  return <ConfirmationPanel
   room={{title:room.title,startDate:room.startDate,endDate:room.endDate,startTime:room.startTime,endTime:room.endTime,timezone:room.timezone}}
