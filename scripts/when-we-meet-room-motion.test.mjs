@@ -91,3 +91,12 @@ test('tabs keep Radix ids so aria-controls / aria-labelledby resolve',()=>{
  assert.doesNotMatch(component,/<TabsTrigger[^>]*\sid=/);
  assert.doesNotMatch(component,/<TabsContent[^>]*\sid=/);
 });
+
+test('mouse drags mark a rectangle (days x half-hours) and sample the pointer path',()=>{
+ const weekly=readFileSync(new URL('../src/features/when-we-meet/WeeklyAvailability.tsx',import.meta.url),'utf8');
+ assert.match(weekly,/function applyRect\(slot:Slot\)/);
+ assert.match(weekly,/applyRect\(slot\)\}\}/);
+ assert.match(weekly,/else if\(!readOnly\)applyRect\(slot\)/);
+ assert.match(weekly,/d\.applied\.has\(id\)!==want/);
+ assert.match(weekly,/window\.addEventListener\('pointerup',up\)/);
+});

@@ -77,7 +77,7 @@ export function WeeklyAvailability({startDate,endDate,timezone,slots,responses,c
  const pager=pagerWindow(allDates,pagerStart??Math.max(0,allDates.indexOf(firstRelevantDate??'')),pageSize);
  const paged=!phone&&allDates.length>pageSize;
  const dates=paged?pager.dates:allDates;
- const gesture=useRef(createGesture()),holdTimer=useRef<number|null>(null),drag=useRef<{value:boolean;seen:Set<string>;last?:Slot}|null>(null);
+ const gesture=useRef(createGesture()),holdTimer=useRef<number|null>(null),drag=useRef<{value:boolean;seen:Set<string>;last?:Slot;anchor?:Slot;applied?:Set<string>;base?:Set<string>;rect?:string[]}|null>(null);
  function paint(slot:Slot){const d=drag.current;if(!d)return;const segment=dragSegment(d.last,slot,slots) as Slot[];d.last=slot;for(const cell of segment){if(d.seen.has(cell.id))continue;d.seen.add(cell.id);if(mineSet.has(cell.id)!==d.value)onToggle(cell.id)}}
  const pick=useRef<{drag:string|null}>({drag:null}),[anchor,setAnchor]=useState<string|null>(null);
  useEffect(()=>{if(anchor&&!(range?.startId===anchor&&range.endId===anchor))setAnchor(null)},[anchor,range]);
@@ -142,6 +142,21 @@ export function WeeklyAvailability({startDate,endDate,timezone,slots,responses,c
  function holdMove(x:number,y:number){const id=slotIdAt(x,y),slot=id&&byId.get(id);if(!slot)return;if(selecting&&pick.current.drag)choose(dragRange(slots,pick.current.drag,slot.id));else if(!readOnly)paint(slot)}
  const lastMouse=useRef<{x:number;y:number}|null>(null);
  const endPointer=()=>{clearHold();drag.current=null;pick.current.drag=null;lastMouse.current=null};
+ // Marquee: a mouse drag marks the whole rectangle between the first cell and the cell under the pointer (days x half-hours).
+ // The first cell decides whether the rectangle checks or clears; cells that leave the rectangle go back to how they were.
+ function applyRect(slot:Slot){
+  const d=drag.current;if(!d?.anchor||!d.applied||!d.base)return;
+  const col=(date:string)=>dates.indexOf(date),rowOf=(id:string)=>rows.findIndex(row=>Object.values(row.byDate).some(cell=>(cell as Slot|undefined)?.id===id));
+  const c1=col(d.anchor.date),c2=col(slot.date),r1=rowOf(d.anchor.id),r2=rowOf(slot.id);
+  if(c1<0||c2<0||r1<0||r2<0)return;
+  const inRect=new Set<string>();
+  for(let r=Math.min(r1,r2);r<=Math.max(r1,r2);r++)for(let c=Math.min(c1,c2);c<=Math.max(c1,c2);c++){const cell=rows[r].byDate[dates[c]] as Slot|undefined;if(cell)inRect.add(cell.id)}
+  for(const id of new Set([...(d.rect??[]),...inRect])){
+   const want=inRect.has(id)?d.value:d.base.has(id);
+   if(d.applied.has(id)!==want){onToggle(id);if(want)d.applied.add(id);else d.applied.delete(id)}
+  }
+  d.rect=[...inRect];
+ }
  // Mouse drags are tracked by position, not by pointerenter: a fast stroke jumps over cells (and over whole days when it
  // moves sideways), so every move is sampled along the straight line from the previous pointer position.
  function mouseDragMove(e:React.PointerEvent){
@@ -150,12 +165,10 @@ export function WeeklyAvailability({startDate,endDate,timezone,slots,responses,c
   if(!(e.buttons&1)){endPointer();return}
   const from=lastMouse.current??{x:e.clientX,y:e.clientY},dx=e.clientX-from.x,dy=e.clientY-from.y;
   const steps=Math.max(1,Math.ceil(Math.hypot(dx,dy)/(rowHeight/4)));
-  let lastId='';
-  for(let i=1;i<=steps;i++){
-   const id=slotIdAt(from.x+dx*i/steps,from.y+dy*i/steps),slot=id&&byId.get(id);
-   if(!slot||id===lastId)continue;
-   lastId=id;
-   if(selecting){const anchorId=pick.current.drag;if(anchorId)choose(dragRange(slots,anchorId,slot.id))}else if(!readOnly)paint(slot);
+  const id=slotIdAt(e.clientX,e.clientY),slot=id&&byId.get(id);
+  if(slot){
+   if(selecting){const anchorId=pick.current.drag;if(anchorId)choose(dragRange(slots,anchorId,slot.id))}
+   else if(!readOnly)applyRect(slot);
   }
   lastMouse.current={x:e.clientX,y:e.clientY};
  }
@@ -165,9 +178,9 @@ export function WeeklyAvailability({startDate,endDate,timezone,slots,responses,c
  function cellHandlers(slot:Slot):React.HTMLAttributes<HTMLDivElement>{
   if(!interactive)return {};
   return {
-   onPointerDown:e=>{if(e.pointerType==='touch'){gesture.current.down('touch',e.clientX,e.clientY,slot.id);startHold(slot);return}if(e.button!==0)return;lastMouse.current={x:e.clientX,y:e.clientY};setFocusId(slot.id);if(selecting){pick.current.drag=slot.id;setAnchor(null);choose(dragRange(slots,slot.id,slot.id))}else{drag.current={value:!mineSet.has(slot.id),seen:new Set()};paint(slot)}},
+   onPointerDown:e=>{if(e.pointerType==='touch'){gesture.current.down('touch',e.clientX,e.clientY,slot.id);startHold(slot);return}if(e.button!==0)return;lastMouse.current={x:e.clientX,y:e.clientY};setFocusId(slot.id);if(selecting){pick.current.drag=slot.id;setAnchor(null);choose(dragRange(slots,slot.id,slot.id))}else{drag.current={value:!mineSet.has(slot.id),seen:new Set(),anchor:slot,base:new Set(mineSet),applied:new Set(mineSet),rect:[]};applyRect(slot)}},
    onPointerMove:e=>{if(e.pointerType!=='touch')return;if(gesture.current.holding()){holdMove(e.clientX,e.clientY);return}gesture.current.move(e.clientX,e.clientY);if(gesture.current.pointerType()===null)clearHold()},
-   onPointerEnter:e=>{if(e.pointerType!=='mouse'||!e.buttons)return;if(selecting){const from=pick.current.drag;if(from)choose(dragRange(slots,from,slot.id))}else paint(slot)},
+   onPointerEnter:e=>{if(e.pointerType!=='mouse'||!e.buttons)return;if(selecting){const from=pick.current.drag;if(from)choose(dragRange(slots,from,slot.id))}},
    onPointerUp:e=>{if(e.pointerType==='touch'){clearHold();const held=gesture.current.holding();if(gesture.current.up(e.clientX,e.clientY,slot.id)&&!held){setFocusId(slot.id);selecting?tap(slot):onToggle(slot.id)}}endPointer()},
    onPointerCancel:()=>{gesture.current.cancel();endPointer()},
    onContextMenu:e=>{if(gesture.current.holding()||holdTimer.current!==null)e.preventDefault()},
