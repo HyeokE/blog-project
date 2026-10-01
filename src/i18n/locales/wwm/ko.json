@@ -407,7 +407,7 @@
     "returnToMeetings": "모임 목록으로 돌아가기"
   },
   "toast": {
-    "linkCopied": "링크를 복사했어요",
+    "linkCopied": "초대 문구와 링크를 복사했어요",
     "copyFailed": "복사하지 못했어요. 링크를 선택해뒀으니 직접 복사해주세요",
     "renamed": "모임 이름을 바꿨어요",
     "nameUpdated": "내 이름을 바꿨어요",

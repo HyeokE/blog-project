@@ -407,7 +407,7 @@
     "returnToMeetings": "Return to meetings and try again"
   },
   "toast": {
-    "linkCopied": "Link copied",
+    "linkCopied": "Invitation and link copied",
     "copyFailed": "Couldn’t copy — link selected",
     "renamed": "Meeting renamed",
     "nameUpdated": "Name updated",

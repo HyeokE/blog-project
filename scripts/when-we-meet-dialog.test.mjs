@@ -11,7 +11,7 @@ test('owned list and guest entry share a Radix create dialog, not an inline form
  // Create failures stay inside the dialog as an alert (dictionary copy by status, never raw server text); success closes it and opens one "{Title} is ready" dialog (no toast).
  assert.match(source,/catch\(e\)\{(?:funnelSignal\('create','submit_failed'\);)?setCreateError\(copy\.apiError\(e,'create'\)\);setStatus\(''\);\}/);
  assert.match(source,/<div id="wwm-create-status"[^>]*role=\{createError\?'alert':'status'\}/);
- assert.match(source,/setCreated\(\{id:result\.id,title:form\.title\.trim\(\),link:`\$\{window\.location\.origin\}\/craft\/when-we-meet\/\$\{result\.id\}\?invite=\$\{result\.inviteToken\}`,summary:meetingSummary\(form\)\}\)/);
+ assert.match(source,/setCreated\(\{id:result\.id,title:form\.title\.trim\(\),link:`\$\{window\.location\.origin\}\/craft\/when-we-meet\/\$\{result\.id\}\?invite=\$\{result\.inviteToken\}`,summary:meetingSummary\(form\)(?:,share:inviteShareText\([^)]*\))?\}\)/);
  assert.match(source,/<CreatedMeetingDialog meeting=\{created\}/);
  assert.doesNotMatch(source,/Room created/);
  const chrome=readFileSync(new URL('../src/features/when-we-meet/RoomChrome.tsx',import.meta.url),'utf8');

@@ -10,7 +10,7 @@ test('personal slots expose selection, group slots expose counts',()=>{assert.eq
 test('tabs use one active treatment and a shared toast host',()=>{assert.doesNotMatch(src,/wwm-active-tab/);assert.match(readFileSync(new URL('../src/features/when-we-meet/RoomChrome.tsx',import.meta.url),'utf8'),/toast\.success\(copied\)/);assert.match(readFileSync(new URL('../src/app/craft/layout.tsx',import.meta.url),'utf8'),/<Toaster\s*\/>/)});
 test('purposeful English tabs and a header invite without bottom sharing',()=>{
  // Current room tabs: Availability / Everyone / People (a Confirm tab may be added later).
- assert.match(src,/copyLink\(link,MEETING_TOASTS\.linkCopied\)/);assert.match(src,/const tabNames=\{availability:t\('room\.tabs\.availability'\),everyone:t\('room\.tabs\.everyone'\),people:t\('room\.tabs\.people'\)(?:,[a-z]+:t\('room\.tabs\.[a-z]+'\))?\} as const/);
+ assert.match(src,/copyLink\(inviteShareText\(link,name\),MEETING_TOASTS\.linkCopied\)/);assert.match(src,/const tabNames=\{availability:t\('room\.tabs\.availability'\),everyone:t\('room\.tabs\.everyone'\),people:t\('room\.tabs\.people'\)(?:,[a-z]+:t\('room\.tabs\.[a-z]+'\))?\} as const/);
  for(const gone of ['Overlap','Suggestions'])assert.ok(!src.includes(`'${gone}'`),`superseded tab ${gone}`);
  assert.match(src,/<RoomHeader [^>]*onInvite=\{\(\)=>void invite\(\)\}/);
  assert.match(readFileSync(new URL('../src/features/when-we-meet/RoomChrome.tsx',import.meta.url),'utf8'),/<div className="wwm-header-actions">\s*<Button type="button" variant="outline"[^>]*onClick=\{onInvite\}><Link2 aria-hidden="true"\/><span className="wwm-invite-label">\{t\('room\.invite'\)\}<\/span><\/Button>/);

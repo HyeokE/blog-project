@@ -51,7 +51,7 @@ test('one toast vocabulary, one sentence each, meeting not room',()=>{
   assert.doesNotMatch(text,/\broom\b/i);
   assert.doesNotMatch(text,/\.\s+\S/,'one sentence');
  }
- assert.equal(MEETING_TOASTS.linkCopied,'Link copied');
+ assert.equal(MEETING_TOASTS.linkCopied,'Invitation and link copied');
  assert.equal(MEETING_TOASTS.copyFailed,'Couldn’t copy — link selected');
  assert.equal(MEETING_TOASTS.renamed,'Meeting renamed');
  assert.equal(MEETING_TOASTS.nameUpdated,'Name updated');

@@ -17,14 +17,14 @@ import './room-chrome.css';
 const COPIED_MS=2000;
 
 /** Read-only invitation link with an inline Copy that flips to "Copied" for two seconds. On failure the link is selected for manual copy. */
-export function LinkField({value,autoSelect=false}:{value:string;autoSelect?:boolean}){
+export function LinkField({value,copyValue,autoSelect=false}:{value:string;copyValue?:string;autoSelect?:boolean}){
  const {t,MEETING_TOASTS}=useWwmCopy();
  const [copied,setCopied]=useState(false);
  const input=useRef<HTMLInputElement>(null),timer=useRef(0);
  useEffect(()=>()=>window.clearTimeout(timer.current),[]);
  useEffect(()=>{if(autoSelect)requestAnimationFrame(()=>input.current?.select())},[autoSelect]);
  async function copy(){
-  try{await navigator.clipboard.writeText(value);funnelStepIfActive('create','invite_copied');setCopied(true);window.clearTimeout(timer.current);timer.current=window.setTimeout(()=>setCopied(false),COPIED_MS)}
+  try{await navigator.clipboard.writeText(copyValue??value);funnelStepIfActive('create','invite_copied');setCopied(true);window.clearTimeout(timer.current);timer.current=window.setTimeout(()=>setCopied(false),COPIED_MS)}
   catch{input.current?.focus();input.current?.select();toast.error(MEETING_TOASTS.copyFailed)}
  }
  return <div className="wwm-link-field"><Input ref={input} aria-label={t('room.invitationLink')} data-analytics-label={ANALYTICS_ELEMENTS.INVITE_LINK_INPUT} readOnly value={value} onFocus={event=>event.target.select()}/><Button type="button" variant="ghost" size="sm" className="wwm-link-copy" data-analytics-label={ANALYTICS_ELEMENTS.INVITE_LINK_COPY} data-analytics-id="inline" onClick={()=>void copy()}><span aria-live="polite">{copied?t('create.copied'):t('create.copy')}</span></Button></div>;
@@ -33,7 +33,7 @@ export function LinkField({value,autoSelect=false}:{value:string;autoSelect?:boo
 /** Copies a link; resolves false when the clipboard refused (callers then show the link selected). `copied` is the success toast text. */
 export async function copyLink(link:string,copied:string){try{await navigator.clipboard.writeText(link);toast.success(copied);return true}catch{return false}}
 
-export type CreatedMeeting={id:string;title:string;link:string;summary:string};
+export type CreatedMeeting={id:string;title:string;link:string;summary:string;share?:string};
 /** The one success moment after creating a meeting: name, window, link and the way in. No toast. */
 export function CreatedMeetingDialog({meeting,onOpenMeeting,onClose,onCloseAutoFocus}:{meeting:CreatedMeeting|null;onOpenMeeting:(id:string)=>void;onClose:()=>void;onCloseAutoFocus:(event:Event)=>void}){
  const {t}=useWwmCopy();
@@ -42,16 +42,16 @@ export function CreatedMeetingDialog({meeting,onOpenMeeting,onClose,onCloseAutoF
  return <Dialog open={Boolean(meeting)} onOpenChange={open=>{if(!open)onClose()}}>
   <DialogContent className="wwm-ready-dialog" closeLabel={t('common.close')} onCloseAutoFocus={onCloseAutoFocus}>
    {meeting&&<><DialogHeader><DialogTitle>{rich(t('create.readyTitle',{title:RICH_SLOT}),RICH_SLOT,<span className="wwm-ready-name">{meeting.title}</span>)}</DialogTitle><DialogDescription>{meeting.summary}</DialogDescription></DialogHeader>
-   <LinkField value={meeting.link} autoSelect={failed}/>
+   <LinkField value={meeting.link} copyValue={meeting.share} autoSelect={failed}/>
    <DialogFooter className="wwm-ready-footer"><Button type="button" data-analytics-label={ANALYTICS_ELEMENTS.MEETING_OPEN} onClick={()=>onOpenMeeting(meeting.id)}>{t('create.openMeeting')}</Button></DialogFooter></>}
   </DialogContent>
  </Dialog>;
 }
 
 /** Fallback when the clipboard is unavailable: the link, selected, with its own Copy. */
-export function InviteLinkDialog({link,onClose,onCloseAutoFocus}:{link:string;onClose:()=>void;onCloseAutoFocus:(event:Event)=>void}){
+export function InviteLinkDialog({link,share,onClose,onCloseAutoFocus}:{link:string;share?:string;onClose:()=>void;onCloseAutoFocus:(event:Event)=>void}){
  const {t}=useWwmCopy();
- return <Dialog open={Boolean(link)} onOpenChange={open=>{if(!open)onClose()}}><DialogContent className="wwm-ready-dialog" closeLabel={t('common.close')} onCloseAutoFocus={onCloseAutoFocus}><DialogHeader><DialogTitle>{t('room.invitePeople')}</DialogTitle><DialogDescription>{t('create.linkHint')}</DialogDescription></DialogHeader>{link&&<LinkField value={link} autoSelect/>}<DialogFooter className="wwm-ready-footer"><Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.DIALOG_DONE} onClick={onClose}>{t('common.done')}</Button></DialogFooter></DialogContent></Dialog>;
+ return <Dialog open={Boolean(link)} onOpenChange={open=>{if(!open)onClose()}}><DialogContent className="wwm-ready-dialog" closeLabel={t('common.close')} onCloseAutoFocus={onCloseAutoFocus}><DialogHeader><DialogTitle>{t('room.invitePeople')}</DialogTitle><DialogDescription>{t('create.linkHint')}</DialogDescription></DialogHeader>{link&&<LinkField value={link} copyValue={share} autoSelect/>}<DialogFooter className="wwm-ready-footer"><Button type="button" variant="outline" data-analytics-label={ANALYTICS_ELEMENTS.DIALOG_DONE} onClick={onClose}>{t('common.done')}</Button></DialogFooter></DialogContent></Dialog>;
 }
 
 type HeaderProps={
