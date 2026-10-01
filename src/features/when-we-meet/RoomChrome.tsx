@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import {funnelStepIfActive} from './funnel';
-import {Check,Link2,MoreHorizontal} from 'lucide-react';
+import {Check,Globe,Link2,MoreHorizontal} from 'lucide-react';
 import {toast} from 'sonner';
 import {ANALYTICS_ELEMENTS} from '@/constants/analytics';
 import {Button} from '@/components/ui/button';
@@ -94,9 +94,8 @@ export function RoomHeader({title,startDate,endDate,timezone,confirmation,offlin
  </header>;
 }
 
-/** Room time ⇄ my time. Display only: saved times are UTC instants and never move. */
-export function TimezoneSwitch({value,roomZone,deviceZone,onChange}:{value:'room'|'device';roomZone:string;deviceZone:string;onChange:(next:'room'|'device')=>void}){
+/** Opens the "Time zone" dialog. Display only: saved times are UTC instants and never move. */
+export function TimezoneSwitch({viewing,onOpen}:{viewing:boolean;onOpen:()=>void}){
  const {t}=useWwmCopy();
- const options=[['room',t('room.tzRoom'),roomZone],['device',t('room.tzDevice'),deviceZone]] as const;
- return <span className="wwm-tz-switch" role="radiogroup" aria-label={t('room.tzViewLabel')}>{options.map(([key,label,zone])=><button key={key} type="button" role="radio" aria-checked={value===key} title={zone} data-analytics-label={ANALYTICS_ELEMENTS.TIMEZONE_VIEW} data-analytics-id={key} onClick={()=>onChange(key)}>{label}</button>)}</span>;
+ return <button type="button" className="wwm-tz-trigger" data-viewing={viewing||undefined} data-analytics-label={ANALYTICS_ELEMENTS.TIMEZONE_VIEW} onClick={onOpen}><Globe aria-hidden="true"/>{t('room.tzChange')}</button>;
 }

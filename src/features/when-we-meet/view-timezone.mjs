@@ -22,14 +22,14 @@ export function isHalfHourAligned(slots){return slots.every(slot=>/:(00|30)$/.te
 export function labelsDiffer(slots,projected){return slots.some((slot,index)=>slot.date!==projected[index].date||slot.time!==projected[index].time)}
 /**
  * What to show for a room: the room's own labels, or `zone`'s when a different zone is offered and chosen.
- * `offered` is false when `zone` is the room's, reads the same, or cannot be drawn (not on the half hour).
+ * `offered` is false when `zone` is the room's or cannot be drawn (not on the half hour).
  */
 export function timezoneView({slots,roomZone,zone,useZone}){
  const empty={offered:false,zone:roomZone,slots,startDate:slots[0]?.date||'',endDate:slots.at(-1)?.date||'',startTime:'00:00',endTime:'24:00'};
  if(!zone||zone===roomZone||!slots.length)return empty;
  let projected;
  try{projected=projectSlots(slots,zone)}catch{return empty}
- if(!isHalfHourAligned(projected)||!labelsDiffer(slots,projected))return empty;
+ if(!isHalfHourAligned(projected))return empty;
  if(!useZone)return {...empty,offered:true};
  const ordered=[...projected].sort((a,b)=>a.utc.localeCompare(b.utc));
  return {offered:true,zone,slots:projected,startDate:ordered[0].date,endDate:ordered.at(-1).date,startTime:'00:00',endTime:'24:00'};

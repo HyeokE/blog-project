@@ -23,9 +23,10 @@ test('before the choice is made the room clock stays, but the switch is offered'
  assert.equal(shown.zone,'Asia/Seoul');
 });
 
-test('no switch when the device zone is the room zone, reads the same, or is off the half hour',()=>{
+test('no projection when the zone is the room zone or is off the half hour; a zone that reads the same is still a valid view',()=>{
  assert.equal(view(seoul(),'Asia/Seoul').offered,false);
- assert.equal(view(seoul(),'Asia/Tokyo').offered,false);
+ assert.equal(view(seoul(),'Asia/Tokyo').offered,true);
+ assert.deepEqual(view(seoul(),'Asia/Tokyo').slots,makeSlots(seoul()));
  assert.equal(view(seoul(),'Asia/Kathmandu').offered,false);
  assert.equal(view(seoul(),'').offered,false);
  assert.equal(view(seoul(),'Not/AZone').offered,false);

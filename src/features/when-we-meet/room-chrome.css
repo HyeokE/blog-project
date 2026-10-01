@@ -62,9 +62,14 @@
  :root[data-craft] .wwm.wwm-room .wwm-save-state [data-slot='button']::before{content:'';width:16px;height:16px;background:currentColor;-webkit-mask:var(--wwm-retry-icon) center/16px no-repeat;mask:var(--wwm-retry-icon) center/16px no-repeat}
  .wwm.wwm-room .wwm-save-state{--wwm-retry-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8'/%3E%3Cpath d='M3 3v5h5'/%3E%3C/svg%3E")}
 }
-/* Room time / My time: two quiet 24px segments, the active one inked like the Confirmed chip. */
-.wwm .wwm-tz-switch{display:inline-flex;height:24px;border:1px solid var(--craft-rule);border-radius:var(--craft-radius);overflow:hidden}
-.wwm .wwm-tz-switch button{box-sizing:border-box;height:22px;min-height:0;min-width:0;padding:0 var(--craft-space-3);border:0;background:transparent;color:var(--craft-muted);font:var(--craft-fw-medium) var(--craft-fs-12)/20px var(--craft-font);cursor:pointer;white-space:nowrap}
-.wwm .wwm-tz-switch button+button{border-left:1px solid var(--craft-rule)}
-.wwm .wwm-tz-switch button[aria-checked='true']{background:var(--craft-ink);color:var(--craft-on-ink)}
-.wwm .wwm-tz-switch button:focus-visible{outline:2px solid var(--craft-ink);outline-offset:-2px}
+/* Time zone trigger: a quiet 24px ghost button with a globe; inked while another zone is shown. */
+.wwm .wwm-tz-trigger{display:inline-flex;align-items:center;gap:var(--craft-space-1);box-sizing:border-box;height:24px;min-height:0;min-width:0;padding:0 var(--craft-space-2);border:1px solid transparent;border-radius:var(--craft-radius);background:transparent;color:var(--craft-muted);font:var(--craft-fw-medium) var(--craft-fs-12)/20px var(--craft-font);cursor:pointer;white-space:nowrap}
+.wwm .wwm-tz-trigger svg{width:14px;height:14px;flex:none}
+.wwm .wwm-tz-trigger:hover{border-color:var(--craft-rule);color:var(--craft-ink)}
+.wwm .wwm-tz-trigger[data-viewing]{border-color:var(--craft-rule);color:var(--craft-ink)}
+.wwm .wwm-tz-trigger:focus-visible{outline:2px solid var(--craft-ink);outline-offset:1px}
+.wwm-zone-dialog .wwm-zone-options{display:grid;gap:var(--craft-space-2);margin:0;padding:0;border:0}
+.wwm-zone-dialog .wwm-zone-options button{display:flex;justify-content:space-between;align-items:center;gap:var(--craft-space-3);box-sizing:border-box;min-height:var(--craft-h-md);padding:0 var(--craft-space-4);border:1px solid var(--craft-rule);border-radius:var(--craft-radius);background:transparent;color:var(--craft-ink);font:var(--craft-fw-medium) var(--craft-fs-14)/20px var(--craft-font);text-align:left;cursor:pointer}
+.wwm-zone-dialog .wwm-zone-options button small{color:var(--craft-muted);font:var(--craft-fw-regular) var(--craft-fs-12)/16px var(--craft-font)}
+.wwm-zone-dialog .wwm-zone-options button[aria-checked='true']{background:var(--craft-ink);border-color:var(--craft-ink);color:var(--craft-on-ink)}
+.wwm-zone-dialog .wwm-zone-options button[aria-checked='true'] small{color:inherit;opacity:.8}

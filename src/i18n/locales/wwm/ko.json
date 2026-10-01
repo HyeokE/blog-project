@@ -132,9 +132,13 @@
     "notConfigured": "아직 서비스가 데이터베이스에 연결되지 않아 모임을 저장할 수 없어요. 사이트 운영자에게 설정을 요청해주세요.",
     "findingTimes": "함께 정할 시간을 찾고 있어요",
     "savedDataSafe": "저장한 내용은 그대로 있어요.",
-    "tzViewLabel": "표시할 시간대",
     "tzRoom": "모임 시간대",
-    "tzDevice": "내 시간대"
+    "tzDevice": "내 시간대",
+    "tzChange": "시간대",
+    "tzDialogTitle": "표시할 시간대",
+    "tzDialogBody": "내 화면의 시간만 바뀌어요. 저장된 시간은 그대로예요.",
+    "tzOther": "다른 시간대",
+    "tzUnsupported": "30분 단위가 아닌 시간대라 달력에 표시할 수 없어요."
   },
   "save": {
     "saving": "저장하고 있어요",

@@ -132,9 +132,13 @@
     "notConfigured": "This service is not connected to Supabase yet. No meeting or availability can be saved. Ask the site owner to configure the shared project and review the migration. Google login must be enabled before meeting actions can work.",
     "findingTimes": "Finding the times you’re planning together.",
     "savedDataSafe": "Your saved data is safe.",
-    "tzViewLabel": "Time zone shown",
     "tzRoom": "Room time",
-    "tzDevice": "My time"
+    "tzDevice": "My time",
+    "tzChange": "Time zone",
+    "tzDialogTitle": "Show times in",
+    "tzDialogBody": "Only changes the clock you see. Saved times don’t move.",
+    "tzOther": "Another time zone",
+    "tzUnsupported": "That time zone isn’t on the half hour, so the calendar can’t show it."
   },
   "save": {
     "saving": "Saving…",
