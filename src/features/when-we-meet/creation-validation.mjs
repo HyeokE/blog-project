@@ -1,4 +1,4 @@
-import {validateRoom} from './domain.mjs';
+import {validateRoom,validateRoomCode} from './domain.mjs';
 import {createWwmTranslator} from '../../i18n/wwm.mjs';
 const english=createWwmTranslator('en');
 
@@ -13,6 +13,12 @@ export function todayInTimezone(zone,clock=new Date()){
 /** Field errors for the create form; `t` is the When We Meet translator (English by default). */
 export function creationErrors(values,clock=new Date(),t=english){
  const errors={};
+ const mode=values.scheduleMode===undefined?'time':values.scheduleMode;
+ if(mode!=='time'&&mode!=='date')errors.scheduleMode=t('create.modeError');
+ if(mode==='time'&&(values.startTime!==undefined||values.endTime!==undefined)){
+  const problem=validateRoomCode({...values,title:'Valid',startDate:'2099-01-01',endDate:'2099-01-01',timezone:'UTC'});
+  if(problem==='aligned'||problem==='endAfterStart')errors.times=t(`validation.${problem}`);
+ }
  if(typeof values.title!=='string'||!values.title.trim()||values.title.trim().length>100)errors.title=t('create.titleError');
  const today=todayInTimezone(values.timezone,clock);
  if(!today)errors.timezone=t('validation.timezone');

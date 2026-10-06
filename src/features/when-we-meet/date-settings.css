@@ -1,0 +1,211 @@
+/* Portal-local Craft fallbacks; shared root tokens remain the source of truth. */
+.wwm-date-settings {
+  --craft-surface: #f1eee2;
+  --craft-ink: #514e40;
+  --craft-muted: #635f52;
+  --craft-rule: #81775b70;
+  --craft-hover: #81775b1c;
+  --craft-on-ink: #fff9e7;
+  --craft-danger: #b4232d;
+  --craft-focus: #514e40;
+  --craft-required: var(--craft-danger);
+  --craft-radius: 4px;
+  --craft-font: 'SUIT', 'Pretendard', sans-serif;
+  --wwm-ink: var(--craft-ink);
+  --wwm-muted: var(--craft-muted);
+  --wwm-rule: var(--craft-rule);
+  --wwm-surface: var(--craft-surface);
+  --wwm-danger: var(--craft-danger);
+}
+:root[data-mode='dark'] .wwm-date-settings {
+  --craft-surface: #36372d;
+  --craft-ink: #d6cdb3;
+  --craft-muted: #beb6a1;
+  --craft-rule: #d8ccaf55;
+  --craft-hover: #d8ccaf1c;
+  --craft-on-ink: #20211c;
+  --craft-danger: #ff7379;
+  --craft-focus: #d6cdb3;
+}
+/* Specific enough to override the shared primitive's zoom utilities without
+   changing centering transforms or other Craft dialogs. */
+:root .wwm-date-settings[data-slot='dialog-content'] {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: min(480px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: 1px solid var(--craft-rule);
+  border-radius: var(--craft-radius);
+  background: var(--craft-surface);
+  color: var(--craft-ink);
+  font-family: var(--craft-font);
+  overflow: hidden;
+  animation: wwm-date-settings-in 140ms ease-out !important;
+  transition: opacity 140ms ease-out !important;
+}
+:root .wwm-date-settings[data-state='closed'] {
+  animation: wwm-date-settings-out 100ms ease-in !important;
+}
+.wwm-date-settings [data-slot='dialog-header'] {
+  flex: none;
+  padding: 16px 48px 16px 16px;
+  border-bottom: 1px solid var(--craft-rule);
+}
+.wwm-date-settings [data-slot='dialog-title'] {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.wwm-date-settings [data-slot='dialog-description'] {
+  margin: 4px 0 0;
+  color: var(--craft-muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.wwm-date-settings-form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.wwm-date-settings-body {
+  min-height: 0;
+  padding: 16px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--craft-rule) transparent;
+}
+.wwm-date-settings-fields {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.wwm-date-settings-field {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.wwm-date-settings .craft-field-label,
+.wwm-date-settings .wwm-picker-label {
+  color: var(--craft-ink);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.wwm-date-settings .wwm-range {
+  display: grid;
+  gap: 8px;
+}
+.wwm-date-settings-control { min-width: 0; }
+.wwm-date-settings-error {
+  margin: 4px 0 0;
+  color: var(--craft-danger);
+  font-size: 14px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.wwm-date-settings-control > .wwm-date-settings-error { margin: 4px 0 0; }
+.wwm-date-settings-notice {
+  margin: 16px 0 0;
+  color: var(--craft-muted);
+  font-size: 14px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.wwm-date-settings-notice p { margin: 0 0 8px; }
+.wwm-date-settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.wwm-date-settings-impact {
+  margin-top: 12px;
+  overflow-wrap: anywhere;
+}
+.wwm-date-settings-impact ul {
+  margin: 0 0 8px;
+  padding-left: 20px;
+}
+.wwm-date-settings-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  flex: none;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--craft-rule);
+}
+:root .wwm-date-settings :is([data-slot='input'], [data-slot='field-trigger']) {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--craft-rule);
+  border-radius: var(--craft-radius);
+  background: transparent;
+  color: var(--craft-ink);
+  font: 400 16px/22px var(--craft-font);
+  box-shadow: none;
+}
+:root .wwm-date-settings [data-slot='field-trigger'] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.wwm-date-settings [data-slot='field-trigger'] > svg {
+  display: block;
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+:root .wwm-date-settings :is([data-slot='input'], [data-slot='field-trigger'])[aria-invalid='true'] {
+  border-color: var(--craft-danger);
+  box-shadow: inset 0 0 0 1px var(--craft-danger);
+}
+:root .wwm-date-settings :is(input, button):focus-visible {
+  outline: 2px solid var(--craft-focus);
+  outline-offset: 2px;
+}
+:root .wwm-date-settings [aria-invalid='true']:focus-visible { outline-color: var(--craft-danger); }
+:root .wwm-date-settings [data-slot='button'] {
+  min-height: 44px;
+  border-radius: var(--craft-radius);
+  font-family: var(--craft-font);
+}
+:root .wwm-date-settings [data-slot='button'][type='submit'] {
+  background: var(--craft-ink);
+  color: var(--craft-on-ink);
+}
+:root .wwm-date-settings [data-slot='button'][type='button'] {
+  background: transparent;
+  border: 1px solid var(--craft-rule);
+  color: var(--craft-ink);
+}
+.wwm-date-settings button:not(:disabled):not([aria-disabled='true']) { cursor: pointer; }
+.wwm-date-settings :is(input, button):disabled,
+.wwm-date-settings fieldset:disabled button { cursor: not-allowed; opacity: .5; }
+@keyframes wwm-date-settings-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes wwm-date-settings-out { from { opacity: 1; } to { opacity: 0; } }
+@media (max-width: 480px) {
+  :root .wwm-date-settings[data-slot='dialog-content'] {
+    width: calc(100vw - 24px);
+    max-width: calc(100vw - 24px);
+    max-height: calc(100dvh - 24px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root .wwm-date-settings[data-slot='dialog-content'],
+  :root .wwm-date-settings * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

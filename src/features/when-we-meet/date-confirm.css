@@ -1,0 +1,52 @@
+.wwm-date-confirm {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.wwm-date-confirm > label {
+  display: grid;
+  gap: 8px;
+}
+.wwm-date-confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.wwm-date-confirm-recipients {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--craft-rule);
+  border-radius: 4px;
+  padding: 16px;
+}
+.wwm-date-confirm-person {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.wwm-date-confirm-person label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.wwm-date-confirm-person small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.wwm-date-confirm-stored {
+  display: grid;
+  gap: 8px;
+}
+.wwm-date-confirm a {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 480px) {
+  .wwm-date-confirm-recipients {
+    padding: 12px;
+  }
+  .wwm-date-confirm-person {
+    gap: 8px;
+  }
+}

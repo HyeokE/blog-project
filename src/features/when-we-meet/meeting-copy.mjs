@@ -35,7 +35,7 @@ export function createMeetingCopy(locale=WWM_DEFAULT_LOCALE){
   t,locale,
   compactRange,
   /** One line for a meeting's window: dates · hours (or All day) · timezone. */
-  meetingSummary:({startDate,endDate,startTime,endTime,timezone})=>[compactRange(startDate,endDate),allDay(startTime,endTime)?t('common.allDay'):`${startTime}–${endTime}`,timezone].filter(Boolean).join(' · '),
+  meetingSummary:({startDate,endDate,startTime,endTime,timezone,scheduleMode})=>[compactRange(startDate,endDate),scheduleMode==='date'||allDay(startTime,endTime)?t('common.allDay'):`${startTime}–${endTime}`,timezone].filter(Boolean).join(' · '),
   /** `Thu 2026.10.01` / `(목) 2026.10.01` ordering follows English: weekday first. */
   dayLabel:date=>date?`${weekdayFormat.format(utcDate(date))} ${formatCraftDate(date)}`:'',
   /** `Thu, Oct 1` · `10월 1일 (목)` (room-local calendar date). */

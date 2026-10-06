@@ -39,7 +39,28 @@ export async function postConfirmationUpdate(_roomId:string,body:unknown){calend
  if(calendar.update==='reconciling'){const edit={...current.review!.edit!,open:{revision,status:'reconciling',title:b.title,startsAt:b.start,endsAt:b.end,recipientIds:b.recipients,excludedIds:b.excluded,optionalIds:b.optional}};calendar.confirmation={...current,review:{...current.review!,edit}};return {status:'reconciling' as const,confirmation:current.confirmation,edit};}
  const confirmation={...current.confirmation!,title:b.title,startsAt:b.start,endsAt:b.end,revision};const edit={revision,recipientIds:b.recipients,excludedIds:b.excluded,optionalIds:b.optional,open:null,lastResentAt:null};calendar.confirmation={confirmation,review:{...current.review!,edit}};return {status:'confirmed' as const,url:confirmation.googleEventUrl??undefined,confirmation,edit};}
 export async function resendConfirmation(){if(calendar.resend==='pending')return pending();await new Promise(r=>setTimeout(r,300));if(calendar.resend==='too_soon')throw new ApiError('Invitations were just sent. Try again in a minute.',429);return {status:'sent' as const};}
-export async function renameRoom(_roomId:string,title:string){if(calendar.rename==='pending')return pending();await new Promise(r=>setTimeout(r,200));if(calendar.rename==='failure')throw new ApiError('Could not rename the meeting.',502);return {title:title.trim()};}
+// Shared only by Storybook mocks: bind date writes before the lazy import yields.
+let dateResetEpoch=0;
+export function bumpDateResetEpoch(){dateResetEpoch++;}
+export async function renameRoom(_roomId:string,title:string){
+ if(_roomId==='66666666-6666-4666-8666-666666666666'){
+  const epoch=dateResetEpoch;
+  const {dateState}=await import('./mock-date-api');
+  if(epoch!==dateResetEpoch){throw new ApiError('Fixture reset.',409);}
+  const generation=dateState.generation;
+  const assertOwner=()=>{if(dateState.room.id!==_roomId||dateState.room.role!=='ADMIN'||dateState.room.ownerId!==dateState.userId){throw new ApiError('Only the synthetic owner can rename the meeting.',403);}};
+  assertOwner();
+  if(typeof title!=='string'||!title.trim()||title.trim().length>100||/[\u0000-\u001f\u007f]/.test(title)){throw new ApiError('Enter a valid synthetic title.',400);}
+  if(calendar.rename==='pending'){return pending();}
+  await new Promise(r=>setTimeout(r,200));
+  if(epoch!==dateResetEpoch||generation!==dateState.generation){throw new ApiError('Fixture reset.',409);}
+  assertOwner();
+  if(calendar.rename==='failure'){throw new ApiError('Could not rename the meeting.',502);}
+  dateState.room={...dateState.room,title:title.trim()};
+  return {title:dateState.room.title};
+ }
+ if(calendar.rename==='pending')return pending();await new Promise(r=>setTimeout(r,200));if(calendar.rename==='failure')throw new ApiError('Could not rename the meeting.',502);return {title:title.trim()};
+}
 // Settings schedule / delete and the invitation preview: synthetic only.
 export async function updateRoomSchedule(_roomId:string,schedule:{startDate:string;endDate:string;startTime:string;endTime:string;timezone:string}){calendar.scheduleCalls.push(schedule);if(calendar.schedule==='pending')return pending();await new Promise(r=>setTimeout(r,200));if(calendar.schedule==='failure')throw new ApiError('Could not update the dates and times.',502);return {schedule,removedSlots:0};}
 export async function deleteRoom(){if(calendar.remove==='pending')return pending();await new Promise(r=>setTimeout(r,200));if(calendar.remove==='failure')throw new ApiError('Could not delete the meeting.',502);return {deleted:true as const};}

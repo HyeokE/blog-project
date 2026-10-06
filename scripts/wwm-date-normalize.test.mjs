@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+const module=await import('../src/features/when-we-meet/date-normalize.mjs').catch(()=>({}));
+const room={id:'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',owner_id:'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',title:'Dates',schedule_mode:'date',start_date:'0001-01-01',end_date:'0001-01-03',start_time:null,end_time:null,timezone:'UTC'};
+const response={user_id:room.owner_id,display_name:'A',slots:[],available_dates:['0001-01-03','0001-01-01','0001-01-01'],updated_at:'2026-10-06T01:02:03.123456+00:00'};
+test('strict room civil values and authenticated owner role',()=>{assert.equal(typeof module.normalizeDateRoom,'function');assert.equal(module.normalizeDateRoom(room,room.owner_id).role,'ADMIN');assert.equal(module.normalizeDateRoom(room,room.id).role,'MEMBER');});
+test('sort deduplicate dates while preserving raw microsecond version',()=>{assert.equal(typeof module.normalizeDateResponses,'function');const [r]=module.normalizeDateResponses([response],module.normalizeDateRoom(room,room.owner_id));assert.deepEqual(r.availableDates,['0001-01-01','0001-01-03']);assert.equal(r.updatedAt,response.updated_at);assert.equal('slots' in r,false);});
+for(const [field,value] of [['schedule_mode','time'],['schedule_mode',undefined],['schedule_mode','unknown'],['start_date','infinity'],['end_date','0001-02-29'],['start_time','00:00'],['end_time',undefined]])test(`reject room ${field} ${String(value)}`,()=>{assert.equal(typeof module.normalizeDateRoom,'function');assert.throws(()=>module.normalizeDateRoom({...room,[field]:value},room.owner_id));});
+for(const patch of [{slots:['time']},{available_dates:['0001-01-04']},{available_dates:[null]},{updated_at:'infinity'},{updated_at:'2026-02-30T00:00:00Z'},{user_id:null}])test(`reject malformed response ${JSON.stringify(patch)}`,()=>{assert.equal(typeof module.normalizeDateResponses,'function');assert.throws(()=>module.normalizeDateResponses([{...response,...patch}],module.normalizeDateRoom(room,room.owner_id)));});
+const token='AbCdEfAb-1234-4123-8123-123456789abc';
+test('authorized room preserves exact optional token and selects its column',()=>{assert.equal(module.normalizeDateRoom({...room,invite_token:token},room.owner_id).inviteToken,token);assert.equal(module.dateRoomColumns.split(',').includes('invite_token'),true);});
+for(const value of [undefined,null])test(`unavailable token ${value} omitted`,()=>assert.equal('inviteToken' in module.normalizeDateRoom({...room,invite_token:value},room.owner_id),false));
+for(const value of ['',` ${token}`,'invalid',42])test(`malformed invitation token fails closed ${typeof value}:${String(value).length}`,()=>assert.throws(()=>module.normalizeDateRoom({...room,invite_token:value},room.owner_id)));
+export {room,response};

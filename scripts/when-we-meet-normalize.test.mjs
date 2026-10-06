@@ -1,3 +1,4 @@
+import {dataBoundaryLeaks} from './wwm-data-boundary.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {normalizeRoom,normalizeMeeting,normalizeResponses,normalizePeople,normalizeAttendees,normalizeConfirmation,normalizeCreatedRoom,normalizeCredential,participantCountsByRoom,confirmationStatusByRoom} from '../src/features/when-we-meet/normalize.mjs';
@@ -60,12 +61,7 @@ test('snake_case columns appear above the data-access layer only inside SQL-faci
  const {readdirSync,readFileSync,statSync}=await import('node:fs');
  const root=new URL('../',import.meta.url);
  const walk=dir=>readdirSync(new URL(dir,root)).flatMap(name=>{const path=`${dir}/${name}`;return statSync(new URL(path,root)).isDirectory()?walk(path):/\.(m?[jt]sx?|d\.m?ts)$/.test(name)?[path]:[]});
- const columns=/\b(owner_id|start_date|end_date|start_time|end_time|invite_token|user_id|display_name|updated_at|created_at|participant_count|is_admin|has_availability|starts_at|ends_at|google_event_url|credential_ciphertext|google_email|google_subject)\b/;
- const files=['src/features','src/app/craft','src/app/api/craft','src/components','src/stories','src/lib'].flatMap(walk).filter(path=>!/when-we-meet\/normalize\.(mjs|d\.mts)$/.test(path));
- const leaks=files.flatMap(path=>{
-  // Column lists/filters/update payloads handed to Supabase are the SQL side of the boundary.
-  const source=readFileSync(new URL(path,root),'utf8').replace(/\.(select|eq|order)\('[^']*'/g,'').replace(/\.update\(\{[^}]*\}\)/g,'');
-  return source.split('\n').flatMap((line,index)=>columns.test(line)?[`${path}:${index+1}`]:[]);
- });
+ const files=['src/features','src/app/craft','src/app/api/craft','src/components','src/stories','src/lib'].flatMap(walk);
+ const leaks=files.flatMap(path=>dataBoundaryLeaks(path,readFileSync(new URL(path,root),'utf8')));
  assert.deepEqual(leaks,[]);
 });

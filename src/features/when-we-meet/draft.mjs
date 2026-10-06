@@ -5,10 +5,10 @@ const RETURN_TTL=10*60*1000;
 const TTL=24*60*60*1000;
 const fields=['title','startDate','endDate','startTime','endTime','timezone'];
 export function saveDraft(storage,draft,now=Date.now()){
-  try{storage.setItem(KEY,JSON.stringify({version:1,savedAt:now,form:Object.fromEntries(fields.map(k=>[k,draft.form[k]])),name:draft.name}));}catch{ /* Storage may be unavailable. */ }
+  try{storage.setItem(KEY,JSON.stringify({version:2,savedAt:now,form:{...Object.fromEntries(fields.map(k=>[k,draft.form[k]])),scheduleMode:draft.form.scheduleMode??'time'},name:draft.name}));}catch{ /* Storage may be unavailable. */ }
 }
 export function readDraft(storage,now=Date.now()){
-  try{const value=JSON.parse(storage.getItem(KEY));if(value?.version!==1||!Number.isFinite(value.savedAt)||value.savedAt>now||now-value.savedAt>TTL||typeof value.name!=='string'||!value.form||fields.some(k=>typeof value.form[k]!=='string'))return null;return {form:Object.fromEntries(fields.map(k=>[k,value.form[k]])),name:value.name};}catch{return null;}
+  try{const value=JSON.parse(storage.getItem(KEY));if(![1,2].includes(value?.version)||(value.version===2&&!['time','date'].includes(value.form?.scheduleMode))||!Number.isFinite(value.savedAt)||value.savedAt>now||now-value.savedAt>TTL||typeof value.name!=='string'||!value.form||fields.some(k=>typeof value.form[k]!=='string'))return null;return {form:{...Object.fromEntries(fields.map(k=>[k,value.form[k]])),scheduleMode:value.version===1?'time':value.form.scheduleMode},name:value.name};}catch{return null;}
 }
 export function clearDraft(storage){try{storage.removeItem(KEY)}catch{ /* Storage may be unavailable. */ }}
 export function markCreateReturn(storage,path,now=Date.now()){try{storage.removeItem(COMPLETED_KEY);storage.setItem(RETURN_KEY,JSON.stringify({version:1,path,savedAt:now}))}catch{ /* Storage may be unavailable. */ }}

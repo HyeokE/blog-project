@@ -30,8 +30,16 @@ export function LinkField({value,copyValue,autoSelect=false}:{value:string;copyV
  return <div className="wwm-link-field"><Input ref={input} aria-label={t('room.invitationLink')} data-analytics-label={ANALYTICS_ELEMENTS.INVITE_LINK_INPUT} readOnly value={value} onFocus={event=>event.target.select()}/><Button type="button" variant="ghost" size="sm" className="wwm-link-copy" data-analytics-label={ANALYTICS_ELEMENTS.INVITE_LINK_COPY} data-analytics-id="inline" onClick={()=>void copy()}><span aria-live="polite">{copied?t('create.copied'):t('create.copy')}</span></Button></div>;
 }
 
-/** Copies a link; resolves false when the clipboard refused (callers then show the link selected). `copied` is the success toast text. */
-export async function copyLink(link:string,copied:string){try{await navigator.clipboard.writeText(link);toast.success(copied);return true}catch{return false}}
+/** Copies a link; resolves false on clipboard refusal or a stale/throwing optional guard. Existing two-argument callers retain success feedback. */
+export async function copyLink(link:string,copied:string,isCurrent?:()=>boolean){
+ try{
+  if(isCurrent&&!isCurrent()){return false;}
+  await navigator.clipboard.writeText(link);
+  if(isCurrent&&!isCurrent()){return false;}
+  toast.success(copied);
+  return true;
+ }catch{return false}
+}
 
 export type CreatedMeeting={id:string;title:string;link:string;summary:string;share?:string};
 /** The one success moment after creating a meeting: name, window, link and the way in. No toast. */

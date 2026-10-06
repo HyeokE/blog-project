@@ -1,0 +1,5 @@
+import type {SupabaseClient,User} from '@supabase/supabase-js';
+import type {CreateDateRoomInput,DateRoomResult,DateRoomSchedule,DateResponseBaseline,DateSaveResult,DateScheduleResult} from './date-contracts';
+export type DateService={capability():Promise<{supported:true}>;create(input:CreateDateRoomInput):Promise<{id:string;inviteToken:string}>;load(roomId:string):Promise<DateRoomResult>;save(roomId:string,input:{name:string;availableDates:string[];base:DateResponseBaseline}):Promise<DateSaveResult>;schedule(roomId:string,input:DateRoomSchedule):Promise<DateScheduleResult>};
+export function createDateService(context:{client:SupabaseClient;user:User|null},options?:{clock?:Date}):DateService;
+export function handleDateRequest(request:Request,roomId:string|undefined,dependencies:{currentUser:()=>Promise<{client:SupabaseClient;user:User|null}>;sameOrigin:(request:Request)=>boolean;body:(request:Request)=>Promise<Record<string,unknown>|null>;uuid:(value:unknown)=>boolean;ok:(value:unknown)=>Response;failed:(message:string,status?:number)=>Response;invalid:(message?:string)=>Response;clock?:Date}):Promise<Response>;

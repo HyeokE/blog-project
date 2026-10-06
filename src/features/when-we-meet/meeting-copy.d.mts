@@ -1,6 +1,7 @@
 export function plural(count:number,singular:string,pluralForm?:string):string;
 export function compactRange(start:string,end:string):string;
-export function meetingSummary(window:{startDate:string;endDate:string;startTime:string;endTime:string;timezone:string}):string;
+export type MeetingSummaryWindow={startDate:string;endDate:string;timezone:string}&({scheduleMode?:'time';startTime:string;endTime:string}|{scheduleMode:'date';startTime:null;endTime:null});
+export function meetingSummary(window:MeetingSummaryWindow):string;
 export function dayLabel(date:string):string;
 export function saveStatus(input:{state:string;dirty:boolean;edited:boolean}):{tone:'idle'|'saving'|'saved'|'error';text:string};
 export function fillButtonLabel(count:number):string;

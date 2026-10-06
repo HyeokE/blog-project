@@ -12,7 +12,13 @@ export function normalizeRoom(row){
 export function participantCountsByRoom(rows){return new Map((rows||[]).map(row=>[row.room_id,Number(row.participant_count)]))}
 /** Per-room `wwm_confirmation_status` results → room id → status (`null` = not confirmed yet). Rooms whose read failed (`null` rows) are left out. */
 export function confirmationStatusByRoom(entries){return new Map((entries||[]).filter(([,rows])=>Array.isArray(rows)).map(([roomId,rows])=>[roomId,rows[0]?.status??null]))}
-export function normalizeMeeting(row,counts=new Map(),statuses=new Map()){return {...normalizeRoom(row),createdAt:row.created_at,participantCount:counts.has(row.id)?counts.get(row.id):null,confirmationStatus:statuses.get(row.id)??null}}
+export function normalizeMeeting(row,counts=new Map(),statuses=new Map()){
+ const scheduleMode=row.schedule_mode===undefined?'time':row.schedule_mode;
+ if(scheduleMode!=='time'&&scheduleMode!=='date')throw new Error('Invalid meeting schedule mode.');
+ if(scheduleMode==='date'?(row.start_time!==null||row.end_time!==null):(typeof row.start_time!=='string'||typeof row.end_time!=='string'))throw new Error('Invalid meeting times.');
+ // List metadata is not a timed Room; preserve date-only nulls at this boundary.
+ return {id:row.id,ownerId:row.owner_id,title:row.title,startDate:row.start_date,endDate:row.end_date,scheduleMode,startTime:scheduleMode==='date'?null:clock(row.start_time),endTime:scheduleMode==='date'?null:clock(row.end_time),timezone:row.timezone,createdAt:row.created_at,participantCount:counts.has(row.id)?counts.get(row.id):null,confirmationStatus:statuses.get(row.id)??null};
+}
 /** `updatedAt` stays the raw DB string: it is the optimistic-concurrency version compared back in SQL. */
 export function normalizeResponses(rows){return rows.map(row=>({userId:row.user_id,displayName:row.display_name,slots:(row.slots||[]).map(instant),...(row.updated_at!==undefined?{updatedAt:row.updated_at}:{})}))}
 export function normalizePeople(rows){return rows.map(row=>({userId:row.user_id,displayName:row.display_name,isAdmin:row.is_admin===true,hasAvailability:row.has_availability===true}))}

@@ -1,0 +1,154 @@
+.wwm-date-room {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  color: var(--wwm-ink, inherit);
+}
+/* Date-only adapter: retain Radix selection/keyboard semantics, without a second indicator. */
+.wwm-date-room .wwm-date-tabs {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
+  height: auto;
+  box-sizing: border-box;
+  gap: var(--craft-space-1);
+  padding: 0;
+  background: transparent;
+  border-radius: var(--craft-radius);
+}
+.wwm-date-room .wwm-date-tabs .wwm-date-tab {
+  flex: 0 0 auto;
+  min-width: 0;
+  height: var(--craft-h-md);
+  min-height: var(--craft-h-md);
+  box-sizing: border-box;
+  padding: 0 var(--craft-space-3);
+  border: 1px solid transparent;
+  border-radius: var(--craft-radius);
+  background: transparent;
+  color: var(--craft-muted);
+  font-size: var(--craft-fs-14);
+  font-weight: var(--craft-fw-medium);
+  line-height: 20px;
+  box-shadow: none;
+  cursor: pointer;
+  transition: background-color 140ms ease, color 140ms ease, opacity 140ms ease;
+}
+.wwm-date-room .wwm-date-tabs .wwm-date-tab[data-state='inactive']:not(:disabled):not([data-disabled]):not([aria-disabled='true']):hover {
+  background: var(--craft-hover);
+  color: var(--craft-ink);
+}
+.wwm-date-room .wwm-date-tabs .wwm-date-tab[data-state='active'] {
+  background: var(--craft-ink);
+  color: var(--craft-on-ink);
+  font-weight: var(--craft-fw-semibold);
+}
+.wwm-date-room .wwm-date-tabs .wwm-date-tab::after {
+  content: none;
+}
+.wwm-date-room .wwm-date-tabs .wwm-date-tab:is(:disabled, [data-disabled], [aria-disabled='true']) {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+html[data-input-modality='keyboard'] .wwm-date-room .wwm-date-tabs .wwm-date-tab:focus-visible {
+  outline: 2px solid var(--craft-focus);
+  outline-offset: 2px;
+  border-color: transparent;
+  box-shadow: none;
+}
+html[data-input-modality='pointer'] .wwm-date-room .wwm-date-tabs .wwm-date-tab:focus-visible {
+  outline: none;
+  border-color: transparent;
+  box-shadow: none;
+}
+@media (max-width: 600px) {
+  .wwm-date-room .wwm-date-tabs {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .wwm-date-room .wwm-date-tabs .wwm-date-tab {
+    width: 100%;
+  }
+}
+.wwm-date-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.wwm-date-header > .wwm-room-header {
+  flex: 1 1 320px;
+  margin-bottom: 0;
+}
+.wwm-date-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.wwm-date-name {
+  display: grid;
+  gap: 4px;
+  max-width: 320px;
+  margin: 16px 0;
+}
+.wwm-date-status {
+  min-height: 24px;
+  font-size: 0.875rem;
+  margin: 12px 0;
+}
+.wwm-date-calendar {
+  --cell-size: 40px !important;
+  max-width: 100%;
+  background: transparent !important;
+  margin: 16px 0;
+}
+.wwm-date-calendar button {
+  border-radius: 4px;
+  min-height: 40px;
+}
+.wwm-date-calendar button:not(:disabled) {
+  cursor: pointer;
+}
+.wwm-date-calendar button:disabled {
+  cursor: not-allowed;
+}
+.wwm-date-groups {
+  display: grid;
+  gap: 16px;
+}
+.wwm-date-groups h3 {
+  font-size: 0.875rem;
+  margin: 0 0 8px;
+}
+.wwm-date-groups ul {
+  margin: 0;
+  padding-left: 20px;
+}
+.wwm-date-skeleton {
+  width: 304px;
+  max-width: 100%;
+  padding: 12px;
+}
+.wwm-date-skeleton-caption {
+  height: 40px;
+  margin-bottom: 16px;
+}
+.wwm-date-skeleton > div:last-child {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.wwm-date-skeleton > div:last-child > * {
+  aspect-ratio: 1;
+  border-radius: 4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wwm-date-room * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

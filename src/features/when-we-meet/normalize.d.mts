@@ -1,6 +1,7 @@
 export type RoomRow={id:string;owner_id?:string;title:string;start_date:string;end_date:string;start_time:string;end_time:string;timezone:string;invite_token?:string};
 export type NormalizedRoom={id:string;ownerId?:string;title:string;startDate:string;endDate:string;startTime:string;endTime:string;timezone:string;inviteToken?:string};
-export type NormalizedMeeting=NormalizedRoom&{createdAt:string;participantCount:number|null;confirmationStatus:string|null};
+export type MeetingRow=Omit<RoomRow,'start_time'|'end_time'|'owner_id'|'invite_token'>&{owner_id:string;schedule_mode?:string|null;start_time:string|null;end_time:string|null;created_at:string};
+export type NormalizedMeeting={id:string;ownerId:string;title:string;startDate:string;endDate:string;timezone:string;createdAt:string;participantCount:number|null;confirmationStatus:string|null}&({scheduleMode:'time';startTime:string;endTime:string}|{scheduleMode:'date';startTime:null;endTime:null});
 export type NormalizedResponse={userId:string;displayName:string;slots:string[];updatedAt?:string};
 export type NormalizedPerson={userId:string;displayName:string;isAdmin:boolean;hasAvailability:boolean};
 export type NormalizedAttendee={userId:string;displayName:string;email:string|null;hasAvailability:boolean};
@@ -11,7 +12,7 @@ export type NormalizedCredential={googleSubject:string;googleEmail:string;creden
 export function normalizeRoom(row:RoomRow):NormalizedRoom;
 export function participantCountsByRoom(rows:Array<{room_id:string;participant_count:number|string}>|null|undefined):Map<string,number>;
 export function confirmationStatusByRoom(entries:Array<[string,Array<{status:string}>|null]>|null|undefined):Map<string,string|null>;
-export function normalizeMeeting(row:RoomRow&{created_at:string},counts?:Map<string,number>,statuses?:Map<string,string|null>):NormalizedMeeting;
+export function normalizeMeeting(row:MeetingRow,counts?:Map<string,number>,statuses?:Map<string,string|null>):NormalizedMeeting;
 export function normalizeResponses(rows:Array<{user_id:string;display_name:string;slots:string[]|null;updated_at?:string}>):NormalizedResponse[];
 export function normalizePeople(rows:Array<{user_id:string;display_name:string;is_admin:boolean;has_availability:boolean}>):NormalizedPerson[];
 export function normalizeAttendees(rows:Array<{user_id:string;display_name:string;email:string|null;has_availability:boolean}>):NormalizedAttendee[];

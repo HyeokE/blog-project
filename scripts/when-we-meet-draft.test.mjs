@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {saveDraft,readDraft,clearDraft,createIntent,markCreateReturn,completeCreateReturn,consumeCreateReturn} from '../src/features/when-we-meet/draft.mjs';
 import {visibleMeetings} from '../src/features/when-we-meet/meeting-list.mjs';
-const form={title:'Coffee',startDate:'2026-10-01',endDate:'2026-10-02',startTime:'09:00',endTime:'11:00',timezone:'Asia/Seoul'};
+const form={scheduleMode:'time',title:'Coffee',startDate:'2026-10-01',endDate:'2026-10-02',startTime:'09:00',endTime:'11:00',timezone:'Asia/Seoul'};
 const storage=()=>{const m=new Map();return {getItem:k=>m.get(k)??null,setItem:(k,v)=>m.set(k,v),removeItem:k=>m.delete(k)}};
 test('round trips every field and name within tab',()=>{const s=storage();saveDraft(s,{form,name:'June'},1000);assert.deepEqual(readDraft(s,1001),{form,name:'June'});clearDraft(s);assert.equal(readDraft(s,1001),null)});
 test('rejects corrupt, incompatible and expired drafts without throwing',()=>{const s=storage();s.setItem('wwm:create-draft','{bad');assert.equal(readDraft(s,1000),null);saveDraft(s,{form,name:'June'},1000);assert.equal(readDraft(s,1000+24*60*60*1000+1),null);s.setItem('wwm:create-draft',JSON.stringify({version:999,savedAt:1000,form,name:'June'}));assert.equal(readDraft(s,1001),null)});

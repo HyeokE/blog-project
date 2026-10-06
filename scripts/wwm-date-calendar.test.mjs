@@ -1,0 +1,6 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+const helper=await import('../src/features/when-we-meet/date-calendar.mjs').catch(()=>({}));
+test('local civil adapters preserve early years and reject invalid dates',()=>{assert.equal(typeof helper.toLocalDate,'function');for(const value of ['0001-01-01','0099-12-31','2026-03-08','2026-11-01'])assert.equal(helper.fromLocalDate(helper.toLocalDate(value)),value);assert.throws(()=>helper.toLocalDate('2026-02-30'));});
+test('remote update preserves local delta and untouched remote name',()=>{assert.equal(typeof helper.rebaseDateDraft,'function');assert.deepEqual(helper.rebaseDateDraft({name:'Old',availableDates:['2026-10-01']},{name:'Old',availableDates:['2026-10-01','2026-10-02']},{name:'Remote',availableDates:['2026-10-03']}),{name:'Remote',availableDates:['2026-10-02','2026-10-03']});});
+test('range changes prune invalid draft dates, explicitly identify removal',()=>{assert.equal(typeof helper.constrainDateDraft,'function');assert.deepEqual(helper.constrainDateDraft({name:'Me',availableDates:['2026-10-01','2026-10-02']},{startDate:'2026-10-02',endDate:'2026-10-03'}),{value:{name:'Me',availableDates:['2026-10-02']},removed:true});});

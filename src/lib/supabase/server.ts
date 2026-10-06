@@ -28,7 +28,13 @@ export async function currentSupabaseUser() {
 export async function ownedCraftMeetings(context?:Awaited<ReturnType<typeof currentSupabaseUser>>){
  const {client,user}=context||await currentSupabaseUser();
  if(!user){return {meetings:[],userId:null};}
- const {data,error}=await client.from('wwm_rooms').select('id,owner_id,title,start_date,end_date,start_time,end_time,timezone,created_at').order('created_at',{ascending:false});
+ const read=(legacy=false)=>{
+  const query=legacy?client.from('wwm_rooms').select('id,owner_id,title,start_date,end_date,start_time,end_time,timezone,created_at'):client.from('wwm_rooms').select('id,owner_id,title,start_date,end_date,start_time,end_time,timezone,created_at,schedule_mode');
+  return query.eq('owner_id',user.id).order('created_at',{ascending:false});
+ };
+ let {data,error}=await read();
+ // Only an unmigrated schema's missing-column error permits a legacy timed read.
+ if(error?.code==='42703'){({data,error}=await read(true));}
  if(error){throw new Error('Could not load meetings.');}
  const {data:counts,error:countError}=await client.rpc('wwm_participant_counts');
  const totals=participantCountsByRoom(countError?[]:counts);

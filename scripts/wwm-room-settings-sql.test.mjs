@@ -50,7 +50,10 @@ test('schedule edit: owner only, validated, trims saved availability outside the
  assert.equal(await code(call(Mb,future,plus(future,1),'09:00','11:00')),'42501');
  assert.equal(await code(call(X,future,plus(future,1),'09:00','11:00')),'42501');
  assert.notEqual(await code(call(null,future,plus(future,1),'09:00','11:00')),'ok');
- assert.equal(await code(call(O,future,plus(future,14),'09:00','11:00')),'22023','15 days');
+ assert.equal(await code(call(O,future,plus(future,28),'09:00','11:00')),'22023','29 days');
+ // Inclusive 28-day maximum keeps the original slots before the trim regression below.
+ assert.equal((await call(O,future,plus(future,27),'09:00','12:00'))[0].removed_slots,0,'28 days accepted without trimming');
+ assert.equal((await as(O,`select end_date::text from public.wwm_rooms where id=$1`,[room]))[0].end_date,plus(future,27));
  assert.equal(await code(call(O,future,future,'09:15','11:00')),'22023','unaligned');
  assert.equal(await code(call(O,future,future,'11:00','09:00')),'22023','end before start');
  assert.equal(await code(call(O,future,future,'09:00','11:00','Mars/Base')),'22023','timezone');

@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
 import { unstable_rethrow } from 'next/navigation';
+import DateWhenWeMeet from '@/features/when-we-meet/DateWhenWeMeet';
+import {craftDateRoomEntry,craftDateRoomResponses} from '@/features/when-we-meet/date-server';
+import type {DateRoomResponseResult} from '@/features/when-we-meet/DateRoomResponseLoader';
 import WhenWeMeet from '@/features/when-we-meet/WhenWeMeet';
 import {createWwmTranslator} from '@/i18n/wwm.mjs';
 import {getWwmLocale} from '@/lib/wwm-locale';
@@ -15,6 +18,11 @@ export async function RoomSection({params}:{params:Promise<{roomId:string}>}){
  const {roomId}=await params;
  try {
   const context=await currentSupabaseUser();
+  const entry=await craftDateRoomEntry(roomId,context);
+  if(entry.kind==='date'){
+   const responsesPromise=craftDateRoomResponses(roomId,entry.room,context).then((responses):DateRoomResponseResult=>({responses}),():DateRoomResponseResult=>({error:'Could not load date availability.'}));
+   return <DateWhenWeMeet key={`${roomId}:${entry.userId}`} initialRoom={{room:entry.room,userId:entry.userId}} responsesPromise={responsesPromise}/>;
+  }
   // The confirmation read runs beside the metadata read: it decides the header status line and the opening tab.
   const [initialRoom,initialConfirmation]=await Promise.all([craftRoomMetadata(roomId,context),craftRoomConfirmation(roomId,context).catch(()=>null)]);
   const responsesPromise=initialRoom?craftRoomResponses(roomId,context).then((responses):RoomResponseResult=>({responses}),():RoomResponseResult=>({error:'Could not load availability. Please try again.'})):undefined;
