@@ -276,11 +276,13 @@ function ShadeFinderWorkspace({ stage }: { stage: RefObject<Stage> }) {
               <ShadePicker url={shadeUrl} value={selectedShade?.id || ''} onChange={shade => { stage.current = 'selected'; trackShadeAction('shade_select', { brandId: selection.brandId, productId: selectedProduct.id, shadeId: shade.id, shadeName: shade.name, hex: shade.hex }); setSelection({ ...selection, shade }); }} />
             </AsyncRegion> : <SearchPicker field="shade" label="컬러 · 호수" placeholder="제품을 먼저 선택하세요" disabled options={[]} value="" onChange={() => undefined} />}
 
+            <div className="sf-selection-footer">
             {selectedShade && selectedProduct ? <div className="sf-selected-color">
               <div className="sf-source-swatch" style={{ backgroundColor: selectedShade.hex }} role="img" aria-label={`선택 컬러 ${selectedShade.hex}`} />
               <div><p className="sf-kicker">선택한 컬러</p><strong>{selectedShade.name}</strong><span>{selectedShade.hex}</span></div>
             </div> : <p className="sf-selection-hint">피부에 잘 맞았던 컬러를 기준으로 골라주세요.</p>}
             {(selection.brandId || selection.type !== 'all') && <Button variant="ghost" data-analytics-label={ANALYTICS_ELEMENTS.SHADE_RESET} onClick={() => { stage.current = 'view'; trackShadeAction('selection_reset'); setSelection(EMPTY_SELECTION); resetResults(); }}><RotateCcw aria-hidden="true" />선택 초기화</Button>}
+            </div>
           </Card>
         </section>
 
@@ -335,7 +337,7 @@ function WorkspaceSkeleton() {
   return <div className="sf-workspace" aria-hidden="true">
     <section className="sf-selection">
       <div className="sf-section-heading"><h2>내가 쓰는 컬러</h2></div>
-      <Card className="sf-selection-card">
+      <Card className="sf-selection-card sf-selection-skeleton">
         <FieldSkeleton label="제품 종류" /><FieldSkeleton label="브랜드" />
         <FieldSkeleton label="제품" /><FieldSkeleton label="컬러 · 호수" />
       </Card>
