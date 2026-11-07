@@ -13,10 +13,12 @@
  /* Type: 12/14/16/20/28 (+40 display on /craft only); weights 400/500/600 */
  --craft-fs-12:12px;--craft-fs-14:14px;--craft-fs-16:16px;--craft-fs-20:20px;--craft-fs-28:28px;--craft-fs-40:40px;
  --craft-fw-regular:400;--craft-fw-medium:500;--craft-fw-semibold:600;
+ --craft-lh-control:20px;--craft-lh-input:22px;--craft-leading-compact:1.4;
  /* Space 4/8/12/16/24/32/48 */
  --craft-space-1:4px;--craft-space-2:8px;--craft-space-3:12px;--craft-space-4:16px;--craft-space-6:24px;--craft-space-8:32px;--craft-space-12:48px;--craft-space:var(--craft-space-2);
- /* Geometry: one radius; 32px in-grid toolbar controls, 44px for every field and button */
+ /* Geometry: 32px toolbar controls, 44px default controls; compact variants opt into 36/40px. */
  --craft-radius:4px;--craft-control-radius:var(--craft-radius);--craft-h-sm:32px;--craft-h-md:44px;--craft-control-height:var(--craft-h-md);
+ --craft-h-compact:36px;--craft-h-field-compact:40px;
  --craft-shadow-pop:0 8px 24px #20211c24;
  /* Layers: sticky grid chrome < floating popovers < dialogs < popovers opened from a dialog < toasts */
  --craft-z-sticky:20;--craft-z-popover:60;--craft-z-dialog:80;--craft-z-dialog-popover:90;--craft-z-toast:100;
