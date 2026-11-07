@@ -53,7 +53,7 @@
 :root[data-craft] :is([data-slot='field-trigger'],[data-slot='select-trigger']){display:flex;align-items:center;justify-content:space-between;gap:var(--craft-space-2);text-align:left;white-space:nowrap;cursor:pointer;font-variant-numeric:tabular-nums}
 :root[data-craft] :is([data-slot='field-trigger'],[data-slot='select-trigger'])>:is([data-slot='field-trigger-value'],[data-slot='select-value']){flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 :root[data-craft] :is([data-slot='field-trigger'],[data-slot='select-trigger'])>svg{flex:none;width:16px;height:16px;color:var(--craft-muted)}
-:root[data-craft] [data-slot='input']::placeholder{color:var(--craft-placeholder);opacity:1}
+:root[data-craft] [data-slot='input']::placeholder{color:var(--craft-placeholder);font:inherit;letter-spacing:inherit;opacity:1}
 :root[data-craft] :is([data-slot='field-trigger'][data-placeholder],[data-slot='select-trigger'][data-placeholder]) :is([data-slot='field-trigger-value'],[data-slot='select-value']){color:var(--craft-placeholder)}
 /* Hover darkens the border only: a filled field read as disabled (stage 2, create dialog "To"). Disabled = half opacity. */
 :root[data-craft] :is([data-slot='input'],[data-slot='field-trigger'],[data-slot='select-trigger']):hover:not(:disabled){border-color:var(--craft-ink)}
