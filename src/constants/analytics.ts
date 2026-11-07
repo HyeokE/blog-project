@@ -1,6 +1,11 @@
 export const GA_MEASUREMENT_ID = 'G-07RYXQL1X0';
 
 export const ANALYTICS_EVENTS = {
+  SHADE_ACTION: 'shade_action',
+  SHADE_REQUEST: 'shade_request',
+  SHADE_RESULTS: 'shade_results',
+  SHADE_IMPRESSION: 'shade_impression',
+  SHADE_EXIT: 'shade_exit',
   WEB_VITAL: 'web_vital',
   PAGE_LOAD: 'page_load',
   UI_CLICK: 'ui_click',
@@ -104,6 +109,14 @@ export type AnalyticsEvent = (typeof ANALYTICS_EVENTS)[keyof typeof ANALYTICS_EV
 export type AnalyticsAction = (typeof ANALYTICS_ACTIONS)[keyof typeof ANALYTICS_ACTIONS];
 
 export const ANALYTICS_ELEMENTS = {
+  SHADE_TYPE: 'shade_type',
+  SHADE_EXAMPLE: 'shade_example',
+  SHADE_RESET: 'shade_reset',
+  SHADE_FILTER_RESET: 'shade_filter_reset',
+  SHADE_GUIDE: 'shade_guide',
+  SHADE_MORE: 'shade_more',
+  SHADE_SEARCH_SUBMIT: 'shade_search_submit',
+
   HOME_LINK: 'home_link',
   NAV_LINK: 'nav_link',
   POST_OPEN: 'post_open',
@@ -210,6 +223,9 @@ export const ANALYTICS_ELEMENTS = {
 } as const;
 
 export const ANALYTICS_SECTIONS = {
+  SHADE_FINDER: 'shade_finder',
+  SHADE_SELECTION: 'shade_selection',
+  SHADE_RESULTS: 'shade_results',
   HEADER: 'header',
   NAV_DOCK: 'nav_dock',
   MENU: 'menu',
@@ -249,5 +265,6 @@ export const ANALYTICS_PAGES = {
   PERSONAL: 'personal',
   DESIGNS: 'designs',
   ABOUT_DESIGN: 'about_design',
+  SHADE_FINDER: 'shade_finder',
   UNKNOWN: 'unknown',
 } as const;

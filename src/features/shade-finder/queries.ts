@@ -1,5 +1,6 @@
 'use client';
 
+import { trackShadeRequest } from './analytics';
 import { parseMatchesResponse, parseProductsResponse, parseShadeFinderBootstrap, parseShadesResponse } from './public-contracts';
 import type { MatchesResponse, ProductsResponse, ShadeFinderBootstrap, ShadesResponse } from './public-types';
 
@@ -19,10 +20,25 @@ function request<T>(resource: Resource, url: string, parse: (value: unknown) => 
   }
   const cached = cache.get(url);
   if (cached) {return cached;}
-  const promise = fetch(url, { signal: AbortSignal.timeout(15000) }).then(async response => {
-    if (!response.ok) {throw new Error('색상 정보를 불러오지 못했어요.');}
+  const started = Date.now();
+  let status = 0;
+  let failure: 'network' | 'http' | 'timeout' | 'validation' = 'network';
+  const promise = Promise.resolve().then(async () => {
+    const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
+    status = response.status;
+    if (!response.ok) {
+      failure = 'http';
+      throw new Error('색상 정보를 불러오지 못했어요.');
+    }
+    failure = 'validation';
     const payload: unknown = await response.json();
-    return parse(payload);
+    const result = parse(payload);
+    trackShadeRequest(resource, url, 'ok', status, Date.now() - started);
+    return result;
+  }).catch((error: unknown) => {
+    const category = error instanceof Error && error.name === 'TimeoutError' ? 'timeout' : failure;
+    trackShadeRequest(resource, url, 'error', status, Date.now() - started, category);
+    throw error;
   });
   cache.set(url, promise);
   // React will surface the rejection through the region's ErrorBoundary.

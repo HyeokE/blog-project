@@ -47,6 +47,7 @@ export function analyticsPage(pathname: string): string {
     pathname === '/2025/light' ? '/' : pathname.replace(/^\/(2025|2026)(?=\/|$)/, '') || '/';
   const pages: Record<string, string> = {
     '/': ANALYTICS_PAGES.HOME,
+    '/craft/shade-finder': ANALYTICS_PAGES.SHADE_FINDER,
     '/about': ANALYTICS_PAGES.ABOUT,
     '/resume': ANALYTICS_PAGES.RESUME,
     '/gallery': ANALYTICS_PAGES.GALLERY,

@@ -56,3 +56,9 @@ Recommendation cards compare the two displayed HEX codes using the same sRGB-to-
 ## Recommendation search
 
 The result search submits brand, product and recommended shade names through the same-origin matches route (`q`, at most 100 characters). Search runs in Supabase over the nearest shade already selected for each product, before counting and paging; it does not change which shade is that product's nearest match. Whitespace-separated terms must all occur in the combined brand/product/shade labels, case-insensitively. Percent signs and underscores are literal text. Type and brand filters intersect with search, and pagination keeps the query. The UI submits on Enter or the search button so Korean composition does not trigger partial searches.
+
+## Usage analytics
+
+Shade Finder uses the site's GA4 tracker. `shade_action` records selections, picker usage, search submission/reset, filters, the color guide, pagination and retries. `shade_request` records actual API attempts with their outcome, HTTP status, duration and a fixed failure category; cache reads do not create request events. `shade_results` records loaded result counts, including empty results. `shade_impression` records a recommendation once when at least half its card enters the viewport. `shade_exit` records time on the page and the last selection stage on navigation or page hide.
+
+Payloads contain allowlisted public catalog identifiers, labels and colors, numeric comparison values and counts. Search text, full request URLs, response bodies and raw error messages are not sent. Each event carries at most ten feature parameters alongside the shared page/environment fields. Analytics failures do not interrupt the product flow. Local tests use synthetic data and stub delivery; browser verification can inspect `window.dataLayer` before checking the deployed GA4 transport.

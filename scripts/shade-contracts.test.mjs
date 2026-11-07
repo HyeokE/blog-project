@@ -139,7 +139,7 @@ test('queries decode unknown JSON before caching and retry replaces rejected pro
     bootstrap(),
   ];
   const urls = [];
-  const queries = load('queries.ts', { './public-contracts': contracts }, {
+  const queries = load('queries.ts', { './public-contracts': contracts, './analytics': { trackShadeRequest() {} } }, {
     AbortSignal,
     URLSearchParams,
     fetch: async url => {
@@ -165,7 +165,7 @@ test('queries decode unknown JSON before caching and retry replaces rejected pro
 
 test('HTTP failures reject before attempting to decode a response body', async () => {
   let decoded = false;
-  const queries = load('queries.ts', { './public-contracts': contracts }, {
+  const queries = load('queries.ts', { './public-contracts': contracts, './analytics': { trackShadeRequest() {} } }, {
     AbortSignal,
     URLSearchParams,
     fetch: async () => ({ ok: false, json: async () => { decoded = true; return bootstrap(); } }),
