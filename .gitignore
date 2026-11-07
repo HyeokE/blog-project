@@ -49,3 +49,14 @@ next-env.d.ts
 # storybook build output
 /storybook-static
 /artifacts
+
+# Shade Finder catalog/seed exports belong outside the source checkout.
+*shadepicker*.*
+shade-catalog-raw*.*
+shade-finder-catalog*.json
+shade-finder-seed*.sql
+/src/features/shade-finder/**/*.json
+/src/features/shade-finder/**/*.csv
+/src/features/shade-finder/**/*.xlsx
+
+/supabase/.temp/

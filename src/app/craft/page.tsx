@@ -22,6 +22,13 @@ export default function CraftPage() {
           <p>Small things made to be useful.</p>
         </header>
         <section aria-label="Projects" className="craft-projects" data-analytics-section={ANALYTICS_SECTIONS.CRAFT_PROJECTS}>
+          <Link className="craft-project" href="/craft/shade-finder" data-analytics-label={ANALYTICS_ELEMENTS.CRAFT_PROJECT}>
+            <span className="craft-project-content">
+              <strong>Shade Finder</strong>
+              <span>Find a familiar shade in a new foundation or cushion.</span>
+            </span>
+            <ArrowUpRight aria-hidden="true" size={24} strokeWidth={1.5} />
+          </Link>
           <Link className="craft-project" href="/craft/when-we-meet" data-analytics-label={ANALYTICS_ELEMENTS.CRAFT_PROJECT}>
             <span className="craft-project-content">
               <strong>When We Meet</strong>

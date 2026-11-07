@@ -4,13 +4,14 @@ import {createServerClient} from '@supabase/ssr';
 import {requestOrigin} from '@/lib/request-origin.mjs';
 import {normalizeRoom,normalizeResponses,normalizeMeeting,participantCountsByRoom,confirmationStatusByRoom,normalizeConfirmation} from '@/features/when-we-meet/normalize.mjs';
 
-export async function serverSupabaseClient({readOnly=false}:{readOnly?:boolean}={}) {
+// Keep the SDK's untyped default for existing callers; new data layers supply their generated schema.
+export async function serverSupabaseClient<Database = any>({readOnly=false}:{readOnly?:boolean}={}) {
   const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if(!url||!key){throw new Error('Supabase is not configured.');}
   const store=await cookies();
   const secure=Boolean(requestOrigin(await headers())?.startsWith('https:'));
-  return createServerClient(url,key,{cookies:{
+  return createServerClient<Database>(url,key,{cookies:{
     getAll(){return store.getAll()},
     // Proxy refreshes and forwards request cookies before Server Components render.
     // Route Handlers retain the writable adapter for OAuth exchange and sign-out.
