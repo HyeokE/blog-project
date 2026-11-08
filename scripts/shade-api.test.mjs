@@ -165,6 +165,24 @@ test('matches use six-result pages with stable ranking, source exclusion and acc
   }
 });
 
+test('HEX matching returns the same public shape and includes the exact reference product', live, async () => {
+  const source = await selection();
+  const params = { hex: source.shade.hex.toUpperCase(), type: source.product.type, brandId: source.brand.id };
+  const first = await get('matches', params);
+  validateMatchPage(first, undefined, 0);
+  const { products } = await get('products', { brandId: source.brand.id, type: source.product.type });
+  assert.equal(first.total, products.length);
+  const exact = await get('matches', { ...params, q: source.product.name });
+  assert.ok(exact.matches.some(match => match.product.id === source.product.id && match.deltaE < 1e-10));
+  assert.deepEqual(await get('matches', { ...params, hex: source.shade.hex }), first);
+  const lastOffset = Math.floor((first.total - 1) / 6) * 6;
+  assert.deepEqual(await get('matches', { ...params, offset: String(lastOffset + 6) }), { matches: [], total: first.total, nextOffset: null });
+  for (const invalid of [
+    { hex: '#e5bda0', shadeId: source.shade.id }, { hex: '#fff' }, { hex: '' },
+    [['hex', '#e5bda0'], ['hex', '#ffffff']], { hex: '#e5bda0', offset: '1' },
+  ]) { await get('matches', invalid, 400); }
+});
+
 test('API rejects missing, malformed, duplicate, unknown and unbounded queries', live, async () => {
   const source = await selection();
   const shadeId = source.shade.id;

@@ -153,7 +153,7 @@ test('PostgreSQL: invoker RPCs preserve ranks and enforce RLS, keys, enums and f
     assert.deepEqual(rows.map(row => row.relname), ['brands', 'imports', 'products', 'shades']);
     assert.ok(rows.every(row => row.relrowsecurity));
     const functions = await client.query("select p.proname, p.prosecdef, p.proconfig from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='shade_finder_private' or (n.nspname='public' and p.proname like 'shade_finder_%')");
-    assert.equal(functions.rows.length, 5);
+    assert.equal(functions.rows.length, 7);
     assert.ok(functions.rows.every(row => !row.prosecdef && row.proconfig.includes('search_path=""')));
   });
 
@@ -264,6 +264,58 @@ test('PostgreSQL: invoker RPCs preserve ranks and enforce RLS, keys, enums and f
       await client.query('reset role');
       await client.query('rollback to savepoint shade_search_name');
       await client.query('release savepoint shade_search_name');
+    }
+  });
+
+  await t.test('HEX RPC matches arbitrary colours without excluding products and retains filters/search/pages', async () => {
+    const expectedMatches = (hex, filters = {}, query = '') => {
+      const lab = rgbToLab(hexToRgb(hex));
+      const tokens = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      return runtimeCatalog.products.filter(product => (!filters.type || product.type === filters.type) && (!filters.brandId || product.brandId === filters.brandId)).map(product => {
+        const shades = product.shades.map(shade => ({ shade, deltaE: deltaE2000(lab, rgbToLab(hexToRgb(shade.hex))) }))
+          .sort((a, b) => a.deltaE - b.deltaE || a.shade.id.localeCompare(b.shade.id));
+        return { product, ...shades[0] };
+      }).filter(match => {
+        const brand = runtimeCatalog.brands.find(item => item.id === match.product.brandId);
+        const text = [brand.name, brand.nameEn, match.product.name, match.product.nameEn, match.shade.name].join(' ').toLowerCase();
+        return tokens.every(token => text.includes(token));
+      }).sort((a, b) => a.deltaE - b.deltaE || a.product.id.localeCompare(b.product.id) || a.shade.id.localeCompare(b.shade.id));
+    };
+    for (const role of ['anon', 'authenticated']) {
+      await client.query(`set local role ${role}`);
+      try {
+        for (const hex of ['#000000', '#ffffff', '#E5BDA0', '#0a0b0c', '#ff0000', '#00ff00', '#0000ff', runtimeCatalog.products[0].shades[0].hex]) {
+          const converted = (await client.query('select shade_finder_private.hex_to_lab($1) as lab', [hex])).rows[0].lab;
+          converted.forEach((value, index) => assert.ok(Math.abs(value - rgbToLab(hexToRgb(hex))[index]) < 1e-10));
+          for (const filters of [{}, { type: 'cushion', brandId: runtimeCatalog.brands[0].id }]) {
+            for (const query of ['', 'AnotherBrand', '100%_literal', '%', 'no-such-match']) {
+              const expected = expectedMatches(hex, filters, query);
+              for (const offset of [0, 6, 24, 30]) {
+                const { rows } = await client.query('select * from public.shade_finder_matches_hex($1,$2,$3,$4,$5)', [hex, filters.type ?? null, filters.brandId ?? null, offset, query]);
+                assert.deepEqual(rows.map(row => row.shade_id), expected.slice(offset, offset + 6).map(match => match.shade.id));
+                rows.forEach((row, index) => {
+                  assert.ok(Math.abs(row.delta_e - expected[offset + index].deltaE) < 1e-10);
+                  assert.equal(Number(row.total_count), expected.length);
+                });
+              }
+            }
+          }
+        }
+        const source = runtimeCatalog.products[0];
+        const exact = await client.query('select * from public.shade_finder_matches_hex($1)', [source.shades[0].hex]);
+        assert.equal(Number(exact.rows[0].total_count), runtimeCatalog.products.length);
+        assert.ok(exact.rows.some(row => row.product_id === source.id && row.delta_e < 1e-10));
+        for (const hex of [null, '', '#fff', '#12345678', '123456', '#12345z', ' #123456', '#123456\n']) {
+          await rejectQuery('select * from public.shade_finder_matches_hex($1)', [hex], '22023');
+        }
+        for (const offset of [null, -6, 1, 100002]) {
+          await rejectQuery('select * from public.shade_finder_matches_hex($1,null,null,$2)', ['#e5bda0', offset], '22023');
+        }
+        await rejectQuery('select * from public.shade_finder_matches_hex($1,null,$2)', ['#e5bda0', '00000000-0000-4000-8000-000000000000'], 'P0002');
+        for (const query of ['x'.repeat(101), 'a\nb', 'a\tb']) {
+          await rejectQuery('select * from public.shade_finder_matches_hex($1,null,null,0,$2)', ['#e5bda0', query], '22023');
+        }
+      } finally { await client.query('reset role'); }
     }
   });
 

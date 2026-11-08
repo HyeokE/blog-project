@@ -39,6 +39,16 @@ export type Database = {
           total_count: number;
         }>;
       };
+      shade_finder_matches_hex: {
+        Args: {
+          p_brand_id?: string;
+          p_hex: string;
+          p_offset?: number;
+          p_query?: string;
+          p_type?: Database['public']['Enums']['shade_product_type'];
+        };
+        Returns: Database['public']['Functions']['shade_finder_matches']['Returns'];
+      };
       shade_finder_products: {
         Args: { p_brand_id: string; p_type?: Database['public']['Enums']['shade_product_type'] };
         Returns: Array<{
@@ -233,6 +243,10 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      hex_to_lab: {
+        Args: { p_hex: string };
+        Returns: number[];
+      };
       delta_e_2000: {
         Args: { a1: number; a2: number; b1: number; b2: number; l1: number; l2: number };
         Returns: number;

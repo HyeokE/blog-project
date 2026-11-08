@@ -1,6 +1,4 @@
 import type { Metadata } from 'next';
-import ShadeFinder from '@/features/shade-finder/ShadeFinder';
-import '@/features/shade-finder/shade-finder.css';
 
 const title = 'Shade Finder · 비슷한 파운데이션 컬러 찾기 | Craft';
 const description = '내가 쓰는 파운데이션과 쿠션의 호수를 기준으로 다른 제품의 비슷한 컬러를 찾아보세요.';
@@ -21,5 +19,5 @@ export const metadata: Metadata = {
 };
 
 export default function ShadeFinderPage() {
-  return <ShadeFinder />;
+  return null;
 }

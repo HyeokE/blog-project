@@ -5,7 +5,7 @@ import { trackEvent } from '@/utils/analytics';
 import { isShadeId } from './public-contracts';
 import type { MatchView, ProductFilter } from './public-types';
 
-const actions = ['view', 'example_select', 'selection_type', 'brand_select', 'product_select', 'shade_select', 'selection_reset', 'result_type', 'result_brand', 'search_submit', 'search_reset', 'filters_reset', 'guide_open', 'guide_close', 'load_more', 'retry', 'picker_open', 'picker_close', 'picker_search'] as const;
+const actions = ['view', 'example_select', 'selection_type', 'brand_select', 'product_select', 'shade_select', 'selection_reset', 'result_type', 'result_brand', 'search_submit', 'search_reset', 'filters_reset', 'guide_open', 'guide_close', 'load_more', 'retry', 'picker_open', 'picker_close', 'picker_search', 'product_mode', 'photo_mode', 'photo_capture_open', 'photo_upload_open', 'photo_photo_loaded', 'photo_photo_error', 'photo_region_select', 'photo_white_reference_select', 'photo_photo_reset', 'photo_color_use'] as const;
 export type ShadeAction = (typeof actions)[number];
 export interface ShadeContext {
   brandId?: string;
@@ -66,6 +66,7 @@ export function shadeRequestContext(url: string): Parameters {
     const value = params.get(key);
     if (isShadeId(value)) { result[key] = value; }
   }
+  if (params.has('hex')) { result.sourceType = 'photo'; }
   const productType = params.get('type');
   if (productType === 'foundation' || productType === 'cushion') { result.productType = productType; }
   const offset = params.get('offset');
@@ -78,8 +79,9 @@ export function shadeRequestContext(url: string): Parameters {
 
 export function trackShadeRequest(resource: string, url: string, result: 'ok' | 'error', status: number, durationMs: number, failure?: 'network' | 'http' | 'timeout' | 'validation') {
   if (!['bootstrap', 'products', 'shades', 'matches'].includes(resource)) { return; }
-  const { offset, searchLength, hasSearch, shadeId, productId, brandId } = shadeRequestContext(url);
+  const { offset, searchLength, hasSearch, shadeId, productId, brandId, sourceType } = shadeRequestContext(url);
   emit(ANALYTICS_EVENTS.SHADE_REQUEST, {
+    ...(sourceType ? { sourceType } : {}),
     resource, result, status, durationMs: Math.max(0, Math.round(durationMs)),
     ...(failure ? { failure } : {}),
     ...(typeof offset === 'number' ? { offset } : {}),
@@ -94,10 +96,10 @@ export function trackShadeResults(url: string, total: number, shown: number) {
   }
 }
 
-export function trackShadeImpression(selectedShadeId: string, match: MatchView, position: number) {
-  if (!isShadeId(selectedShadeId) || !isShadeId(match.product.id) || !isShadeId(match.shade.id) || !count(position) || !Number.isFinite(match.deltaE)) { return; }
+export function trackShadeImpression(selectedShadeId: string | undefined, match: MatchView, position: number) {
+  if ((selectedShadeId !== undefined && !isShadeId(selectedShadeId)) || !isShadeId(match.product.id) || !isShadeId(match.shade.id) || !count(position) || !Number.isFinite(match.deltaE)) { return; }
   emit(ANALYTICS_EVENTS.SHADE_IMPRESSION, {
-    selectedShadeId, productId: match.product.id, shadeId: match.shade.id,
+    ...(selectedShadeId ? { selectedShadeId } : { sourceType: 'photo' }), productId: match.product.id, shadeId: match.shade.id,
     brandName: match.brandName, productName: match.product.name, shadeName: match.shade.name,
     hex: match.shade.hex, productType: match.product.type, deltaE: match.deltaE, position,
   });

@@ -18,6 +18,7 @@ interface ShadeRepository {
   readProducts(brandId: string, type: ProductFilter): Promise<ProductsResponse>;
   readShades(productId: string): Promise<ShadesResponse>;
   readMatches(shadeId: string, type: ProductFilter, brandId: string | undefined, offset: number, query?: string): Promise<MatchesResponse>;
+  readHexMatches(hex: string, type: ProductFilter, brandId: string | undefined, offset: number, query?: string): Promise<MatchesResponse>;
 }
 
 type RpcResult<T> = { data: T | null; error: { code: string } | null };
@@ -70,6 +71,23 @@ export async function createShadeRepository(): Promise<ShadeRepository> {
       return result;
     }
 
+    async function readHexMatches(hex: string, type: ProductFilter, brandId: string | undefined, offset: number, query = ''): Promise<MatchesResponse> {
+      const args: Database['public']['Functions']['shade_finder_matches_hex']['Args'] = {
+        p_hex: hex,
+        p_offset: offset,
+        ...(query === '' ? {} : { p_query: query }),
+        ...(type === 'all' ? {} : { p_type: type }),
+        ...(brandId === undefined ? {} : { p_brand_id: brandId }),
+      };
+      const result = await readResult(() => client.rpc('shade_finder_matches_hex', args), rows => normalizeMatches(rows, offset));
+      if (offset > 0 && result.matches.length === 0) {
+        // A table-returning RPC has no count row beyond the final page.
+        const firstPage = await readResult(() => client.rpc('shade_finder_matches_hex', { ...args, p_offset: 0 }), rows => normalizeMatches(rows, 0));
+        return { matches: [], total: firstPage.total, nextOffset: null };
+      }
+      return result;
+    }
+
     async function readBootstrap(): Promise<ShadeFinderBootstrap> {
       const brands = await readResult(() => client.rpc('shade_finder_brands'), normalizeBrands);
       const preferredBrand = brands.find(brand => brand.name === '헤라');
@@ -89,7 +107,7 @@ export async function createShadeRepository(): Promise<ShadeRepository> {
       return { brands, example: null };
     }
 
-    return { readBootstrap, readProducts, readShades, readMatches };
+    return { readBootstrap, readProducts, readShades, readMatches, readHexMatches };
   } catch (error) {
     if (error instanceof CatalogReadError) {throw error;}
     throw new CatalogReadError(503);

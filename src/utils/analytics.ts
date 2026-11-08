@@ -48,6 +48,7 @@ export function analyticsPage(pathname: string): string {
   const pages: Record<string, string> = {
     '/': ANALYTICS_PAGES.HOME,
     '/craft/shade-finder': ANALYTICS_PAGES.SHADE_FINDER,
+    '/craft/shade-finder/photo': ANALYTICS_PAGES.SHADE_FINDER,
     '/about': ANALYTICS_PAGES.ABOUT,
     '/resume': ANALYTICS_PAGES.RESUME,
     '/gallery': ANALYTICS_PAGES.GALLERY,

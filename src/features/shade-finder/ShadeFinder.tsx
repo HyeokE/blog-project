@@ -2,6 +2,7 @@
 
 import { use, useEffect, useId, useRef, useState, type RefObject } from 'react';
 import dynamic from 'next/dynamic';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ArrowRight, Check, ChevronDown, RotateCcw, Search } from 'lucide-react';
 import { ANALYTICS_ELEMENTS, ANALYTICS_SECTIONS } from '@/constants/analytics';
 import { trackShadeAction, trackShadeResults, trackShadeImpression, trackShadeExit, type ShadeContext } from './analytics';
@@ -17,17 +18,21 @@ import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { SkinPhotoPicker, type SkinPhotoEvent } from './SkinPhotoPicker';
+import { readShadeUrlState, writeShadeUrlState, updateShadeUrlState, type ShadeUrlState, type ShadeUrlAction } from './url-state.mjs';
 import { requestShadeData, retryShadeData, shadeApiUrl } from './queries';
 import { DIFFERENCE_STEPS, describeDifference } from './difference-scale.mjs';
 import { compareShadeColors } from './color-comparison.mjs';
-import type { BrandOption, ProductFilter, ProductOption, ShadeOption, MatchesResponse, MatchView } from './public-types';
+import type { BrandOption, ProductFilter, ProductOption, ShadeOption, MatchesResponse, MatchView, ShadeFinderBootstrap } from './public-types';
 
 type PickerOption = { id: string; name: string; keywords?: string; hex?: string };
 const TYPE_LABELS = { all: '전체', foundation: '파운데이션', cushion: '쿠션' };
 const ALL_BRANDS = 'all-brands';
 const BOOTSTRAP_URL = shadeApiUrl('bootstrap', {});
 type Selection = { type: ProductFilter; brandId: string; product: ProductOption | null; shade: ShadeOption | null };
-const EMPTY_SELECTION: Selection = { type: 'all', brandId: '', product: null, shade: null };
+type FinderMode = 'product' | 'photo';
+type SourceColor = Pick<ShadeOption, 'name' | 'hex'> & { id?: string };
 type Stage = 'view' | 'brand' | 'product' | 'selected' | 'results';
 
 function retryFromControl(url: string) {
@@ -94,7 +99,7 @@ function ColorComparison({ sourceHex, targetHex }: { sourceHex: string; targetHe
   </div>;
 }
 
-function MatchItem({ match, selectedShade, position }: { match: MatchView; selectedShade: ShadeOption; position: number }) {
+function MatchItem({ match, selectedShade, position }: { match: MatchView; selectedShade: SourceColor; position: number }) {
   const element = useRef<HTMLLIElement>(null);
   const reported = useRef(false);
   useEffect(() => {
@@ -190,7 +195,7 @@ function MatchesSkeleton() {
   </div>;
 }
 
-function MatchResults({ url, selectedShade, query, resetFilters, stage }: { url: string; selectedShade: ShadeOption; query: string; resetFilters: () => void; stage: RefObject<Stage> }) {
+function MatchResults({ url, selectedShade, query, resetFilters, stage }: { url: string; selectedShade: SourceColor; query: string; resetFilters: () => void; stage: RefObject<Stage> }) {
   const firstPage = use(requestShadeData('matches', url));
   const [pages, setPages] = useState<MatchesResponse[]>([]);
   const [pending, setPending] = useState(false);
@@ -231,49 +236,80 @@ function MatchResults({ url, selectedShade, query, resetFilters, stage }: { url:
   </>;
 }
 
-function ShadeFinderWorkspace({ stage }: { stage: RefObject<Stage> }) {
-  const initialData = use(requestShadeData('bootstrap', BOOTSTRAP_URL));
-  const [selection, setSelection] = useState<Selection>(EMPTY_SELECTION);
-  const [resultType, setResultType] = useState<ProductFilter>('all');
-  const [resultBrand, setResultBrand] = useState('');
-  const [searchDraft, setSearchDraft] = useState('');
-  const [resultQuery, setResultQuery] = useState('');
+function ShadeFinderModeWorkspace({ mode, selection, initialData, state, search, stage }: {
+  mode: FinderMode; selection: Selection; initialData: ShadeFinderBootstrap; state: ShadeUrlState; search: string; stage: RefObject<Stage>;
+}) {
+  const [photoHex, setPhotoHex] = useState<string | null>(null);
+  const [draft, setDraft] = useState<{ search: string; value: string } | null>(null);
+  const resultType = state.type;
+  const resultBrand = state.brand;
+  const resultQuery = state.q;
+  if (draft && draft.search !== search) { setDraft(null); }
+  const searchDraft = draft?.search === search ? draft.value : resultQuery;
+  const canonicalSearch = writeShadeUrlState(search, state);
+  useEffect(() => {
+    const path = mode === 'photo' ? '/craft/shade-finder/photo' : '/craft/shade-finder';
+    if (canonicalSearch !== search && window.location.pathname === path && new URLSearchParams(window.location.search).toString() === search) {
+      window.history.replaceState(null, '', `${window.location.pathname}${canonicalSearch ? `?${canonicalSearch}` : ''}${window.location.hash}`);
+    }
+  }, [canonicalSearch, search, mode]);
+
+  function updateUrl(action: ShadeUrlAction) {
+    const next = writeShadeUrlState(search, updateShadeUrlState(state, action));
+    if (next !== new URLSearchParams(window.location.search).toString()) {
+      window.history.pushState(null, '', `${window.location.pathname}${next ? `?${next}` : ''}${window.location.hash}`);
+    }
+    setDraft(null);
+  }
   const searchId = useId();
   const sortedBrands: BrandOption[] = initialData.brands;
   const brandsForType = sortedBrands.filter(brand => selection.type === 'all' || brand.types.includes(selection.type));
   const selectedProduct = selection.product;
-  const selectedShade = selection.shade;
+  const selectedShade: SourceColor | null = mode === 'photo' ? (photoHex ? { name: '보정한 피부 컬러', hex: photoHex } : null) : selection.shade;
   const selectedBrand = sortedBrands.find(brand => brand.id === selection.brandId);
   const productUrl = shadeApiUrl('products', { brandId: selection.brandId, type: selection.type });
   const shadeUrl = shadeApiUrl('shades', { productId: selectedProduct?.id || '' });
-  const matchUrl = shadeApiUrl('matches', { shadeId: selectedShade?.id || '', type: resultType, brandId: resultBrand, q: resultQuery, offset: 0 });
+  const matchUrl = shadeApiUrl('matches', { ...(mode === 'photo' ? { hex: photoHex || '' } : { shadeId: selectedShade?.id || '' }), type: resultType, brandId: resultBrand, q: resultQuery, offset: 0 });
 
-  function clearSearch() { setSearchDraft(''); setResultQuery(''); }
-  function resetResults() { setResultType('all'); setResultBrand(''); clearSearch(); }
+  function clearSearch() { updateUrl({ kind: 'q', value: '' }); }
+  function resetResults() { updateUrl({ kind: 'resultsReset' }); }
   function selectExample() {
     const example = initialData.example;
     if (example) {
       stage.current = 'selected';
       trackShadeAction('example_select', { brandId: example.brand.id, productId: example.product.id, shadeId: example.shade.id, hex: example.shade.hex });
-      setSelection({ type: 'all', brandId: example.brand.id, product: example.product, shade: example.shade });
-      resetResults();
+      updateUrl({ kind: 'example', brandId: example.brand.id, productId: example.product.id, shadeId: example.shade.id });
     }
   }
 
-  return <div className="sf-workspace">
+  function photoEvent(event: SkinPhotoEvent) {
+    trackShadeAction(`photo_${event}`);
+    if (['photo_loaded', 'white_reference_select', 'region_select', 'photo_reset'].includes(event)) {
+      setPhotoHex(null);
+      stage.current = 'view';
+    }
+  }
+
+  useEffect(() => {
+    if (mode === 'photo') { stage.current = 'view'; }
+    else if (!selection.shade) { stage.current = selection.product ? 'product' : selection.brandId ? 'brand' : 'view'; }
+  }, [mode, selection.brandId, selection.product, selection.shade, stage]);
+
+  return <div className="sf-workspace" data-mode={mode}>
         <section data-analytics-section={ANALYTICS_SECTIONS.SHADE_SELECTION} className="sf-selection" aria-labelledby="sf-selection-title">
+          <TabsContent value="product">
           <div className="sf-section-heading"><h2 id="sf-selection-title">내가 쓰는 컬러</h2><span className="sf-section-note">기준 제품</span></div>
           <Card className="sf-selection-card">
-            <div className="sf-field"><span className="sf-field-label">제품 종류</span><TypeFilter value={selection.type} label="기준 제품 종류" onChange={type => { stage.current = 'view'; trackShadeAction('selection_type', { productType: type }); setSelection({ ...EMPTY_SELECTION, type }); resetResults(); }} /></div>
+            <div className="sf-field"><span className="sf-field-label">제품 종류</span><TypeFilter value={selection.type} label="기준 제품 종류" onChange={type => { stage.current = 'view'; trackShadeAction('selection_type', { productType: type }); updateUrl({ kind: 'selectionType', value: type }); }} /></div>
             <SearchPicker field="brand" label="브랜드" placeholder="브랜드를 선택하세요" options={brandsForType.map(brand => ({ ...brand, keywords: brand.nameEn }))}
-              value={selection.brandId} onChange={brandId => { stage.current = 'brand'; trackShadeAction('brand_select', { brandId, brandName: sortedBrands.find(brand => brand.id === brandId)?.name }); setSelection({ ...selection, brandId, product: null, shade: null }); resetResults(); }} />
+              value={selection.brandId} onChange={brandId => { stage.current = 'brand'; trackShadeAction('brand_select', { brandId, brandName: sortedBrands.find(brand => brand.id === brandId)?.name }); updateUrl({ kind: 'brandId', value: brandId }); }} />
             {selection.brandId ? <AsyncRegion queryKey={productUrl} onRetry={() => retryFromControl(productUrl)} errorMessage="제품 목록을 불러오지 못했어요."
               fallback={selectedProduct ? <SearchPicker field="product" label="제품" placeholder="제품을 선택하세요" options={[selectedProduct]} value={selectedProduct.id} onChange={() => undefined} disabled /> : <FieldSkeleton label="제품" />}>
-              <ProductPicker url={productUrl} value={selectedProduct?.id || ''} onChange={product => { stage.current = 'product'; trackShadeAction('product_select', { brandId: selection.brandId, productId: product.id, productName: product.name, productType: product.type }); setSelection({ ...selection, product, shade: null }); resetResults(); }} />
+              <ProductPicker url={productUrl} value={selectedProduct?.id || ''} onChange={product => { stage.current = 'product'; trackShadeAction('product_select', { brandId: selection.brandId, productId: product.id, productName: product.name, productType: product.type }); updateUrl({ kind: 'productId', value: product.id }); }} />
             </AsyncRegion> : <SearchPicker field="product" label="제품" placeholder="브랜드를 먼저 선택하세요" disabled options={[]} value="" onChange={() => undefined} />}
             {selectedProduct ? <AsyncRegion queryKey={shadeUrl} onRetry={() => retryFromControl(shadeUrl)} errorMessage="컬러 목록을 불러오지 못했어요."
-              fallback={selectedShade ? <SearchPicker field="shade" label="컬러 · 호수" placeholder="컬러를 선택하세요" options={[selectedShade]} value={selectedShade.id} onChange={() => undefined} disabled /> : <FieldSkeleton label="컬러 · 호수" />}>
-              <ShadePicker url={shadeUrl} value={selectedShade?.id || ''} onChange={shade => { stage.current = 'selected'; trackShadeAction('shade_select', { brandId: selection.brandId, productId: selectedProduct.id, shadeId: shade.id, shadeName: shade.name, hex: shade.hex }); setSelection({ ...selection, shade }); }} />
+              fallback={selection.shade ? <SearchPicker field="shade" label="컬러 · 호수" placeholder="컬러를 선택하세요" options={[selection.shade]} value={selection.shade.id} onChange={() => undefined} disabled /> : <FieldSkeleton label="컬러 · 호수" />}>
+              <ShadePicker url={shadeUrl} value={selectedShade?.id || ''} onChange={shade => { stage.current = 'selected'; trackShadeAction('shade_select', { brandId: selection.brandId, productId: selectedProduct.id, shadeId: shade.id, shadeName: shade.name, hex: shade.hex }); updateUrl({ kind: 'shadeId', value: shade.id }); }} />
             </AsyncRegion> : <SearchPicker field="shade" label="컬러 · 호수" placeholder="제품을 먼저 선택하세요" disabled options={[]} value="" onChange={() => undefined} />}
 
             <div className="sf-selection-footer">
@@ -281,30 +317,37 @@ function ShadeFinderWorkspace({ stage }: { stage: RefObject<Stage> }) {
               <div className="sf-source-swatch" style={{ backgroundColor: selectedShade.hex }} role="img" aria-label={`선택 컬러 ${selectedShade.hex}`} />
               <div><p className="sf-kicker">선택한 컬러</p><strong>{selectedShade.name}</strong><span>{selectedShade.hex}</span></div>
             </div> : <p className="sf-selection-hint">피부에 잘 맞았던 컬러를 기준으로 골라주세요.</p>}
-            {(selection.brandId || selection.type !== 'all') && <Button variant="ghost" data-analytics-label={ANALYTICS_ELEMENTS.SHADE_RESET} onClick={() => { stage.current = 'view'; trackShadeAction('selection_reset'); setSelection(EMPTY_SELECTION); resetResults(); }}><RotateCcw aria-hidden="true" />선택 초기화</Button>}
+            {(selection.brandId || selection.type !== 'all') && <Button variant="ghost" data-analytics-label={ANALYTICS_ELEMENTS.SHADE_RESET} onClick={() => { stage.current = 'view'; trackShadeAction('selection_reset'); updateUrl({ kind: 'sourceReset' }); }}><RotateCcw aria-hidden="true" />선택 초기화</Button>}
             </div>
           </Card>
+          </TabsContent>
+          <TabsContent value="photo">
+            <div className="sf-section-heading"><h2 id="sf-selection-title">피부 사진에서 컬러 찾기</h2></div>
+            <SkinPhotoPicker onEvent={photoEvent} onUseColor={hex => { setPhotoHex(hex); stage.current = 'selected'; }} />
+          </TabsContent>
         </section>
 
-        <section data-analytics-section={ANALYTICS_SECTIONS.SHADE_RESULTS} className="sf-results" aria-labelledby="sf-results-title">
+        <section data-analytics-section={ANALYTICS_SECTIONS.SHADE_RESULTS} className="sf-results" data-awaiting-photo={mode === 'photo' && !photoHex || undefined} aria-labelledby="sf-results-title">
           <div className="sf-section-heading"><h2 id="sf-results-title">비슷한 컬러 찾기</h2></div>
-          {selectedShade && selectedProduct ? <>
+          {selectedShade ? <>
             <div className="sf-result-summary">
-              <p><strong>{selectedBrand?.name} · {selectedShade.name}</strong> 기준</p>
-              <p>{selectedProduct.name}</p>
+              {mode === 'photo' ? <div className="sf-photo-source" data-analytics-ignore="true">
+                <span style={{ backgroundColor: selectedShade.hex }} aria-hidden="true" />
+                <p><strong>보정한 피부 컬러</strong><br />{selectedShade.hex}</p>
+              </div> : <><p><strong>{selectedBrand?.name} · {selectedShade.name}</strong> 기준</p><p>{selectedProduct?.name}</p></>}
             </div>
             <div className="sf-result-filters">
-              <TypeFilter value={resultType} label="추천 제품 종류" onChange={type => { trackShadeAction('result_type', { productType: type, shadeId: selectedShade.id }); setResultType(type); }} />
+              <TypeFilter value={resultType} label="추천 제품 종류" onChange={type => { trackShadeAction('result_type', { productType: type, shadeId: selectedShade.id }); updateUrl({ kind: 'type', value: type }); }} />
               <SearchPicker field="resultBrand" label="추천 브랜드" placeholder="모든 브랜드" value={resultBrand || ALL_BRANDS}
                 options={[{ id: ALL_BRANDS, name: '모든 브랜드' }, ...sortedBrands.map(brand => ({ ...brand, keywords: brand.nameEn }))]}
-                onChange={brandId => { trackShadeAction('result_brand', { brandId: brandId === ALL_BRANDS ? undefined : brandId, shadeId: selectedShade.id }); setResultBrand(brandId === ALL_BRANDS ? '' : brandId); }} />
+                onChange={brandId => { trackShadeAction('result_brand', { brandId: brandId === ALL_BRANDS ? undefined : brandId, shadeId: selectedShade.id }); updateUrl({ kind: 'brand', value: brandId === ALL_BRANDS ? '' : brandId }); }} />
             </div>
             <form data-analytics-label={ANALYTICS_ELEMENTS.SEARCH_FORM} role="search" aria-label="비슷한 컬러 결과 검색" className="sf-result-search"
-              onSubmit={event => { event.preventDefault(); const query = searchDraft.trim().replace(/\s+/gu, ' '); trackShadeAction('search_submit', { searchLength: Array.from(query).length, hasSearch: Boolean(query), shadeId: selectedShade.id }); setResultQuery(query); }}>
+              onSubmit={event => { event.preventDefault(); const query = searchDraft.trim().replace(/\s+/gu, ' '); trackShadeAction('search_submit', { searchLength: Array.from(query).length, hasSearch: Boolean(query), shadeId: selectedShade.id }); updateUrl({ kind: 'q', value: query }); }}>
               <label htmlFor={searchId}>결과 검색</label>
               <div className="sf-search-controls">
                 <Input data-analytics-label={ANALYTICS_ELEMENTS.SEARCH_INPUT} id={searchId} type="search" value={searchDraft} maxLength={100} placeholder="브랜드·제품명·호수" autoComplete="off" enterKeyHint="search"
-                  onChange={event => setSearchDraft(event.target.value)}
+                  onChange={event => setDraft({ search, value: event.target.value })}
                   onKeyDown={event => { if (event.key === 'Enter' && (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229)) { event.preventDefault(); } }} />
                 <Button data-analytics-label={ANALYTICS_ELEMENTS.SHADE_SEARCH_SUBMIT} type="submit" variant="outline"><Search aria-hidden="true" />검색</Button>
               </div>
@@ -322,7 +365,11 @@ function ShadeFinderWorkspace({ stage }: { stage: RefObject<Stage> }) {
             <AsyncRegion queryKey={matchUrl} onRetry={() => retryFromControl(matchUrl)} errorMessage="추천 컬러를 불러오지 못했어요." fallback={<MatchesSkeleton />}>
               <MatchResults stage={stage} key={matchUrl} url={matchUrl} selectedShade={selectedShade} query={resultQuery} resetFilters={resetResults} />
             </AsyncRegion>
-          </> : <div className="sf-empty-state">
+          </> : mode === 'photo' ? <div className="sf-photo-empty">
+            <div className="sf-empty-swatches" aria-hidden="true"><span /><span /><span /></div>
+            <h3>사진에서 고른 색으로 비교해요</h3>
+            <p>피부 영역을 선택하고 색을 확인하면<br />비슷한 컬러의 제품을 보여드려요.</p>
+          </div> : <div className="sf-empty-state">
             <div className="sf-empty-swatches" aria-hidden="true"><span /><span /><span /></div>
             <p className="sf-eyebrow">A SHADE TO START WITH</p>
             <h3>나에게 맞는 컬러,<br />다른 제품에서는 몇 호일까요?</h3>
@@ -331,6 +378,29 @@ function ShadeFinderWorkspace({ stage }: { stage: RefObject<Stage> }) {
           </div>}
         </section>
       </div>;
+}
+
+function RestoredShadeWorkspace({ mode, state, search, initialData, stage }: {
+  mode: FinderMode; state: ShadeUrlState; search: string; initialData: ShadeFinderBootstrap; stage: RefObject<Stage>;
+}) {
+  const canonical = { ...state };
+  const brand = initialData.brands.find(item => item.id === canonical.brandId && (canonical.selectionType === 'all' || item.types.includes(canonical.selectionType)));
+  if (!brand) { canonical.brandId = ''; canonical.productId = ''; canonical.shadeId = ''; }
+  if (!initialData.brands.some(item => item.id === canonical.brand)) { canonical.brand = ''; }
+  let product: ProductOption | null = null;
+  let shade: ShadeOption | null = null;
+  if (mode === 'product' && brand && canonical.productId) {
+    const { products } = use(requestShadeData('products', shadeApiUrl('products', { brandId: brand.id, type: canonical.selectionType })));
+    product = products.find(item => item.id === canonical.productId) ?? null;
+    if (!product) { canonical.productId = ''; canonical.shadeId = ''; }
+    if (product && canonical.shadeId) {
+      const { shades } = use(requestShadeData('shades', shadeApiUrl('shades', { productId: product.id })));
+      shade = shades.find(item => item.id === canonical.shadeId) ?? null;
+      if (!shade) { canonical.shadeId = ''; }
+    }
+  }
+  const selection: Selection = { type: canonical.selectionType, brandId: canonical.brandId, product, shade };
+  return <ShadeFinderModeWorkspace mode={mode} selection={selection} initialData={initialData} state={canonical} search={search} stage={stage} />;
 }
 
 function WorkspaceSkeleton() {
@@ -345,6 +415,37 @@ function WorkspaceSkeleton() {
     <section className="sf-results"><div className="sf-section-heading"><h2>비슷한 컬러 찾기</h2></div><Skeleton className="sf-workspace-skeleton" /></section>
   </div>;
 }
+
+
+function ShadeFinderWorkspace({ stage }: { stage: RefObject<Stage> }) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const search = useSearchParams().toString();
+  const state = readShadeUrlState(search);
+  const initialData = use(requestShadeData('bootstrap', BOOTSTRAP_URL));
+  const mode: FinderMode = pathname === '/craft/shade-finder/photo' ? 'photo' : 'product';
+  const restorationKey = mode === 'photo' ? mode : [mode, state.selectionType, state.brandId, state.productId, state.shadeId].join(':');
+
+  return <Tabs className="sf-modes" value={mode} onValueChange={value => {
+    if ((value !== 'product' && value !== 'photo') || value === mode) { return; }
+    trackShadeAction(value === 'photo' ? 'photo_mode' : 'product_mode');
+    const query = writeShadeUrlState(search, state);
+    const path = value === 'photo' ? '/craft/shade-finder/photo' : '/craft/shade-finder';
+    router.push(`${path}${query ? `?${query}` : ''}`, { scroll: false });
+  }}>
+    <TabsList className="sf-mode-tabs" aria-label="컬러 찾는 방법">
+      <TabsTrigger value="product">쓰는 제품으로 찾기</TabsTrigger>
+      <TabsTrigger value="photo">피부 사진으로 찾기</TabsTrigger>
+    </TabsList>
+    <AsyncRegion queryKey={restorationKey} onRetry={() => {
+      retryShadeData(shadeApiUrl('products', { brandId: state.brandId, type: state.selectionType }));
+      retryShadeData(shadeApiUrl('shades', { productId: state.productId }));
+    }} errorMessage="선택한 컬러를 불러오지 못했어요." fallback={<WorkspaceSkeleton />}>
+      <RestoredShadeWorkspace key={mode} mode={mode} state={state} search={search} initialData={initialData} stage={stage} />
+    </AsyncRegion>
+  </Tabs>;
+}
+
 
 
 const ClientOnlyShadeWorkspace = dynamic(() => import('./ClientOnlyShadeWorkspace'), {

@@ -136,3 +136,26 @@ test('complete GA event including shared environment stays below 25 parameters',
   assert.equal(events[0][2].page_name, 'shade_finder');
   assert.ok(events.every(value => Object.keys(value[2]).length <= 25));
 });
+
+test('photo events and requests do not log photos or extracted skin colors', () => {
+  const { analytics, events } = setup();
+  analytics.trackShadeAction('photo_region_select');
+  const url = '/api/craft/shade-finder/matches?hex=%23a1b2c3&type=cushion&offset=0';
+  analytics.trackShadeRequest('matches', url, 'ok', 200, 25);
+  analytics.trackShadeResults(url, 10, 6);
+  analytics.trackShadeImpression(undefined, {
+    product: { id: uuid(2), name: '쿠션', nameEn: 'Cushion', type: 'cushion' },
+    shade: { id: uuid(3), name: '21호', hex: '#e5bda0' }, brandName: '테스트', deltaE: 1.4,
+  }, 1);
+  assert.equal(events.length, 4);
+  assert.equal(events[1].sourceType, 'photo');
+  assert.equal(events[3].sourceType, 'photo');
+  assert.doesNotMatch(JSON.stringify(events), /a1b2c3|\/api\//);
+  assert.equal(events[3].selectedShadeId, undefined);
+});
+
+test('white-reference selection logs an action without sampled color data', () => {
+  const { analytics, events } = setup();
+  analytics.trackShadeAction('photo_white_reference_select');
+  assert.deepEqual(events, [{ event: 'shade_action', action: 'photo_white_reference_select' }]);
+});

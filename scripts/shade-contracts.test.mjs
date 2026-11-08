@@ -381,3 +381,53 @@ test('match search validates raw Unicode length and controls before normalizing 
   assert.equal((await server.handleMatchesRequest(duplicate)).status, 400);
   assert.equal(requests.length, 5, 'Invalid search queries must not reach Supabase');
 });
+
+
+test('HEX matching validates a single canonicalized source before accessing Supabase', async () => {
+  const requests = [];
+  let clients = 0;
+  const server = load('server.ts', {
+    'server-only': {},
+    './public-contracts': contracts,
+    './data-access': {
+      CatalogReadError: class extends Error {},
+      createShadeRepository: async () => {
+        clients += 1;
+        return { readHexMatches: async (...args) => { requests.push(args); return page(); } };
+      },
+    },
+  }, { URL, URLSearchParams, Response });
+  const request = params => new Request(`http://localhost/api/craft/shade-finder/matches?${new URLSearchParams(params)}`);
+  for (const hex of ['#E5BDA0', '#e5bda0', '#000000', '#FFFFFF']) {
+    const response = await server.handleMatchesRequest(request({ hex, type: 'cushion', brandId: uuid(1), offset: '6', q: '  브랜드   21  ' }));
+    assert.equal(response.status, 200);
+    assert.deepEqual(plain(requests.at(-1)), [hex.toLowerCase(), 'cushion', uuid(1), 6, '브랜드 21']);
+    assert.equal(response.headers.get('cache-control'), 'private, no-store');
+  }
+  for (const params of [
+    {}, { shadeId: uuid(100), hex: '#e5bda0' },
+    ...['', '#fff', 'e5bda0', '#e5bda000', '#gggggg', ' #e5bda0', '#e5bda0\n'].map(hex => ({ hex })),
+    [['hex', '#e5bda0'], ['hex', '#ffffff']],
+    { hex: '#e5bda0', offset: '1' }, { hex: '#e5bda0', type: 'other' },
+    { hex: '#e5bda0', brandId: 'invalid' }, { hex: '#e5bda0', q: 'x'.repeat(101) },
+    { hex: '#e5bda0', extra: 'unsupported' },
+  ]) {
+    assert.equal((await server.handleMatchesRequest(request(params))).status, 400, JSON.stringify(params));
+  }
+  assert.equal(clients, 4, 'Invalid or ambiguous HEX sources must not open a repository');
+});
+
+test('HEX repository uses typed bounded RPC parameters and preserves totals beyond the final page', async () => {
+  const harness = repositoryHarness({ result: (_name, args) => ({
+    data: args.p_offset === 0 ? Array.from({ length: 6 }, (_, index) => rawMatch(index)) : [],
+    error: null,
+  }) });
+  const repository = await harness.createShadeRepository();
+  assert.deepEqual(plain(await repository.readHexMatches('#e5bda0', 'cushion', uuid(1), 18, '브랜드 21')), { matches: [], total: 13, nextOffset: null });
+  const rpcEvents = harness.events.filter(event => event[0] === 'rpc');
+  assert.ok(rpcEvents.every(event => event[2] === 'shade_finder_matches_hex'));
+  assert.deepEqual(plain(rpcEvents.map(event => event[3])), [
+    { p_hex: '#e5bda0', p_offset: 18, p_type: 'cushion', p_brand_id: uuid(1), p_query: '브랜드 21' },
+    { p_hex: '#e5bda0', p_offset: 0, p_type: 'cushion', p_brand_id: uuid(1), p_query: '브랜드 21' },
+  ]);
+});

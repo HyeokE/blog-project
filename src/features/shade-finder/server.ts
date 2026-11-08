@@ -26,6 +26,14 @@ function requiredId(params: URLSearchParams, key: string) {
   return value;
 }
 
+function requiredHex(params: URLSearchParams) {
+  const value = params.get('hex');
+  if (value === null || !/^#[0-9a-f]{6}$/i.test(value)) {
+    throw new RequestError(400, 'Invalid hex.');
+  }
+  return value.toLowerCase();
+}
+
 function productFilter(params: URLSearchParams): ProductFilter {
   const value = params.get('type') ?? 'all';
   if (value !== 'all' && value !== 'foundation' && value !== 'cushion') {
@@ -89,12 +97,20 @@ export function handleShadesRequest(request: Request) {
 
 export function handleMatchesRequest(request: Request) {
   return respond(async () => {
-    const params = requestParams(request, ['shadeId', 'type', 'brandId', 'offset', 'q']);
-    const shadeId = requiredId(params, 'shadeId');
+    const params = requestParams(request, ['shadeId', 'hex', 'type', 'brandId', 'offset', 'q']);
+    if (params.has('shadeId') === params.has('hex')) {
+      throw new RequestError(400, 'Provide exactly one shadeId or hex.');
+    }
+    const source = params.has('shadeId')
+      ? { kind: 'shade' as const, value: requiredId(params, 'shadeId') }
+      : { kind: 'hex' as const, value: requiredHex(params) };
     const type = productFilter(params);
     const brandId = params.has('brandId') ? requiredId(params, 'brandId') : undefined;
     const offset = matchOffset(params);
     const query = matchQuery(params);
-    return (await createShadeRepository()).readMatches(shadeId, type, brandId, offset, query);
+    const repository = await createShadeRepository();
+    return source.kind === 'shade'
+      ? repository.readMatches(source.value, type, brandId, offset, query)
+      : repository.readHexMatches(source.value, type, brandId, offset, query);
   });
 }
