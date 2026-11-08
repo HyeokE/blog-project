@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { compareShadeColors } from '../src/features/shade-finder/color-comparison.mjs';
+import { deltaE2000, hexToRgb, rgbToLab } from '../src/features/shade-finder/matching.mjs';
+import { describeDifference } from '../src/features/shade-finder/difference-scale.mjs';
 
 test('identical HEX values are equal regardless of letter case', () => {
   const rows = compareShadeColors('#E5BDA0', '#e5bda0');
@@ -30,21 +32,33 @@ test('swapping source and target reverses every non-neutral direction', () => {
   }
 });
 
-test('nearby swatches stay in the presentation deadband without claiming identical HEX', () => {
-  for (const row of compareShadeColors('#e5bda0', '#e6bea1')) {
-    assert.equal(row.direction, 0);
-    assert.equal(row.description, '거의 같아요');
-  }
+test('nearby swatches retain small differences and their direction', () => {
+  const rows = compareShadeColors('#e5bda0', '#e6bea1');
+  assert.deepEqual(rows.map(row => row.direction), [1, -1, -1, -1]);
+  assert.deepEqual(rows.map(row => row.description), ['조금 더 밝아요', '조금 더 차분해요', '조금 적어요', '조금 적어요']);
+  const reversed = compareShadeColors('#e6bea1', '#e5bda0');
+  assert.deepEqual(reversed.map(row => row.direction), [-1, 1, 1, 1]);
+  assert.deepEqual(reversed.map(row => row.description), ['조금 더 어두워요', '조금 더 선명해요', '조금 많아요', '조금 많아요']);
+});
+
+test('a level-two overall difference does not hide four small component differences', () => {
+  const source = '#d2af8c';
+  const target = '#cead88';
+  const distance = deltaE2000(rgbToLab(hexToRgb(source)), rgbToLab(hexToRgb(target)));
+  assert.equal(describeDifference(distance).level, 2);
+  assert.deepEqual(compareShadeColors(source, target).map(row => row.description), [
+    '조금 더 어두워요', '조금 더 선명해요', '조금 적어요', '조금 많아요',
+  ]);
 });
 
 test('redness and yellowness can vary independently for foundation-like swatches', () => {
   const redder = compareShadeColors('#e5bda0', '#e9bba0');
   assert.equal(redder[2].direction, 1);
   assert.equal(redder[2].description, '붉은기가 많아요');
-  assert.equal(redder[3].direction, 0);
+  assert.equal(redder[3].description, '조금 적어요');
 
   const yellower = compareShadeColors('#e5bda0', '#e7bd97');
-  assert.equal(yellower[2].direction, 0);
+  assert.equal(yellower[2].description, '조금 적어요');
   assert.equal(yellower[3].direction, 1);
   assert.equal(yellower[3].description, '노란기가 많아요');
 
